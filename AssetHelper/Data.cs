@@ -14,9 +14,41 @@ public static class Data
 {
     private static readonly ManualLogSource Log = Logger.CreateLogSource($"AssetHelper.{nameof(Data)}");
     
-
     private static Dictionary<string, string>? _bundleKeys { get; set; }
     public static IReadOnlyDictionary<string, string>? BundleKeys => new ReadOnlyDictionary<string, string>(_bundleKeys);
+
+    private static void SafeInvoke(Action a)
+    {
+        try
+        {
+            a?.Invoke();
+        }
+        catch (Exception ex)
+        {
+            Log.LogError($"Error invoking action {a.Method.Name}\n" + ex);
+        }
+    }
+
+    private static readonly List<Action> _toInvokeAfterAddressablesLoaded = new();
+    
+    /// <summary>
+    /// Invoke this action once Addressables has loaded the catalog.
+    /// 
+    /// If Addressables has already loaded the catalog, the action will be invoked immediately.
+    /// 
+    /// This is a safe way to execute code that depends on Addressables.
+    /// </summary>
+    public static void InvokeAfterAddressablesLoaded(Action a)
+    {
+        if (_bundleKeys == null)
+        {
+            _toInvokeAfterAddressablesLoaded.Add(a);
+        }
+        else
+        {
+            SafeInvoke(a);
+        }
+    }
 
     
     private static readonly string BundleSuffix = @"_[0-9a-fA-F]{32}\.bundle+$";
@@ -55,5 +87,9 @@ public static class Data
         Log.LogInfo($"Loaded asset list in {sw.ElapsedMilliseconds} ms");
 
         _bundleKeys = keys;
+        foreach (Action a in _toInvokeAfterAddressablesLoaded)
+        {
+            SafeInvoke(a);
+        }
     }
 }
