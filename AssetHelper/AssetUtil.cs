@@ -25,8 +25,19 @@ public static class AssetUtil
     /// <param name="onLoaded">Action to be invoked on the <see cref="LoadedAsset{T}"/> loaded by this operation.
     /// It is expected that this action will store a reference to the loaded asset.</param>
     /// <param name="extraDependencies">Extra asset bundles containing dependencies for this asset.</param>
-    /// <returns></returns>
-    public static IEnumerator LoadAsset<T>(
+    public static void LoadAsset<T>(
+        string bundleName,
+        string assetName,
+        Action<LoadedAsset<T>> onLoaded,
+        List<string>? extraDependencies = null
+        )
+        where T : UObject
+    {
+        AssetHelperPlugin.Instance.StartCoroutine(LoadAssetRoutine(bundleName, assetName, onLoaded, extraDependencies));
+    }
+
+    /// <inheritdoc cref="LoadAsset{T}(string, string, Action{LoadedAsset{T}}, List{string}?)"/>
+    public static IEnumerator LoadAssetRoutine<T>(
         string bundleName,
         string assetName,
         Action<LoadedAsset<T>> onLoaded,
