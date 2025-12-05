@@ -15,7 +15,24 @@ public static class Data
     private static readonly ManualLogSource Log = Logger.CreateLogSource($"AssetHelper.{nameof(Data)}");
     
     private static Dictionary<string, string>? _bundleKeys { get; set; }
-    public static IReadOnlyDictionary<string, string>? BundleKeys => new ReadOnlyDictionary<string, string>(_bundleKeys);
+
+    /// <summary>
+    /// Mapping from bundle file name to the key Addressables uses to load it.
+    /// 
+    /// This may change when the game updates but does not otherwise.
+    /// </summary>
+    public static IReadOnlyDictionary<string, string>? BundleKeys
+    {
+        get
+        {
+            if (_bundleKeys == null)
+            {
+                throw new InvalidOperationException("Addressables has not loaded yet.");
+            }
+            return new ReadOnlyDictionary<string, string>(_bundleKeys);
+        }
+    }
+        
 
     private static void SafeInvoke(Action a)
     {
@@ -68,28 +85,37 @@ public static class Data
         }
     }
 
-    internal static void LoadBundleKeys()
+    internal static bool TryLoadBundleKeys()
     {
         Dictionary<string, string> keys = [];
 
         Stopwatch sw = Stopwatch.StartNew();
-        IResourceLocator locator = Addressables.InitializeAsync().WaitForCompletion();
 
-        foreach (string key in locator.Keys)
+        foreach (IResourceLocator locator in Addressables.ResourceLocators)
         {
-            if (!TryStrip(key, out string? stripped)) continue;
+            foreach (string key in locator.Keys)
+            {
+                if (!TryStrip(key, out string? stripped)) continue;
 
-            keys[stripped] = key;
+                keys[stripped] = key;
+            }
         }
 
         sw.Stop();
-        // This takes about 2 ms I believe so no strong need to cache
-        Log.LogInfo($"Loaded asset list in {sw.ElapsedMilliseconds} ms");
+
+        Log.LogInfo($"Loaded {keys.Count} keys in {sw.ElapsedMilliseconds} ms");
+
+        if (keys.Count == 0)
+        {
+            return false;
+        }
 
         _bundleKeys = keys;
         foreach (Action a in _toInvokeAfterAddressablesLoaded)
         {
             SafeInvoke(a);
         }
+
+        return true;
     }
 }

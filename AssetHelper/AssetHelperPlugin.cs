@@ -21,10 +21,19 @@ public partial class AssetHelperPlugin : BaseUnityPlugin
 
     private IEnumerator Start()
     {
-        // For some reason we need to wait to load the asset list
-        yield return null;
+        // Addressables isn't initialized until the next frame
         yield return null;
 
-        Data.LoadBundleKeys();
+        while (true)
+        {
+            // Check this just in case
+            bool b = Data.TryLoadBundleKeys();
+            if (b)
+            {
+                yield break;
+            }
+
+            yield return null;
+        }
     }
 }
