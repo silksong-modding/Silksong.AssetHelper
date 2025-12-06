@@ -40,6 +40,24 @@
         "resolved": "1.25.0",
         "contentHash": "jOclVb2PVoOdKafuzt3bJ3BHkbjsfuAx+60yqP4zCAhlNa1rwn1Jt05qrmqJgmBY42S08hXbps9KA6QR2Z7aOA=="
       },
+      "MonoDetour": {
+        "type": "Direct",
+        "requested": "[*, )",
+        "resolved": "0.7.7",
+        "contentHash": "6Vuj/uuP38/zslv0yFcHAl6monP8AOM00nK5tzLnQdS5HWmAWotT8/wbqNc6o6cU81WfkFE/ByokU8uiLlHmuw==",
+        "dependencies": {
+          "MonoMod.RuntimeDetour": "21.12.13.1"
+        }
+      },
+      "MonoDetour.HookGen": {
+        "type": "Direct",
+        "requested": "[0.7.*, )",
+        "resolved": "0.7.6",
+        "contentHash": "LVaOXo0eBk1LbR9gfrEd7e2YfB8ha5LgEzGOvq8XVtEyGZpNMABkd6LmROFWaqRZ3YL7HS+PNCKTds41fW5F8w==",
+        "dependencies": {
+          "MonoDetour": "0.5.0"
+        }
+      },
       "PolySharp": {
         "type": "Direct",
         "requested": "[1.15.0, )",
@@ -51,6 +69,17 @@
         "requested": "[*-*, )",
         "resolved": "1.1.0-silksong1.0.29315",
         "contentHash": "HHAt52uzuBXi8cn90/D7WC7YEptcW9yST5fo43lThzRaN6d/TLiXhy7d1Cv3UyACTnryKqINSYPqa2hSbLR+Qg=="
+      },
+      "Silksong.UnityHelper": {
+        "type": "Direct",
+        "requested": "[1.1.0, )",
+        "resolved": "1.1.0",
+        "contentHash": "kHKSJLPduK1GckyNAASE9/BdV1boHPdkw3NvSSfQ4XQBLpcwDwfk2WeBdR4gqSiWIekE5Mje1MVbknsOMkFAmA==",
+        "dependencies": {
+          "BepInEx.Core": "5.4.21",
+          "HarmonyX": "2.9.0",
+          "UnityEngine.Modules": "6000.0.50"
+        }
       },
       "UnityEngine.Modules": {
         "type": "Direct",

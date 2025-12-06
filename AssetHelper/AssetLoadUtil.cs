@@ -12,9 +12,9 @@ using UObject = UnityEngine.Object;
 
 namespace Silksong.AssetHelper;
 
-public static class AssetUtil
+public static class AssetLoadUtil
 {
-    private static readonly ManualLogSource Log = Logger.CreateLogSource(nameof(AssetUtil));
+    private static readonly ManualLogSource Log = Logger.CreateLogSource(nameof(AssetLoadUtil));
 
     /// <summary>
     /// Load the specified asset from the specified asset bundle.
@@ -59,7 +59,15 @@ public static class AssetUtil
         {
             if (!AssetsData.BundleKeys.TryGetValue(name, out string key))
             {
-                Log.LogError($"Could not find key {name}");
+                if (name.EndsWith(".bundle"))
+                {
+                    Log.LogError($"Could not find key {name} - bundle keys should typically not be suffixed with .bundle");
+                }
+                else
+                {
+                    Log.LogError($"Could not find key {name}");
+                }
+                
                 yield break;
             }
 

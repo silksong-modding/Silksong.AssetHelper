@@ -17,8 +17,6 @@ public partial class AssetHelperPlugin : BaseUnityPlugin
         Logger.LogInfo($"Plugin {Name} ({Id}) has loaded!");
     }
 
-
-
     private IEnumerator Start()
     {
         // Addressables isn't initialized until the next frame

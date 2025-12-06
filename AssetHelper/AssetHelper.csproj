@@ -43,6 +43,16 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Silksong.UnityHelper" Version="1.1.0" />
+    <PackageReference Include="MonoDetour.HookGen" Version="0.7.*" PrivateAssets="all" />
+    <PackageReference Include="MonoDetour" Version="*" />
+  </ItemGroup>
+
+  <PropertyGroup Condition="'$(CI)' == 'true'">
+    <MonoDetourHookGenStripUnusedHooks>true</MonoDetourHookGenStripUnusedHooks>
+  </PropertyGroup>
+
+  <ItemGroup>
     <None Include="../README.md" Pack="True" PackagePath="README.md" />
     <None Include="../thunderstore/icon.png" Pack="True" PackagePath="icon.png" />
   </ItemGroup>
