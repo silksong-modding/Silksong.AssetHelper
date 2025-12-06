@@ -39,6 +39,27 @@ public class LoadedAsset<T> : IDisposable
     private readonly AssetBundle _bundle;
     private readonly AssetBundleLoadHandle _bundleHandle;
 
+    #region Dispose boilerplate
+    private bool _disposed = false;
+
+    /// <summary>
+    /// Virtual dispose method following the standard Dispose pattern.
+    /// </summary>
+    protected virtual void Dispose(bool disposing)
+    {
+        if (_disposed)
+        {
+            return;
+        }
+
+        Addressables.Release(_bundleHandle);
+
+        _disposed = true;
+    }
+
+    ~LoadedAsset() => Dispose(false);
+    #endregion
+
     /// <summary>
     /// Release the Asset Bundles used to load this asset.
     /// 
@@ -48,7 +69,7 @@ public class LoadedAsset<T> : IDisposable
     /// </summary>
     public void Dispose()
     {
-        Addressables.Release(_bundleHandle);
         GC.SuppressFinalize(this);
+        Dispose(true);
     }
 }
