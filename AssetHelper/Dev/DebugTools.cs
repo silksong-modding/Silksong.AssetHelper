@@ -34,7 +34,7 @@ public static class DebugTools
     /// <summary>
     /// Dump all asset names to the asset_names.json file next to this assembly.
     /// 
-    /// This function loads all asset bundles, so is very slow.
+    /// This function loads all asset bundles, so is quite slow.
     /// </summary>
     public static void DumpAllAssetNames()
     {
