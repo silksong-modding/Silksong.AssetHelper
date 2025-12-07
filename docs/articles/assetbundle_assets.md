@@ -67,13 +67,4 @@ The GameplayAsset will automatically handle loading and unloading the asset bund
 
 For more complex control (such as only loading the asset if the player enters a save file with certain
 mods active), it is recommended to create a @"Silksong.AssetHelper.LoadedAssets.LoadedAsset`1"
-instance instead.
-
-
-
-
-
-
-
-
-
+instance when needed instead.
