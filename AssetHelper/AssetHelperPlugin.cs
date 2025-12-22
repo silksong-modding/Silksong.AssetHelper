@@ -1,8 +1,7 @@
 using BepInEx;
+using Silksong.AssetHelper.BundleTools;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine.AddressableAssets;
-using UnityEngine.AddressableAssets.ResourceLocators;
 
 namespace Silksong.AssetHelper;
 
@@ -19,6 +18,8 @@ public partial class AssetHelperPlugin : BaseUnityPlugin
     {
         Instance = this;
         Logger.LogInfo($"Plugin {Name} ({Id}) has loaded!");
+
+        Deps.Setup();
 
         GameEvents.Hook();
     }
@@ -39,5 +40,10 @@ public partial class AssetHelperPlugin : BaseUnityPlugin
 
             yield return null;
         }
+    }
+
+    private void OnApplicationQuit()
+    {
+        GameEvents.AfterQuitApplication();
     }
 }

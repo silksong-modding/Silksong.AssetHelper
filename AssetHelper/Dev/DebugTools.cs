@@ -1,5 +1,6 @@
 ﻿using BepInEx.Logging;
 using Silksong.AssetHelper.LoadedAssets;
+using Silksong.AssetHelper.Util;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;

@@ -2,6 +2,7 @@
 // the bundle names <-> bundle keys and dependency list.
 
 using BepInEx.Logging;
+using Silksong.AssetHelper.BundleTools;
 using Silksong.AssetHelper.Util;
 using System;
 using System.Collections;
@@ -66,6 +67,20 @@ public class LoadableAsset<T> where T : UObject
     {
         _assetName = assetName;
         _bundleGroup = bundleGroup;
+    }
+
+    /// <summary>
+    /// Instantiate a loadable asset. Dependent bundles will be automatically determined.
+    /// </summary>
+    /// <param name="assetName">The name of the asset.</param>
+    /// <param name="mainBundle">The bundle containing the asset.</param>
+    public LoadableAsset(string assetName, string mainBundle)
+    {
+        _assetName = assetName;
+
+        List<string> deps = Deps.DetermineDirectDeps(mainBundle).Where(x => x != mainBundle).ToList();
+        List<string> bundles = [mainBundle, .. deps];
+        _bundleGroup = new(bundles);
     }
 
     /// <summary>

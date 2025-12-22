@@ -23,12 +23,21 @@ internal static class GameEvents
 
     public static event Action? OnEnterGame;
     public static event Action? OnExitGame;
+    public static event Action? OnQuitApplication;
 
     public static void Hook()
     {
         Md.GameManager.ContinueGame.Postfix(AfterContinueGame, manager: mgr);
         Md.GameManager.StartNewGame.Postfix(AfterStartNewGame, manager: mgr);
         Md.QuitToMenu.Start.Postfix(AfterQuitGame, manager: mgr);
+    }
+
+    internal static void AfterQuitApplication()
+    {
+        foreach (Action a in OnQuitApplication?.GetInvocationList() ?? Array.Empty<Action>())
+        {
+            ActionUtil.SafeInvoke(a);
+        }
     }
 
     private static void AfterQuitGame(QuitToMenu self, ref IEnumerator returnValue)

@@ -45,7 +45,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Silksong.GameLibs" Version="*-*" PrivateAssets="all" GeneratePathProperty="true"/>
+    <PackageReference Include="Silksong.GameLibs" Version="*-*" PrivateAssets="all" GeneratePathProperty="true" />
     <Reference Include="Unity.Addressables" Publicize="true">
       <HintPath>$(PkgSilksong_GameLibs)/lib/netstandard2.1/Unity.Addressables.dll</HintPath>
     </Reference>
@@ -55,7 +55,7 @@
   </ItemGroup>
   
   <ItemGroup>
-    <PackageReference Include="AssetsTools.NET" Version="3.0.2" GeneratePathProperty="true" PrivateAssets="all"/>
+    <PackageReference Include="AssetsTools.NET" Version="3.0.2" GeneratePathProperty="true" PrivateAssets="all" />
   </ItemGroup>
 
   <ItemGroup>
