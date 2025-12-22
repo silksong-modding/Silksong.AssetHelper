@@ -53,8 +53,6 @@ internal static class CacheManager
     {
         string filePath = Path.Combine(CacheDirectory, filename);
 
-        Log.LogInfo($"Actually write: {filePath}");
-
         VersionedObject<T> toCache = new(AssetHelperPlugin.Version, obj);
         toCache?.SerializeToFile(filePath);
     }
