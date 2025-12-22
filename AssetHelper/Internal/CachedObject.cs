@@ -1,4 +1,4 @@
-﻿namespace Silksong.AssetHelper.Util;
+﻿namespace Silksong.AssetHelper.Internal;
 
 /// <summary>
 /// Object that is loaded from cache if possible, and instantiated if not.

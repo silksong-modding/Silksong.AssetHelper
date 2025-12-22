@@ -1,7 +1,7 @@
 ﻿using BepInEx.Logging;
 using System;
 
-namespace Silksong.AssetHelper.Util;
+namespace Silksong.AssetHelper.Internal;
 
 internal static class ActionUtil
 {

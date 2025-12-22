@@ -1,6 +1,6 @@
 ﻿using MonoDetour;
 using MonoDetour.HookGen;
-using Silksong.AssetHelper.Util;
+using Silksong.AssetHelper.Internal;
 using System;
 using System.Collections;
 

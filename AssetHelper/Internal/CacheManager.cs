@@ -1,11 +1,10 @@
 ﻿using BepInEx;
 using BepInEx.Logging;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 
-namespace Silksong.AssetHelper.Util;
+namespace Silksong.AssetHelper.Internal;
 
 internal static class CacheManager
 {

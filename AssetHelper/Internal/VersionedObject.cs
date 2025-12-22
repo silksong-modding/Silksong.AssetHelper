@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Silksong.AssetHelper.Util;
+﻿namespace Silksong.AssetHelper.Internal;
 
 internal class VersionedObject<T>(string version, T? value)
 {

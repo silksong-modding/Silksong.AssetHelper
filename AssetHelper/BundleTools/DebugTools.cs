@@ -1,6 +1,6 @@
 ﻿using BepInEx.Logging;
 using Silksong.AssetHelper.LoadedAssets;
-using Silksong.AssetHelper.Util;
+using Silksong.AssetHelper.Internal;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -11,7 +11,7 @@ using UnityEngine.ResourceManagement.AsyncOperations;
 using UnityEngine.ResourceManagement.ResourceProviders;
 using NameListLookup = System.Collections.Generic.Dictionary<string, System.Collections.Generic.List<string>>;
 
-namespace Silksong.AssetHelper.Dev;
+namespace Silksong.AssetHelper.BundleTools;
 
 /// <summary>
 /// Class providing tools to help find information about the asset database.

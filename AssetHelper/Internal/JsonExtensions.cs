@@ -4,7 +4,7 @@ using System.IO;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 
-namespace Silksong.AssetHelper.Util;
+namespace Silksong.AssetHelper.Internal;
 
 internal static class JsonExtensions
 {
