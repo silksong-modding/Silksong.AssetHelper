@@ -4,9 +4,9 @@
     ".NETStandard,Version=v2.1": {
       "AssetsTools.NET": {
         "type": "Direct",
-        "requested": "[3.0.2, )",
-        "resolved": "3.0.2",
-        "contentHash": "1Xd2PRRDWMdpk6STiWuEYTQZ7nSaTbJeuVZRr8z4KI+SEpDgvyo1URn3IF2VwrlqE4AyXHYoVx3F5hjSeJMi4A=="
+        "requested": "[3.0.3, )",
+        "resolved": "3.0.3",
+        "contentHash": "U6qH5K6wuu1fqrR33+YBRECaSgl3/vOUzuOrdvduhdNph0irMW5sspG6z0N5v2dm/sg+bRcbaaTQIit9v7yxeg=="
       },
       "BepInEx.Analyzers": {
         "type": "Direct",
