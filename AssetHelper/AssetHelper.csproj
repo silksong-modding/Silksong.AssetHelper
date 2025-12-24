@@ -28,10 +28,6 @@
   </PropertyGroup>
   
   <ItemGroup>
-    <PackageReference Include="BepInEx.AssemblyPublicizer.MSBuild" Version="0.4.3">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
-    </PackageReference>
     <PackageReference Include="BepInEx.Analyzers" Version="1.0.8" PrivateAssets="all" />
     <PackageReference Include="BepInEx.Core" Version="5.4.21" />
     <PackageReference Include="HarmonyX" Version="2.9.0" />
@@ -45,14 +41,18 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Krafs.Publicizer" Version="2.3.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="Silksong.GameLibs" Version="*-*" PrivateAssets="all" GeneratePathProperty="true" />
-    <Reference Include="Unity.Addressables" Publicize="true">
-      <HintPath>$(PkgSilksong_GameLibs)/lib/netstandard2.1/Unity.Addressables.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.ResourceManager" Publicize="true">
-      <HintPath>$(PkgSilksong_GameLibs)/lib/netstandard2.1/Unity.ResourceManager.dll</HintPath>
-    </Reference>
+    <Publicize Include="Unity.Addressables" IncludeCompilerGeneratedMembers="false" IncludeVirtualMembers="false" />
+    <Publicize Include="Unity.ResourceManager" IncludeCompilerGeneratedMembers="false" IncludeVirtualMembers="false" />
   </ItemGroup>
+  
+  <PropertyGroup>
+    <PublicizerRuntimeStrategies>Unsafe</PublicizerRuntimeStrategies>
+  </PropertyGroup>
   
   <ItemGroup>
     <PackageReference Include="AssetsTools.NET" Version="3.0.3" GeneratePathProperty="true" PrivateAssets="all" />

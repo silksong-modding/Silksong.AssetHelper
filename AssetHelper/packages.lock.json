@@ -14,12 +14,6 @@
         "resolved": "1.0.8",
         "contentHash": "xrfNmunsPhBx+vStTxLonq/aHkRrDH77c9tG/x3m5eejrKe5B0nf7cJPRRt6x330sGI0bLaPTtygdeHUgvI3wQ=="
       },
-      "BepInEx.AssemblyPublicizer.MSBuild": {
-        "type": "Direct",
-        "requested": "[0.4.3, )",
-        "resolved": "0.4.3",
-        "contentHash": "Z8Qs3JTTHZG1q0DCqY+HFJ8xp92tkEXWyQ7roeWgUvn20tjv0ZNfAdyy13XrRS1jeEoN/weJc81747TbvvwaDg=="
-      },
       "BepInEx.Core": {
         "type": "Direct",
         "requested": "[5.4.21, )",
@@ -45,6 +39,12 @@
           "MonoMod.RuntimeDetour": "22.1.29.1",
           "System.Reflection.Emit": "4.7.0"
         }
+      },
+      "Krafs.Publicizer": {
+        "type": "Direct",
+        "requested": "[2.3.0, )",
+        "resolved": "2.3.0",
+        "contentHash": "DjktTgctwxUMhMkWKrRECer3LR1lHzanCOlE4mpinAiY8SfWJq4DG/QitP5h1A+WBjyWHzQSOG+204i3VpO1FA=="
       },
       "Microsoft.Unity.Analyzers": {
         "type": "Direct",
