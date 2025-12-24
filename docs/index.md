@@ -2,4 +2,4 @@
 
 Helper utilities for loading game assets.
 
-TODO - usage instructions.
+TODO - usage/installation instructions.
