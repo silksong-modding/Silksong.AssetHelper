@@ -17,7 +17,7 @@ namespace Silksong.AssetHelper.LoadedAssets;
 /// The asset will be automatically unloaded when quitting to menu.
 /// </summary>
 /// <typeparam name="T">The type of the asset.</typeparam>
-public class LoadableAsset<T> where T : UObject
+public class LoadableAsset<T> : ILoadableAsset<T> where T : UObject
 {
     private static readonly ManualLogSource Log = Logger.CreateLogSource(nameof(LoadableAsset<>));
 
@@ -105,6 +105,8 @@ public class LoadableAsset<T> where T : UObject
         }
         _toInvokeWhenLoaded.Add(toInvoke);
     }
+
+    void ILoadableAsset<T>.ExecuteWhenLoaded(Action<ILoadableAsset<T>> toInvoke) => ExecuteWhenLoaded(toInvoke);
 
     private void OnLoadedCallback()
     {
