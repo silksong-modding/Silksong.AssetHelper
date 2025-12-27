@@ -3,7 +3,9 @@ using Silksong.AssetHelper.BundleTools;
 using Silksong.AssetHelper.LoadedAssets;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using UnityEngine;
 
 namespace Silksong.AssetHelper;
@@ -52,27 +54,37 @@ public partial class AssetHelperPlugin : BaseUnityPlugin
 
     IEnumerator LoadAndSpawn()
     {
+        Stopwatch sw = Stopwatch.StartNew();
+        Logger.LogInfo($"Start {AssetBundle.GetAllLoadedAssetBundles().Count()}: {sw.ElapsedMilliseconds} ms");
+
+
         // Load dependencies
         if (dependencyGrp is null)
         {
-            dependencyGrp = AssetBundleGroup.CreateWithDependencies("scenes_scenes_scenes/peak_04c");
+            dependencyGrp = AssetBundleGroup.CreateWithDependencies("scenes_scenes_scenes/dust_02");
         }
         yield return dependencyGrp.LoadAsync();
+
+        Logger.LogInfo($"Deps loaded {AssetBundle.GetAllLoadedAssetBundles().Count()}: {sw.ElapsedMilliseconds} ms");
 
         // Load bundle
         if (_loadedModBundle == null)
         {
-            var req = AssetBundle.LoadFromFileAsync(Path.Combine(AssetPaths.AssemblyFolder, "repacked_heart_piece.bundle"));
+            var req = AssetBundle.LoadFromFileAsync(Path.Combine(AssetPaths.AssemblyFolder, "repacked_rfs.bundle"));
             yield return req;
             _loadedModBundle = req.assetBundle;
         }
 
+        Logger.LogInfo($"MB loaded: {sw.ElapsedMilliseconds} ms");
+
         // Spawn mask shard
-        GameObject go = UObject.Instantiate(_loadedModBundle.LoadAsset<GameObject>("AssetHelper/Heart Piece.prefab"));
-        go.name = $"MaskShard-{GetRandomString()}";
+        GameObject go = UObject.Instantiate(_loadedModBundle.LoadAsset<GameObject>("AssetHelper/Roachfeeder Short.prefab"));
+        go.name = $"RFS-{GetRandomString()}";
 
         go.transform.position = HeroController.instance.transform.position + new Vector3(0, 3, 0);
         go.SetActive(true);
+
+        Logger.LogInfo($"Spawned: {sw.ElapsedMilliseconds} ms");
 
         static string GetRandomString()
         {

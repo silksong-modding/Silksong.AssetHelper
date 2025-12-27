@@ -33,6 +33,11 @@ internal static class BundleCreate
             string outPath = Path.Combine(AssetPaths.AssemblyFolder, "repacked_heart_piece.bundle");
             CreateShallowSceneBundle(sceneBunPath, ["Heart Piece"], null, outPath);
         }
+        {
+            string sceneBunPath = Path.Combine(AssetPaths.BundleFolder, "scenes_scenes_scenes", "dust_02.bundle");
+            string outPath = Path.Combine(AssetPaths.AssemblyFolder, "repacked_rfs.bundle");
+            CreateShallowSceneBundle(sceneBunPath, ["Roachfeeder Short"], null, outPath);
+        }
 
 
         TheData data = new();
@@ -212,8 +217,7 @@ internal static class BundleCreate
         nonSceneBundlePath ??= Path.Combine(AssetPaths.BundleFolder, "toolui_assets_all.bundle");
 
         // Load the scene bundle
-        string sceneBundleFile = Path.Combine(AssetPaths.BundleFolder, "scenes_scenes_scenes", "peak_04c.bundle");
-        BundleFileInstance sceneBun = mgr.LoadBundleFile(sceneBundleFile);
+        BundleFileInstance sceneBun = mgr.LoadBundleFile(sceneBundlePath);
         if (!TryFindAssetsFiles(mgr, sceneBun, out AssetsFileInstance? mainSceneAfileInst, out AssetsFileInstance? sceneSharedAssetsFileInst))
         {
             throw new NotSupportedException($"Could not find assets files for {sceneBundlePath}");
