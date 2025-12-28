@@ -17,11 +17,11 @@ public partial class AssetHelperPlugin : BaseUnityPlugin
     private void Awake()
     {
         Instance = this;
-        Logger.LogInfo($"Plugin {Name} ({Id}) has loaded!");
-
+        
         Deps.Setup();
 
         GameEvents.Hook();
+        Logger.LogInfo($"Plugin {Name} ({Id}) has loaded!");
     }
 
     private IEnumerator Start()
