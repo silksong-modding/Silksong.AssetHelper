@@ -2,7 +2,8 @@
 using AssetsTools.NET.Extra;
 using System;
 using System.Collections.Generic;
-using PPtrData = (int fileId, long PathId);
+using System.Linq;
+using PPtrData = (int fileId, long pathId);
 
 namespace Silksong.AssetHelper.BundleTools;
 
@@ -40,6 +41,17 @@ public static class BundleUtils
     }
 
     /// <summary>
+    /// Create an <see cref="AssetsManager"/> with the default settings for AssetHelper.
+    /// </summary>
+    public static AssetsManager CreateDefaultManager() => new()
+    {
+        UseQuickLookup = true,
+        UseMonoTemplateFieldCache = true,
+        UseRefTypeManagerCache = true,
+        UseTemplateFieldCache = true,
+    };
+
+    /// <summary>
     /// Asset class IDs representing a transform.
     /// </summary>
     public static List<AssetClassID> TransformClassIds { get; } = [AssetClassID.Transform, AssetClassID.RectTransform];
@@ -62,6 +74,44 @@ public static class BundleUtils
                 }
             }
         }
+    }
+
+    /// <summary>
+    /// Find root game objects matching the given object names.
+    /// </summary>
+    /// <exception cref="ArgumentException">If not all </exception>
+    public static AssetData[] FindRootGameObjects(this AssetsManager mgr, AssetsFileInstance afileInst, List<string> objectNames)
+    {
+        AssetData[] datas = new AssetData[objectNames.Count];
+
+        foreach (AssetData data in mgr.GetRootTransforms(afileInst))
+        {
+            AssetFileInfo goInfo = afileInst.file.GetAssetInfo(data.ValueField["m_GameObject.m_PathID"].AsLong);
+            AssetTypeValueField goValueField = mgr.GetBaseField(afileInst, goInfo);
+            string goName = goValueField["m_Name"].AsString;
+
+            if (objectNames.Contains(goName))
+            {
+                datas[objectNames.IndexOf(goName)] = new(goInfo, goValueField);
+            }
+        }
+
+        if (datas.Any(x => x is null))
+        {
+            List<string> missingNames = new();
+            for (int i = 0; i < objectNames.Count; i++)
+            {
+                if (datas[i] is null)
+                {
+                    missingNames.Add(objectNames[i]);
+                }
+            }
+            string missingNamesString = string.Join(", ", missingNames);
+
+            throw new ArgumentException($"Missing root objects in bundle! {missingNamesString}");
+        }
+
+        return datas;
     }
 
     /// <inheritdoc cref="GetTransformName(AssetsManager, AssetsFileInstance, AssetTypeValueField)" />

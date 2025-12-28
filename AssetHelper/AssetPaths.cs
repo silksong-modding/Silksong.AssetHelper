@@ -41,6 +41,11 @@ public static class AssetPaths
     }
 
     /// <summary>
+    /// Get the path to the scene bundle for a given scene.
+    /// </summary>
+    public static string GetScenePath(string sceneName) => Path.Combine(BundleFolder, "scenes_scenes_scenes", $"{sceneName.ToLowerInvariant()}.bundle");
+
+    /// <summary>
     /// The Silksong version. This is calculated using reflection so it is not hardcoded.
     /// </summary>
     public static string SilksongVersion
