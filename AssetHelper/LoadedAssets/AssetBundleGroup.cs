@@ -26,10 +26,10 @@ public class AssetBundleGroup(List<string> bundleNames)
     /// </summary>
     public static AssetBundleGroup CreateWithDependencies(string mainBundle, bool includeMainBundle = true)
     {
-        if (AssetsData.IsAddressablesLoaded)
+        if (GameEvents.IsInGame)
         {
             Log.LogWarning(
-                "Checking dependencies may be slow and should be done during your plugin's Awake method."
+                "Checking dependencies may be slow and should not be done while in game."
                 );
         }
         List<string> deps = Deps.DetermineDirectDeps(mainBundle).Where(x => x != mainBundle).ToList();
