@@ -28,7 +28,77 @@ internal static class BundleCreate
         {
             string sceneBunPath = Path.Combine(AssetPaths.BundleFolder, "scenes_scenes_scenes", "peak_04c.bundle");
             string outPath = Path.Combine(AssetPaths.AssemblyFolder, "repacked_hpa.bundle");
-            CreateAssetSceneBundle(sceneBunPath, ["Heart Piece"], null, outPath);
+            // CreateAssetSceneBundle(sceneBunPath, ["Heart Piece"], null, outPath);
+        }
+
+        Stopwatch sw = Stopwatch.StartNew();
+        Log.LogInfo($"Starting [{sw.ElapsedMilliseconds} ms]");
+
+        AssetsManager mgr = new();
+        string bunPath = Path.Combine(AssetPaths.BundleFolder, "scenes_scenes_scenes", "memory_coral_tower.bundle");
+        BundleFileInstance sceneBun = mgr.LoadBundleFile(bunPath);
+        if (!TryFindAssetsFiles(mgr, sceneBun, out AssetsFileInstance? mainSceneAfileInst, out AssetsFileInstance? _))
+        {
+            throw new NotSupportedException($"Could not find assets files for {bunPath}");
+        }
+
+        sw.Stop();
+        Log.LogInfo($"Found file [{sw.ElapsedMilliseconds} ms]");
+
+        foreach (string goName in new string[]
+        {
+            // "Battle Scenes",
+            // "Boss Scene",
+            // "Stalactite Group",
+            // "Enemy Activator Groups",
+            "Battle Scenes/Battle Scene Chamber 2/Wave 9/Coral Conch Driller",
+            "Enemy Activator Groups/Enemy Activator Low/Enemy Folder/Coral Goomba M (2)",
+            "Enemy Activator Groups/Enemy Activator Low/Enemy Folder/Coral Goomba L",
+            "Battle Scenes/Battle Scene Chamber 3/Wave 5 - fish1/Coral Swimmer Fat (1)",
+            "Battle Scenes/Battle Scene Chamber 3/Wave 5 - fish1/Coral Poke Swimmer",
+            "Battle Scenes/Battle Scene Chamber 2/Wave 7b - Fish/Coral Spike Swimmer (1)",
+            "Battle Scenes/Battle Scene Chamber 2/Wave 2/Coral Warrior (1)",
+            "Battle Scenes/Battle Scene Chamber 4/Wave 3/Coral Bubble Brute",
+            "Battle Scenes/Battle Scene Chamber 2/Wave 10/Coral Brawler (1)",
+            "Battle Scenes/Battle Scene Chamber 2/Wave 1/Coral Hunter",
+            "Enemy Activator Groups/Enemy Activator Low/Enemy Folder/Coral Swimmer Small",
+            "Battle Scenes/Battle Scene Chamber 3/Wave 15b - double jellyfish/Coral Big Jellyfish",
+            "Battle Scenes/Battle Scene Chamber 1/Wave 5/Coral Flyer",
+            "Battle Scenes/Battle Scene Chamber 3/Wave 2b/Coral Flyer Throw",
+            "Boss Scene/Roar Spikes/Spike Holder 1/Coral Spike"
+        })
+        {
+            long pathId = mgr.FindTransform(mainSceneAfileInst, goName).ValueField["m_GameObject.m_PathID"].AsLong;
+
+            Log.LogInfo($"Starting {goName} at pathId {pathId}");
+
+            BundleUtils.ChildPPtrs kidsFalse = null;
+            List<(int fileId, long PathId)> ep = null;
+
+            if (true)
+            {
+                sw = Stopwatch.StartNew();
+                kidsFalse = mgr.FindBundleDependentObjects(mainSceneAfileInst, pathId, followParent: false);
+                sw.Stop();
+                Log.LogInfo($"KidsFalse: {sw.ElapsedMilliseconds} ms; {kidsFalse.InternalPaths.Count} + {kidsFalse.ExternalPaths.Count}");
+
+            }
+
+            if (false)
+            {
+                sw = Stopwatch.StartNew();
+                var kidsTrue = mgr.FindBundleDependentObjects(mainSceneAfileInst, pathId, followParent: true);
+                sw.Stop();
+                Log.LogInfo($"KidsTrue: {sw.ElapsedMilliseconds} ms; {kidsTrue.InternalPaths.Count} + {kidsTrue.ExternalPaths.Count}");
+            }
+
+            if (false)
+            {
+                sw = Stopwatch.StartNew();
+                Deps.FindDirectDependentObjects(mgr, mainSceneAfileInst, pathId, out var ip, out ep);
+                sw.Stop();
+                Log.LogInfo($"OG: {sw.ElapsedMilliseconds} ms; {ip.Count} + {ep.Count}");
+            }
         }
     }
 
