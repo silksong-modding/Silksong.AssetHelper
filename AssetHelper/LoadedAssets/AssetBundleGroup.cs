@@ -24,18 +24,38 @@ public class AssetBundleGroup(List<string> bundleNames)
     /// <summary>
     /// Create an AssetBundleGroup which loads the given bundle as well as its direct dependencies.
     /// </summary>
-    public static AssetBundleGroup CreateWithDependencies(string mainBundle)
+    public static AssetBundleGroup CreateWithDependencies(string mainBundle, bool includeMainBundle = true)
     {
-        if (AssetsData.IsAddressablesLoaded)
+        if (GameEvents.IsInGame)
         {
             Log.LogWarning(
-                "Checking dependencies may be slow and should be done during your plugin's Awake method."
+                "Checking dependencies may be slow and should not be done while in game."
                 );
         }
         List<string> deps = Deps.DetermineDirectDeps(mainBundle).Where(x => x != mainBundle).ToList();
-        List<string> bundles = [mainBundle, .. deps];
+        
+        if (includeMainBundle)
+        {
+            List<string> bundles = [mainBundle, .. deps];
+            return new(bundles);
+        }
+        else
+        {
+            return new(deps);
+        }
+    }
 
-        return new(bundles);
+    /// <summary>
+    /// Create an asset bundle group for the given scene.
+    /// </summary>
+    /// <param name="sceneName">The scene.</param>
+    /// <param name="includeScene">Whether the scene bundle itself should be included in the group.</param>
+    /// <returns></returns>
+    public static AssetBundleGroup CreateForScene(string sceneName, bool includeScene)
+    {
+        string key = $"scenes_scenes_scenes/{sceneName.ToLowerInvariant()}";
+
+        return CreateWithDependencies(key, includeScene);
     }
 
     private static readonly ManualLogSource Log = Logger.CreateLogSource(nameof(AssetBundleGroup));

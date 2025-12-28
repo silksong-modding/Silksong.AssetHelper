@@ -32,7 +32,7 @@ public static class AssetsData
         {
             if (_bundleKeys == null)
             {
-                throw new InvalidOperationException("Addressables has not loaded yet.");
+                return null;
             }
             return new ReadOnlyDictionary<string, string>(_bundleKeys);
         }
@@ -54,7 +54,7 @@ public static class AssetsData
     /// </summary>
     public static void InvokeAfterAddressablesLoaded(Action a)
     {
-        if (IsAddressablesLoaded)
+        if (!IsAddressablesLoaded)
         {
             _toInvokeAfterAddressablesLoaded.Add(a);
         }
