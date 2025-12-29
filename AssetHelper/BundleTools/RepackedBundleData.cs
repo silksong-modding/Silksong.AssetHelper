@@ -1,5 +1,8 @@
-﻿using System;
+﻿using Silksong.AssetHelper.Internal;
+using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using System.Text;
 
 namespace Silksong.AssetHelper.BundleTools;
@@ -22,6 +25,39 @@ public class RepackedBundleData
     /// <summary>
     /// A list of asset paths in the asset bundle container.
     /// </summary>
-    public List<string>? AssetPaths { get; set; }
+    public List<string>? GameObjectAssets { get; set; }
 
+    /// <summary>
+    /// Get the ancestor of the given game object within the repacked bundle.
+    /// 
+    /// If bun is a <see cref="UnityEngine.AssetBundle"/> object loaded from this bundle, then
+    /// bun.LoadAsset&lt;GameObject&gt;(ancestorPath).FindChild(relativePath) will
+    /// retrieve the requested game object.
+    /// </summary>
+    /// <param name="objName">The name of a game object from the original scene.
+    /// This should be a path of the form root/.../grandparent/parent/object, with no leading slash.</param>
+    /// <param name="ancestorPath">The asset name representing the </param>
+    /// <param name="relativePath"></param>
+    /// <returns>False if the supplied game object has no ancestor in the repacked bundle.</returns>
+    public bool TryGetAncestor(string objName, [MaybeNullWhen(false)] out string ancestorPath, [MaybeNullWhen(false)] out string relativePath)
+    {
+        foreach (string assetName in GameObjectAssets ?? Enumerable.Empty<string>())
+        {
+            string assetPath = assetName[(nameof(AssetHelper).Length + 1)..];
+            if (assetPath.EndsWith(".prefab"))
+            {
+                assetPath = assetPath[..^".prefab".Length];
+            }
+            if (objName.HasPrefix(assetPath))
+            {
+                ancestorPath = assetName;
+                relativePath = objName[(1 + assetPath.Length)..];
+                return true;
+            }
+        }
+
+        ancestorPath = null;
+        relativePath = null;
+        return false;
+    }
 }

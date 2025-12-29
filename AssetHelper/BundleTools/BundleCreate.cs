@@ -272,7 +272,7 @@ public static class BundleCreate
 
         bundleData["m_Container.Array"].Children.Clear();
         bundleData["m_Container.Array"].Children.AddRange(newChildren);
-        outData.AssetPaths = containerPaths;
+        outData.GameObjectAssets = containerPaths;
 
         // Finish up
         internalBundle.SetNewData(bundleData);
