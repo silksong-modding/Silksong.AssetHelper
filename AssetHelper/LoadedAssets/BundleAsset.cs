@@ -21,9 +21,10 @@ public class BundleAsset<T> : ILoadableAsset<T> where T : UObject
 {
     private static readonly ManualLogSource Log = Logger.CreateLogSource(nameof(BundleAsset<>));
 
-    private AssetBundleGroup _bundleGroup;
-    private string _assetName;
+    private readonly AssetBundleGroup _bundleGroup;
+    private readonly string _assetName;
 
+    // TODO - check that this works as-is across scene changes
     private T? _asset;
 
     /// <summary>
@@ -168,6 +169,10 @@ public class BundleAsset<T> : ILoadableAsset<T> where T : UObject
     /// </summary>
     public void Unload()
     {
+        if (_asset != null)
+        {
+            UObject.Destroy(_asset);
+        }
         _asset = null;
         _bundleGroup.Unload();
     }

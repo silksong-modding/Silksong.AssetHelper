@@ -53,4 +53,15 @@ public static class LoadableAssetExtensions
 
         return asset;
     }
+
+    /// <summary>
+    /// Execute the supplied action, ensuring that the loadable asset is loaded.
+    /// </summary>
+    /// <param name="asset">The asset to ensure loaded.</param>
+    /// <param name="toInvoke">The action to invoke.</param>
+    public static void LoadAndExecute<T>(this ILoadableAsset<T> asset, Action<ILoadableAsset<T>> toInvoke) where T : UObject
+    {
+        asset.Load();
+        asset.ExecuteWhenLoaded(toInvoke);
+    }
 }

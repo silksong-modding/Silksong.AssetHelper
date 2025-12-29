@@ -79,10 +79,13 @@ public static class BundleUtils
     /// <summary>
     /// Find root game objects matching the given object names.
     /// </summary>
-    /// <exception cref="ArgumentException">If not all </exception>
-    public static AssetData[] FindRootGameObjects(this AssetsManager mgr, AssetsFileInstance afileInst, List<string> objectNames)
+    public static Dictionary<string, AssetData> FindRootGameObjects(
+        this AssetsManager mgr,
+        AssetsFileInstance afileInst,
+        List<string> objectNames,
+        out List<string> missingObjects)
     {
-        AssetData[] datas = new AssetData[objectNames.Count];
+        Dictionary<string, AssetData> gameObjects = new();
 
         foreach (AssetData data in mgr.GetRootTransforms(afileInst))
         {
@@ -92,26 +95,12 @@ public static class BundleUtils
 
             if (objectNames.Contains(goName))
             {
-                datas[objectNames.IndexOf(goName)] = new(goInfo, goValueField);
+                gameObjects[goName] = new(goInfo, goValueField);
             }
         }
 
-        if (datas.Any(x => x is null))
-        {
-            List<string> missingNames = new();
-            for (int i = 0; i < objectNames.Count; i++)
-            {
-                if (datas[i] is null)
-                {
-                    missingNames.Add(objectNames[i]);
-                }
-            }
-            string missingNamesString = string.Join(", ", missingNames);
-
-            throw new ArgumentException($"Missing root objects in bundle! {missingNamesString}");
-        }
-
-        return datas;
+        missingObjects = objectNames.Where(x => !gameObjects.ContainsKey(x)).ToList();
+        return gameObjects;
     }
 
     /// <inheritdoc cref="GetTransformName(AssetsManager, AssetsFileInstance, AssetTypeValueField)" />

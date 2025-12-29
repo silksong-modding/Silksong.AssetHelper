@@ -139,7 +139,14 @@ public static class BundleCreate
         AssetsFile sharedAssetsAfile = sceneSharedAssetsFileInst.file;
         string sceneCab = mainSceneAfileInst.name;
 
-        BundleUtils.AssetData[] gameObjects = mgr.FindRootGameObjects(mainSceneAfileInst, objectNames);
+        Dictionary<string, BundleUtils.AssetData> gameObjects = mgr.FindRootGameObjects(
+            mainSceneAfileInst, objectNames, out List<string> missingObjects);
+
+        if (missingObjects.Count > 0)
+        {
+            Log.LogWarning($"Missing objects for bundle {sceneBundlePath}");
+            Log.LogWarning(string.Join(", ", missingObjects));
+        }
 
         // Load a non-scene bundle to modify
         BundleFileInstance modBun = mgr.LoadBundleFile(nonSceneBundlePath);
@@ -199,14 +206,15 @@ public static class BundleCreate
             }
         }
 
+        // TODO - do this and the container together
         // Fix up the preload table
+        List<string> gameObjectNames = gameObjects.Keys.ToList();
         List<AssetTypeValueField> preloadPtrs = [];
         List<(int start, int count)> depCounts = new();
 
-        for (int i = 0; i < objectNames.Count; i++)
+        foreach (string objName in gameObjectNames)
         {
-            string objName = objectNames[i];
-            BundleUtils.AssetData goData = gameObjects[i];
+            BundleUtils.AssetData goData = gameObjects[objName];
 
             int start = preloadPtrs.Count;
 
@@ -242,7 +250,7 @@ public static class BundleCreate
         for (int i = 0; i < objectNames.Count; i++)
         {
             string objName = objectNames[i];
-            BundleUtils.AssetData goData = gameObjects[i];
+            BundleUtils.AssetData goData = gameObjects[objName];
             (int start, int count) = depCounts[i];
 
             AssetTypeValueField newChild = ValueBuilder.DefaultValueFieldFromArrayTemplate(bundleData["m_Container.Array"]);
