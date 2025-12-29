@@ -1,136 +1,50 @@
 ﻿using AssetsTools.NET;
 using AssetsTools.NET.Extra;
-using BepInEx.Logging;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
 
-namespace Silksong.AssetHelper.BundleTools;
+namespace Silksong.AssetHelper.BundleTools.Repacking;
 
 /// <summary>
-/// Tools for creating repacked asset bundles.
+/// Repacker that creates a shallow bundle; that is, a bundle with no objects but with the metadata to load
+/// objects from a given scene bundle, as long as that scene bundle and its dependencies are in memory.
 /// </summary>
-public static class BundleCreate
+public class ShallowSceneRepacker : SceneRepacker
 {
-    private static readonly ManualLogSource Log = Logger.CreateLogSource($"{nameof(AssetHelper)}.{nameof(BundleCreate)}");
+    private readonly string? _nonSceneBundlePath;
 
     /// <summary>
-    /// Given a scene bundle instance, find the main assets file and the sharedAssets file
-    /// within the bundle.
+    /// Instantiate a ShallowSceneRepacker.
     /// </summary>
-    private static bool TryFindAssetsFiles(
-        AssetsManager mgr,
-        BundleFileInstance sceneBun, 
-        [MaybeNullWhen(false)] out AssetsFileInstance mainAfileInst,
-        [MaybeNullWhen(false)] out AssetsFileInstance sharedAssetsFileInst)
-    {
-        int mainAfileIdx = -1;
-        int sharedAssetsAfileIdx = -1;
-
-        List<string> names = sceneBun.file.GetAllFileNames();
-        for (int i = 0; i < names.Count; i++)
-        {
-            if (!names[i].Contains('.'))
-            {
-                mainAfileIdx = i;
-            }
-            else if (names[i].EndsWith(".sharedAssets"))
-            {
-                sharedAssetsAfileIdx = i;
-            }
-        }
-
-        if (mainAfileIdx == -1 || sharedAssetsAfileIdx == -1)
-        {
-            mainAfileInst = default;
-            sharedAssetsFileInst = default;
-            return false;
-        }
-
-        mainAfileInst = mgr.LoadAssetsFileFromBundle(sceneBun, mainAfileIdx, false);
-        sharedAssetsFileInst = mgr.LoadAssetsFileFromBundle(sceneBun, sharedAssetsAfileIdx, false);
-        return true;
-    }
-
-    /// <summary>
-    /// Determine sensible cab and bundle names for the given bundle.
-    /// 
-    /// These don't matter, but these ones look like the ones made by unity.
-    /// </summary>
-    /// <param name="sceneBundlePath"></param>
-    /// <param name="objectNames"></param>
-    /// <param name="outBundlePath"></param>
-    /// <param name="cabName"></param>
-    /// <param name="bundleName"></param>
-    private static void GetBundleNames(
-        string sceneBundlePath,
-        List<string> objectNames,
-        string outBundlePath,
-        out string cabName,
-        out string bundleName)
-    {
-        const string salt = "AssetHelperSalt\n";
-
-        using SHA256 sha256 = SHA256.Create();
-
-        StringBuilder inputSb = new();
-        inputSb.AppendLine(salt);
-        inputSb.AppendLine(sceneBundlePath ?? string.Empty);
-
-        foreach (string name in objectNames)
-        {
-            inputSb.AppendLine($"\n{name}");
-        }
-
-        inputSb.AppendLine(outBundlePath);
-
-        string saltedInput = inputSb.ToString();
-
-        byte[] inputBytes = Encoding.UTF8.GetBytes(saltedInput);
-        byte[] hashBytes = sha256.ComputeHash(inputBytes);
-
-        StringBuilder sb = new(64);
-        foreach (byte b in hashBytes)
-        {
-            sb.Append(b.ToString("x2"));
-        }
-
-        string fullHash = sb.ToString();
-
-        cabName = $"CAB-{fullHash.Substring(0, 32)}";
-        bundleName = $"{fullHash.Substring(32, 32)}.bundle";
-    }
-
-    /// <summary>
-    /// Create a shallow bundle that can be used to spawn objects from the provided scene bundle.
-    /// </summary>
-    /// <param name="sceneBundlePath">A path to the scene bundle.</param>
-    /// <param name="objectNames">A list of game objects to spawn. Only root game objects are supported.</param>
     /// <param name="nonSceneBundlePath">A path to a non scene bundle to be used as a template.
     /// The content of this bundle does not matter.
     /// If null, a sensible default for silksong will be selected.</param>
-    /// <param name="outBundlePath">A path to the created bundle.</param>
-    /// <returns>An object encapsulating information about the written bundle.</returns>
-    public static RepackedBundleData CreateShallowSceneBundle(
-        string sceneBundlePath,
-        List<string> objectNames,
-        string outBundlePath,
-        string? nonSceneBundlePath = null
-        )
+    public ShallowSceneRepacker(string nonSceneBundlePath)
     {
+        _nonSceneBundlePath = nonSceneBundlePath;
+    }
+
+    /// <summary>
+    /// Instantiate a ShallowSceneRepacker.
+    /// </summary>
+    public ShallowSceneRepacker() : this(Path.Combine(AssetPaths.BundleFolder, "toolui_assets_all.bundle")) { }
+    // This is a sensible default for silksong but it would be nice to avoid the need to hardcode...
+
+
+    /// <inheritdoc />
+    public override RepackedBundleData Repack(string sceneBundlePath, List<string> objectNames, string outBundlePath)
+    {
+        // Only support root objects - TODO check if this works with non-root game objects
+        objectNames = objectNames.Select(x => x.Split('/')[0]).Distinct().ToList();
+
         RepackedBundleData outData = new();
         AssetsManager mgr = BundleUtils.CreateDefaultManager();
 
-        GetBundleNames(sceneBundlePath, objectNames, outBundlePath, out string newCabName, out string newBundleName);
+        GetDefaultBundleNames(sceneBundlePath, objectNames, outBundlePath, out string newCabName, out string newBundleName);
         outData.BundleName = newBundleName;
         outData.CabName = newCabName;
-
-        // TODO - avoid hardcoding this. I'd like something with no aux internal files, I think...
-        nonSceneBundlePath ??= Path.Combine(AssetPaths.BundleFolder, "toolui_assets_all.bundle");
 
         // Load the scene bundle
         BundleFileInstance sceneBun = mgr.LoadBundleFile(sceneBundlePath);
@@ -153,7 +67,7 @@ public static class BundleCreate
         }
 
         // Load a non-scene bundle to modify
-        BundleFileInstance modBun = mgr.LoadBundleFile(nonSceneBundlePath);
+        BundleFileInstance modBun = mgr.LoadBundleFile(_nonSceneBundlePath);
         AssetBundleFile modBunF = modBun.file;
         AssetsFileInstance modAfileInst = mgr.LoadAssetsFileFromBundle(modBun, 0, false);  // TODO - check index
         AssetsFile modAfile = modAfileInst.file;
