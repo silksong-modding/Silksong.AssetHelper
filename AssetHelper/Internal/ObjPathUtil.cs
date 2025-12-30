@@ -68,10 +68,17 @@ internal static class ObjPathUtil
     /// <param name="ancestorPath">The path representing the ancestor.</param>
     /// <param name="relativePath">The path relative to the ancestor.</param>
     /// <returns>False if the supplied game object has no ancestor in the repacked bundle.</returns>
-    public static bool TryGetAncestor(List<string> paths, string objName, [MaybeNullWhen(false)] out string ancestorPath, [MaybeNullWhen(false)] out string relativePath)
+    public static bool TryFindAncestor(List<string> paths, string objName, [MaybeNullWhen(false)] out string ancestorPath, [MaybeNullWhen(false)] out string relativePath)
     {
         foreach (string path in paths ?? Enumerable.Empty<string>())
         {
+            if (objName == path)
+            {
+                ancestorPath = objName;
+                relativePath = string.Empty;
+                return true;
+            }
+
             if (objName.HasPrefix(path))
             {
                 ancestorPath = path;
@@ -83,5 +90,25 @@ internal static class ObjPathUtil
         ancestorPath = null;
         relativePath = null;
         return false;
+    }
+
+    /// <summary>
+    /// Given the name to a game object in the hierarchy, returns its parent's name.
+    /// </summary>
+    /// <param name="objName">The name of the object.</param>
+    /// <param name="parent">The name of the parent.</param>
+    /// <returns>True if the object is not a root game object; false otherwise.</returns>
+    public static bool TryGetParent(this string objName, out string parent)
+    {
+        int lastSlashIndex = objName.LastIndexOf('/');
+
+        if (lastSlashIndex == -1)
+        {
+            parent = string.Empty;
+            return false;
+        }
+
+        parent = objName.Substring(0, lastSlashIndex);
+        return true;
     }
 }

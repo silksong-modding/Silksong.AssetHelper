@@ -55,7 +55,7 @@ public class RepackedBundleData
             pathToKey[assetPath] = assetName;
         }
 
-        if (!ObjPathUtil.TryGetAncestor(ancestorPaths, objName, out string? ancestorPath, out relativePath))
+        if (!ObjPathUtil.TryFindAncestor(ancestorPaths, objName, out string? ancestorPath, out relativePath))
         {
             ancestorName = null;
             return false;

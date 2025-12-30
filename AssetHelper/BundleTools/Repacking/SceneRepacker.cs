@@ -19,9 +19,10 @@ public abstract class SceneRepacker
         AssetsManager mgr,
         BundleFileInstance sceneBun,
         [MaybeNullWhen(false)] out AssetsFileInstance mainAfileInst,
-        [MaybeNullWhen(false)] out AssetsFileInstance sharedAssetsAfileInst)
+        [MaybeNullWhen(false)] out AssetsFileInstance sharedAssetsAfileInst,
+        out int mainAfileIdx)
     {
-        int mainAfileIdx = -1;
+        mainAfileIdx = -1;
         int sharedAssetsAfileIdx = -1;
 
         List<string> names = sceneBun.file.GetAllFileNames();

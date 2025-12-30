@@ -202,7 +202,7 @@ public static class BundleUtils
         HashSet<PPtrData> externalPPtrs = [];
         ChildPPtrs childPPtrs = new(internalPPtrs, externalPPtrs);
 
-        if (followParent && (
+        if (!followParent && (
             info.TypeId == (int)AssetClassID.Transform
             || info.TypeId == (int)AssetClassID.RectTransform
             ))
