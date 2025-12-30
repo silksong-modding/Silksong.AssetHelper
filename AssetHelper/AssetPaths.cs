@@ -12,6 +12,7 @@ namespace Silksong.AssetHelper;
 public static class AssetPaths
 {
     private static string? _bundleFolder;
+    private static string? _catalogFolder;
     private static string? _cacheDirectory;
     private static string? _silksongVersion;
 
@@ -25,6 +26,26 @@ public static class AssetPaths
             _bundleFolder ??= GetBundleFolder();
             return _bundleFolder;
         }
+    }
+
+    /// <summary>
+    /// Path to the catalog folder
+    /// </summary>
+    public static string CatalogFolder
+    {
+        get
+        {
+            _catalogFolder ??= GetCatalogFolder();
+            return _catalogFolder;
+        }
+    }
+
+    private static string GetCatalogFolder()
+    {
+        return Path.Combine(
+                AssetPaths.CacheDirectory,
+                "Catalogs"
+        );
     }
 
     private static string GetBundleFolder()
