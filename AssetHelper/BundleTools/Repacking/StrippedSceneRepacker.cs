@@ -207,7 +207,7 @@ public class StrippedSceneRepacker : SceneRepacker
             }
 
             int locRedirect = mgr.Redirect(mainSceneAfileInst, toMove, 1, newOneAssetPathId);  // Just in case
-            AssetHelperPlugin.InstanceLogger.LogInfo($"Redirected {redirectCount} + {locRedirect} references");
+            AssetHelperPlugin.InstanceLogger.LogInfo($"Redirected {redirectCount} references plus {locRedirect} self-references");
         }
 
         // Move updated internal bundle into the main assets file
