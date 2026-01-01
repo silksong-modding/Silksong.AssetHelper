@@ -2,10 +2,7 @@
 using AssetsTools.NET.Extra;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using UnityEngine.TextCore.Text;
-using static Silksong.AssetHelper.BundleTools.AssetDependencies;
 
 namespace Silksong.AssetHelper.BundleTools;
 
