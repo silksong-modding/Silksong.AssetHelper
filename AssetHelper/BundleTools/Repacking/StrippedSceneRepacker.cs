@@ -17,16 +17,11 @@ namespace Silksong.AssetHelper.BundleTools.Repacking;
 public class StrippedSceneRepacker : SceneRepacker
 {
     /// <inheritdoc />
-    public override RepackedBundleData Repack(string sceneBundlePath, List<string> objectNames, string outBundlePath)
+    public override void Repack(string sceneBundlePath, List<string> objectNames, string outBundlePath, ref RepackedBundleData outData)
     {
         objectNames = objectNames.GetHighestNodes();
 
-        RepackedBundleData outData = new();
         AssetsManager mgr = BundleUtils.CreateDefaultManager();
-
-        GetDefaultBundleNames(sceneBundlePath, objectNames, outBundlePath, out string newCabName, out string newBundleName);
-        outData.BundleName = newBundleName;
-        outData.CabName = newCabName;
 
         BundleFileInstance sceneBun = mgr.LoadBundleFile(sceneBundlePath);
         if (!mgr.TryFindAssetsFiles(sceneBun, out BundleUtils.SceneBundleInfo sceneBundleInfo))
@@ -144,8 +139,8 @@ public class StrippedSceneRepacker : SceneRepacker
         AssetTypeValueField iBundleData = mgr.GetBaseField(sceneSharedAssetsFileInst, internalBundle);
 
         // Set simple data
-        iBundleData["m_Name"].AsString = newBundleName;
-        iBundleData["m_AssetBundleName"].AsString = newBundleName;
+        iBundleData["m_Name"].AsString = outData.BundleName;
+        iBundleData["m_AssetBundleName"].AsString = outData.BundleName;
         iBundleData["m_IsStreamedSceneAssetBundle"].AsBool = false;
         iBundleData["m_SceneHashes.Array"].Children.Clear();
 
@@ -228,7 +223,7 @@ public class StrippedSceneRepacker : SceneRepacker
         mainSceneAfileInst.file.Metadata.AddAssetInfo(newInternalBundle);
 
         sceneBun.file.BlockAndDirInfo.DirectoryInfos[mainAfileIdx].SetNewData(mainSceneAfileInst.file);
-        sceneBun.file.BlockAndDirInfo.DirectoryInfos[mainAfileIdx].Name = newCabName;
+        sceneBun.file.BlockAndDirInfo.DirectoryInfos[mainAfileIdx].Name = outData.CabName;
 
         int tot = sceneBun.file.BlockAndDirInfo.DirectoryInfos.Count;
         for (int i = 0; i < tot; i++)
@@ -239,7 +234,5 @@ public class StrippedSceneRepacker : SceneRepacker
 
         sceneBun.file.WriteBundleToFile(outBundlePath);
         mgr.UnloadAll();
-
-        return outData;
     }
 }

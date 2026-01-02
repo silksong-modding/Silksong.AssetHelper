@@ -35,17 +35,12 @@ public class ShallowSceneRepacker : SceneRepacker
 
 
     /// <inheritdoc />
-    public override RepackedBundleData Repack(string sceneBundlePath, List<string> objectNames, string outBundlePath)
+    public override void Repack(string sceneBundlePath, List<string> objectNames, string outBundlePath, ref RepackedBundleData outData)
     {
         // Only support root objects
         List<string> rootObjects = objectNames.Select(x => x.Split('/')[0]).Distinct().ToList();
 
-        RepackedBundleData outData = new();
         AssetsManager mgr = BundleUtils.CreateDefaultManager();
-
-        GetDefaultBundleNames(sceneBundlePath, rootObjects, outBundlePath, out string newCabName, out string newBundleName);
-        outData.BundleName = newBundleName;
-        outData.CabName = newCabName;
 
         // Load the scene bundle
         BundleFileInstance sceneBun = mgr.LoadBundleFile(sceneBundlePath);
@@ -119,8 +114,8 @@ public class ShallowSceneRepacker : SceneRepacker
         // Update the name
         AssetFileInfo internalBundle = modAfile.AssetInfos.Where(info => info.TypeId == (int)AssetClassID.AssetBundle).First();
         AssetTypeValueField bundleData = mgr.GetBaseField(modAfileInst, internalBundle);
-        bundleData["m_Name"].AsString = newBundleName;
-        bundleData["m_AssetBundleName"].AsString = newBundleName;
+        bundleData["m_Name"].AsString = outData.BundleName;
+        bundleData["m_AssetBundleName"].AsString = outData.BundleName;
 
         // Update the dependencies on the internal bundle
         AssetTypeValueField childString = bundleData["m_Dependencies.Array"].Children[0];
@@ -191,11 +186,9 @@ public class ShallowSceneRepacker : SceneRepacker
         internalBundle.SetNewData(bundleData);
 
         modBunF.BlockAndDirInfo.DirectoryInfos[0].SetNewData(modAfile);
-        modBunF.BlockAndDirInfo.DirectoryInfos[0].Name = newCabName;
+        modBunF.BlockAndDirInfo.DirectoryInfos[0].Name = outData.CabName;
 
         modBunF.WriteBundleToFile(outBundlePath);
         mgr.UnloadAll();
-
-        return outData;
     }
 }
