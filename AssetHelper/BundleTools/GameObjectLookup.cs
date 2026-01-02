@@ -59,6 +59,26 @@ public class GameObjectLookup : IEnumerable<GameObjectLookup.GameObjectInfo>
     /// </summary>
     public static GameObjectLookup CreateFromFile(AssetsManager mgr, AssetsFileInstance afileInst)
     {
+        Dictionary<long, string> go2name = [];
+        Dictionary<long, long> tf2parent = [];
+        Dictionary<long, long> tf2go = [];
+
+        // Iterate over the assets files once
+        foreach (AssetFileInfo info in afileInst.file.AssetInfos)
+        {
+            if (info.TypeId == (int)AssetClassID.GameObject)
+            {
+                AssetTypeValueField goValueField = mgr.GetBaseField(afileInst, info);
+                go2name[info.PathId] = goValueField["m_Name"].AsString;
+            }
+            else if (info.TypeId == (int)AssetClassID.Transform || info.TypeId == (int)AssetClassID.RectTransform)
+            {
+                AssetTypeValueField tValueField = mgr.GetBaseField(afileInst, info);
+                tf2parent[info.PathId] = tValueField["m_Father.m_PathID"].AsLong;
+                tf2go[info.PathId] = tValueField["m_GameObject.m_PathID"].AsLong;
+            }
+        }
+
         Dictionary<long, GameObjectInfo> fromTransformLookup = [];
 
         GameObjectInfo DoAdd(long tPathId)
@@ -68,28 +88,31 @@ public class GameObjectLookup : IEnumerable<GameObjectLookup.GameObjectInfo>
                 return info;
             }
 
-            AssetTypeValueField tValueField = mgr.GetBaseField(afileInst, tPathId);
-            long goPathId = tValueField["m_GameObject.m_PathID"].AsLong;
-            AssetTypeValueField goValueField = mgr.GetBaseField(afileInst, goPathId);
-            string goName = goValueField["m_Name"].AsString;
-            long parentTransformPathId = tValueField["m_Father.m_PathID"].AsLong;
+            long parentTransformPathId = tf2parent[tPathId];
+            long goPathId = tf2go[tPathId];
+            string goName = go2name[goPathId];
 
             if (parentTransformPathId == 0)
             {
-                GameObjectInfo newInfo = new(goPathId, tPathId, goName, 0);
-                fromTransformLookup[tPathId] = newInfo;
-                return newInfo;
-            }
+                GameObjectInfo goinfo = new(goPathId, tPathId, goName, 0);
+                fromTransformLookup[tPathId] = goinfo;
 
-            GameObjectInfo parentInfo = DoAdd(parentTransformPathId);
-            GameObjectInfo childInfo = new(goPathId, tPathId, $"{parentInfo.GameObjectName}/{goName}", parentTransformPathId);
-            fromTransformLookup[tPathId] = childInfo;
-            return childInfo;
+                return goinfo;
+            }
+            else
+            {
+                string parentName = DoAdd(parentTransformPathId).GameObjectName;
+
+                GameObjectInfo goinfo = new(goPathId, tPathId, $"{parentName}/{goName}", parentTransformPathId);
+                fromTransformLookup[tPathId] = goinfo;
+
+                return goinfo;
+            }
         }
 
-        foreach (AssetFileInfo transform in afileInst.file.GetAllTransforms())
+        foreach (long pathId in tf2parent.Keys)
         {
-            DoAdd(transform.PathId);
+            DoAdd(pathId);
         }
 
         return CreateFromInfos(fromTransformLookup.Values);
