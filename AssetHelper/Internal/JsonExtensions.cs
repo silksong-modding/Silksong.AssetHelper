@@ -20,7 +20,7 @@ internal static class JsonExtensions
         Task.Run(() => self.SerializeToFile(filePath));
     }
 
-    public static bool TryLoadFromFile<T>(string filePath, [MaybeNullWhen(false)] out T obj)
+    public static bool TryLoadFromFile<T>(string filePath, [NotNullWhen(true)] out T? obj)
     {
         obj = default;
 

@@ -3,6 +3,7 @@ using AssetsTools.NET.Extra;
 using Silksong.AssetHelper.Util;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using GameObjectInfo = Silksong.AssetHelper.BundleTools.GameObjectLookup.GameObjectInfo;
 
@@ -23,7 +24,9 @@ public class StrippedSceneRepacker : SceneRepacker
 
         AssetsManager mgr = BundleUtils.CreateDefaultManager();
 
-        BundleFileInstance sceneBun = mgr.LoadBundleFile(sceneBundlePath);
+        using MemoryStream ms = new(File.ReadAllBytes(sceneBundlePath));
+        BundleFileInstance sceneBun = mgr.LoadBundleFile(ms, sceneBundlePath);
+        
         if (!mgr.TryFindAssetsFiles(sceneBun, out BundleUtils.SceneBundleInfo sceneBundleInfo))
         {
             throw new NotSupportedException($"Could not find assets files for {sceneBundlePath}");

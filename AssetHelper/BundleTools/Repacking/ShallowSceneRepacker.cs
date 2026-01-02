@@ -43,7 +43,9 @@ public class ShallowSceneRepacker : SceneRepacker
         AssetsManager mgr = BundleUtils.CreateDefaultManager();
 
         // Load the scene bundle
-        BundleFileInstance sceneBun = mgr.LoadBundleFile(sceneBundlePath);
+        MemoryStream ms = new(File.ReadAllBytes(sceneBundlePath));
+        BundleFileInstance sceneBun = mgr.LoadBundleFile(ms, sceneBundlePath);
+
         if (!mgr.TryFindAssetsFiles(sceneBun, out BundleUtils.SceneBundleInfo sceneBundleInfo))
         {
             throw new NotSupportedException($"Could not find assets files for {sceneBundlePath}");
@@ -76,7 +78,8 @@ public class ShallowSceneRepacker : SceneRepacker
         outData.NonRepackedAssets = nonRepackedAssets;
 
         // Load a non-scene bundle to modify
-        BundleFileInstance modBun = mgr.LoadBundleFile(_nonSceneBundlePath);
+        MemoryStream nsms = new(File.ReadAllBytes(_nonSceneBundlePath));
+        BundleFileInstance modBun = mgr.LoadBundleFile(nsms, _nonSceneBundlePath);
         AssetBundleFile modBunF = modBun.file;
         AssetsFileInstance modAfileInst = mgr.LoadAssetsFileFromBundle(modBun, 0, false);  // TODO - check index
         AssetsFile modAfile = modAfileInst.file;

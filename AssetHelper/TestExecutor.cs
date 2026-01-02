@@ -29,7 +29,7 @@ internal static class TestExecutor
             return;
         }
 
-        Gen(data!);
+        Gen(data);
     }
 
     public static void Gen(Dictionary<string, List<string>> rpData)
