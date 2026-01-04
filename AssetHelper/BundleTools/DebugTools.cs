@@ -13,6 +13,7 @@ using UnityEngine.ResourceManagement.ResourceLocations;
 using UnityEngine.ResourceManagement.ResourceProviders;
 using NameListLookup = System.Collections.Generic.Dictionary<string, System.Collections.Generic.List<string>>;
 using AssetsTools.NET.Extra;
+using UnityEngine.AddressableAssets.ResourceLocators;
 
 namespace Silksong.AssetHelper.BundleTools;
 
@@ -24,7 +25,7 @@ public static class DebugTools
     private static readonly ManualLogSource Log = Logger.CreateLogSource($"AssetHelper.{nameof(DebugTools)}");
 
     /// <summary>
-    /// Dump all addressable keys to the bundle_keys.json file next to this assembly.
+    /// Dump all addressable keys to the bundle_keys.json file in the debug data dir.
     /// 
     /// The keys in this dictionary should be used to construct a <see cref="AssetBundleGroup"/>.
     /// </summary>
@@ -36,7 +37,7 @@ public static class DebugTools
     }
 
     /// <summary>
-    /// Dump all asset names to the asset_names.json file next to this assembly.
+    /// Dump all asset names to the asset_names.json file in the debug data dir.
     /// 
     /// This function loads all asset bundles, so is quite slow.
     /// </summary>
@@ -105,6 +106,23 @@ public static class DebugTools
         assetInfos.SerializeToFileInBackground(Path.Combine(AssetPaths.DebugDataDir, "addressable_assets.json"));
     }
 
+    /// <summary>
+    /// Write a list of all Addressable assets in the catalog given by the provided locator.
+    /// </summary>
+    /// <param name="locator"></param>
+    /// <param name="fileName">The name of the file within the debug data dir.</param>
+    public static void DumpAllAddressableAssets(IResourceLocator locator, string fileName)
+    {
+        List<AddressablesAssetInfo> assetInfos = [];
+
+        foreach (IResourceLocation loc in locator.AllLocations)
+        {
+            assetInfos.Add(AddressablesAssetInfo.FromLocation(loc));
+        }
+
+        assetInfos.SerializeToFileInBackground(Path.Combine(AssetPaths.DebugDataDir, fileName));
+    }
+
     private class AddressablesAssetInfo
     {
         public string? InternalId { get; init; }
@@ -147,7 +165,7 @@ public static class DebugTools
     /// Get a readable list of loaded bundle names (paths relative to the bundle base dir).
     /// 
     /// The first time this is used in each Silksong version, it will generate a lookup of bundle name -> readable name,
-    /// which is quite slow.
+    /// which can be quite slow.
     /// </summary>
     /// <exception cref="InvalidOperationException">Raised if this is called before Addressables is ready.</exception>
     public static LoadedBundleNames GetLoadedBundleNames(out List<string> names, out List<string> unknown)
@@ -178,7 +196,7 @@ public static class DebugTools
     }
 
     /// <summary>
-    /// Dump all game object paths to paths_{sceneName}.json in this assembly's directory.
+    /// Dump all game object paths to paths_{sceneName}.json in the debug data dir.
     /// If <paramref name="compressed"/> is true, the output file will be paths_{sceneName}_compressed.json.
     /// </summary>
     /// <param name="sceneName">The name of the scene.</param>

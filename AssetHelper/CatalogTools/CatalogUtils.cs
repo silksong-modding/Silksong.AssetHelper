@@ -26,9 +26,9 @@ internal static class CatalogUtils
     /// Mainly used to create the catalog hash file.
     /// </summary>
     /// <param name="catalogByteArray">Data buffer to hash.</param>
-    private static unsafe UnityEngine.Hash128 Hash(byte[] catalogByteArray)
+    private static unsafe Hash128 Hash(byte[] catalogByteArray)
     {
-        UnityEngine.Hash128 outhash = default(UnityEngine.Hash128);
+        Hash128 outhash = default;
         ulong u64_ = outhash.u64_0;
         ulong u64_2 = outhash.u64_1;
 
@@ -37,7 +37,7 @@ internal static class CatalogUtils
             SpookyHash.Hash(p, (ulong)catalogByteArray.Length, &u64_, &u64_2);
         }
 
-        outhash = new UnityEngine.Hash128(u64_, u64_2);
+        outhash = new Hash128(u64_, u64_2);
 
         return outhash;
     }
@@ -49,7 +49,8 @@ internal static class CatalogUtils
     /// </summary>
     /// <param name="locationEntries">List of entries to serialize into the catalog</param>
     /// <param name="catalogId">Unique name of the catalog.</param>
-    public static void WriteCatalog(List<ContentCatalogDataEntry> locationEntries, string catalogId)
+    /// <returns>A path to the catalog bin.</returns>
+    public static string WriteCatalog(List<ContentCatalogDataEntry> locationEntries, string catalogId)
     {
 
         string catalogName = $"{nameof(AssetHelper)}-{catalogId}";
@@ -64,11 +65,12 @@ internal static class CatalogUtils
         catalogSerializer.Serialize(catalogWriter, ccd);
         byte[] catalogBytes = catalogWriter.SerializeToByteArray();
         
-        UnityEngine.Hash128 outhash = Hash(catalogBytes);
+        Hash128 outhash = Hash(catalogBytes);
 
-        File.WriteAllBytes(Path.Combine(AssetPaths.CatalogFolder, $"{catalogName}.bin"), catalogBytes);
+        string catalogBinPath = Path.Combine(AssetPaths.CatalogFolder, $"{catalogName}.bin");
+        File.WriteAllBytes(catalogBinPath, catalogBytes);
         File.WriteAllText(Path.Combine(AssetPaths.CatalogFolder, $"{catalogName}.hash"), outhash.ToString());
 
+        return catalogBinPath;
     }
-
 }
