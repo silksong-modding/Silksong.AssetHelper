@@ -6,6 +6,7 @@ using Silksong.AssetHelper.Internal;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using UnityEngine.AddressableAssets;
@@ -121,6 +122,7 @@ internal static class SceneAssetRepackManager
         AssetHelperPlugin.InstanceLogger.LogInfo($"Repacking {_toRepack.Count} scenes");
         foreach ((string scene, HashSet<string> request) in _toRepack)
         {
+            Stopwatch sw = Stopwatch.StartNew();
             AssetHelperPlugin.InstanceLogger.LogInfo($"Repacking {request.Count} objects in scene {scene}");
             RepackedBundleData newData = repacker.Repack(
                 AssetPaths.GetScenePath(scene),
@@ -129,6 +131,7 @@ internal static class SceneAssetRepackManager
                 );
             _repackData[scene] = newData;
             _repackData.SerializeToFile(_repackDataPath);
+            AssetHelperPlugin.InstanceLogger.LogInfo($"Repacked {scene} in {sw.ElapsedMilliseconds} ms");
 
             yield return null;
         }
