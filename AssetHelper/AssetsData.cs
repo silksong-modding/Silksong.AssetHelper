@@ -68,7 +68,7 @@ public static class AssetsData
     private static readonly string BundleSuffix = @"_[0-9a-fA-F]{32}\.bundle+$";
     private static readonly Regex BundleSuffixRegex = new(BundleSuffix, RegexOptions.Compiled);
 
-    private static bool TryStrip(string key, [MaybeNullWhen(false)] out string stripped)
+    internal static bool TryStrip(string key, [MaybeNullWhen(false)] out string stripped)
     {
         if (BundleSuffixRegex.IsMatch(key))
         {

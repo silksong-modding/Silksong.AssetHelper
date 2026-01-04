@@ -1,12 +1,20 @@
 ﻿using MonoDetour.HookGen;
 using Silksong.AssetHelper.BundleTools;
 using Silksong.AssetHelper.BundleTools.Repacking;
+using Silksong.AssetHelper.CatalogTools;
 using Silksong.AssetHelper.Internal;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
+using UnityEngine;
+using UnityEngine.AddressableAssets;
+using UnityEngine.AddressableAssets.ResourceLocators;
+using UnityEngine.ResourceManagement.ResourceLocations;
+using UnityEngine.ResourceManagement.ResourceProviders;
 using RepackDataCollection = System.Collections.Generic.Dictionary<string, Silksong.AssetHelper.BundleTools.RepackedBundleData>;
 
 namespace Silksong.AssetHelper.Plugin;
@@ -112,7 +120,6 @@ internal static class SceneAssetRepackManager
     /// </summary>
     internal static void Run()
     {
-        throw null;
         Dictionary<string, HashSet<string>> updatedToRepack = [];
 
         SceneRepacker repacker = new StrippedSceneRepacker();
@@ -126,5 +133,75 @@ internal static class SceneAssetRepackManager
             _repackData.SerializeToFile(_repackDataPath);
             SingleRepackOperationCompleted?.Invoke();
         }
+    }
+
+    internal static string CreateCatalog(RepackDataCollection data)
+    {
+        // TODO - clean this up
+
+        Stopwatch sw = Stopwatch.StartNew();
+        void Log(string msg, [CallerLineNumber] int lineno = -1) => AssetHelperPlugin.InstanceLogger.LogInfo($"{msg} [@{lineno}] [{sw.ElapsedMilliseconds} ms]");
+        Log("Started");
+
+        List<ContentCatalogDataEntry> addedEntries = [];
+        Dictionary<string, ContentCatalogDataEntry> bundleLookup = [];
+        Dictionary<string, string> pkLookup = [];
+        HashSet<string> bundlesToInclude = [];
+
+        foreach (IResourceLocation location in Addressables.ResourceLocators.First().AllLocations)
+        {
+            if (location.ResourceType != typeof(IAssetBundleResource)) continue;
+            if (location.PrimaryKey.StartsWith("scenes_scenes_scenes")) continue;
+
+            if (!AssetsData.TryStrip(location.PrimaryKey, out string? stripped)) continue;
+            bundleLookup[stripped] = CatalogEntryUtils.CreateEntryFromLocation(location, out string newPrimaryKey);
+            pkLookup[stripped] = newPrimaryKey;
+        }
+
+        Log($"Created {bundleLookup.Count} existing bundle entries");
+
+        foreach ((string scene, RepackedBundleData bundleData) in data)
+        {
+            // Create an entry for the bundle
+            string repackedSceneBundleKey = $"AssetHelper/RepackedScenes/{scene}";
+
+            ContentCatalogDataEntry bundleEntry = CatalogEntryUtils.CreateBundleEntry(
+                repackedSceneBundleKey,
+                Path.Combine(AssetPaths.AssemblyFolder, "ser_dump", $"repacked_{scene}.bundle"),
+                bundleData.BundleName!,
+                []);
+            addedEntries.Add(bundleEntry);
+
+            List<string> dependencyKeys = [repackedSceneBundleKey];
+            foreach (string dep in BundleDeps.DetermineDirectDeps($"scenes_scenes_scenes/{scene}.bundle"))
+            {
+                string depKey = dep.Replace(".bundle", "");
+                bundlesToInclude.Add(depKey);
+                dependencyKeys.Add(pkLookup[depKey]);
+            }
+
+            foreach ((string containerPath, string objPath) in bundleData.GameObjectAssets ?? [])
+            {
+                ContentCatalogDataEntry entry = CatalogEntryUtils.CreateAssetEntry(
+                    containerPath,
+                    typeof(GameObject),
+                    dependencyKeys,
+                    $"AssetHelper/RepackedAssets/{scene}/{objPath}"
+                    );
+                addedEntries.Add(entry);
+            }
+        }
+
+        List<ContentCatalogDataEntry> allEntries = new();
+        allEntries.AddRange(bundlesToInclude.Select(x => bundleLookup[x]));
+        allEntries.AddRange(addedEntries);
+
+        Log($"Placed {allEntries.Count} entries in catalog list");
+
+        string catalogPath = CatalogUtils.WriteCatalog(allEntries, "repackedSceneCatalog");
+
+        Log("Wrote catalog");
+
+        return catalogPath;
     }
 }
