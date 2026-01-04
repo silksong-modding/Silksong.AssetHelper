@@ -52,8 +52,11 @@ internal static class CatalogUtils
     /// <returns>A path to the catalog bin.</returns>
     public static string WriteCatalog(List<ContentCatalogDataEntry> locationEntries, string catalogId)
     {
-
-        string catalogName = $"{nameof(AssetHelper)}-{catalogId}";
+        string catalogName = catalogId;
+        if (!catalogName.StartsWith(nameof(AssetHelper)))
+        {
+            catalogName = $"{nameof(AssetHelper)}-{catalogId}";
+        }
 
         ContentCatalogData ccd = new ContentCatalogData(catalogName);
         ccd.m_Entries = locationEntries;

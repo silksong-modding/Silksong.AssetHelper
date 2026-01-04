@@ -8,6 +8,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using UnityEngine.AddressableAssets;
+using UnityEngine.AddressableAssets.ResourceLocators;
+using UnityEngine.ResourceManagement.AsyncOperations;
 using RepackDataCollection = System.Collections.Generic.Dictionary<string, Silksong.AssetHelper.BundleTools.RepackedBundleData>;
 
 namespace Silksong.AssetHelper.Plugin;
@@ -26,41 +29,41 @@ internal static class SceneAssetRepackManager
 
     private static void PrependStartManagerStart(StartManager self, ref IEnumerator returnValue)
     {
-        bool shouldRepack = Prepare(SceneAssetAPI.SceneAssetRequest);
-        if (!shouldRepack)
-        {
-            return;
-        }
+        bool shouldRepack = Prepare();
 
-        returnValue = WrapStartManagerStart(self, returnValue);
+        returnValue = WrapStartManagerStart(self, returnValue, shouldRepack);
     }
 
-    private static IEnumerator WrapStartManagerStart(StartManager self, IEnumerator original)
+    private static IEnumerator WrapStartManagerStart(StartManager self, IEnumerator original, bool shouldRepack)
     {
-        // TODO - turn this into a coroutine
-        // TODO - Add progress bar
-        Run();
+        if (shouldRepack)
+        {
+            // Yield after each repack is done
+            yield return Run();
+            CreateCatalog(_repackData);
+            yield return null;
+        }
 
+        AsyncOperationHandle<IResourceLocator> catalogLoadOp = Addressables.LoadContentCatalogAsync(Path.Combine(AssetPaths.CatalogFolder, $"{SCENE_ASSET_CATALOG_KEY}.bin"));
+        yield return catalogLoadOp;
         yield return original;
+        yield break;
     }
     #endregion
 
+    private const string SCENE_ASSET_CATALOG_KEY = "AssetHelper-RepackedSceneData";
+
     private static readonly Version _lastAcceptablePluginVersion = Version.Parse("0.1.0");
     private static string _repackDataPath = Path.Combine(AssetPaths.RepackedSceneBundleDir, "repack_data.json");
-    
-    private static RepackDataCollection _repackData = [];
 
-    /// <summary>
-    /// Event raised each time a single scene is repacked.
-    /// </summary>
-    internal static event Action? SingleRepackOperationCompleted;
+    private static Dictionary<string, HashSet<string>> _toRepack = [];
+    private static RepackDataCollection _repackData = [];
 
     /// <summary>
     /// Prepare the repacking request.
     /// </summary>
-    /// <param name="toRepack">The collection of {scene: object names} in the request.</param>
     /// <returns>True if there is any repacking to be done.</returns>
-    internal static bool Prepare(Dictionary<string, HashSet<string>> toRepack)
+    internal static bool Prepare()
     {
         if (JsonExtensions.TryLoadFromFile(_repackDataPath, out RepackDataCollection? repackData))
         {
@@ -71,13 +74,13 @@ internal static class SceneAssetRepackManager
             _repackData = [];
         }
 
-        Dictionary<string, HashSet<string>> updatedToRepack = [];
+        _toRepack = [];
 
-        foreach ((string scene, HashSet<string> request) in toRepack)
+        foreach ((string scene, HashSet<string> request) in SceneAssetAPI.SceneAssetRequest)
         {
             if (!_repackData.TryGetValue(scene, out RepackedBundleData existingBundleData))
             {
-                updatedToRepack[scene] = request;
+                _toRepack[scene] = request;
                 continue;
             }
 
@@ -89,7 +92,7 @@ internal static class SceneAssetRepackManager
                 || oldPluginVersion < _lastAcceptablePluginVersion
                 )
             {
-                updatedToRepack[scene] = request;
+                _toRepack[scene] = request;
                 continue;
             }
 
@@ -99,39 +102,42 @@ internal static class SceneAssetRepackManager
                 continue;
             }
 
-            updatedToRepack[scene] = new(request
+            _toRepack[scene] = new(request
                 .Union(existingBundleData.GameObjectAssets?.Values ?? Enumerable.Empty<string>())
                 .Union(existingBundleData.NonRepackedAssets ?? Enumerable.Empty<string>())
                 );
         }
 
-        return true;
+        return _toRepack.Count > 0;
     }
 
     /// <summary>
     /// Run the repacking procedure so that by the end, anything in the request which could be repacked has been.
     /// </summary>
-    internal static void Run()
+    internal static IEnumerator Run()
     {
-        Dictionary<string, HashSet<string>> updatedToRepack = [];
-
         SceneRepacker repacker = new StrippedSceneRepacker();
 
-        AssetHelperPlugin.InstanceLogger.LogInfo($"Repacking {updatedToRepack.Count} scenes");
-        foreach ((string scene, HashSet<string> request) in updatedToRepack)
+        AssetHelperPlugin.InstanceLogger.LogInfo($"Repacking {_toRepack.Count} scenes");
+        foreach ((string scene, HashSet<string> request) in _toRepack)
         {
             AssetHelperPlugin.InstanceLogger.LogInfo($"Repacking {request.Count} objects in scene {scene}");
-            RepackedBundleData newData = repacker.Repack(scene, request.ToList(), Path.Combine(AssetPaths.RepackedSceneBundleDir, $"repacked_{scene}.bundle"));
+            RepackedBundleData newData = repacker.Repack(
+                AssetPaths.GetScenePath(scene),
+                request.ToList(),
+                Path.Combine(AssetPaths.RepackedSceneBundleDir, $"repacked_{scene}.bundle")
+                );
             _repackData[scene] = newData;
             _repackData.SerializeToFile(_repackDataPath);
-            SingleRepackOperationCompleted?.Invoke();
+
+            yield return null;
         }
     }
 
     internal static string CreateCatalog(RepackDataCollection data)
     {
-        // TODO - clean this up
-        CustomCatalogBuilder cbr = new("AssetHelper-RepackedSceneData");
+        AssetHelperPlugin.InstanceLogger.LogInfo($"Creating catalog");
+        CustomCatalogBuilder cbr = new(SCENE_ASSET_CATALOG_KEY);
         foreach ((string sceneName, RepackedBundleData bunData) in data)
         {
             string bundlePath = Path.Combine(AssetPaths.RepackedSceneBundleDir, $"repacked_{sceneName}.bundle");
