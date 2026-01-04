@@ -32,7 +32,8 @@ public partial class AssetHelperPlugin : BaseUnityPlugin
 
         GameEvents.Hook();
 
-        StartBlocker.Hook();
+        // TODO - activate this
+        // SceneAssetRepackManager.Hook();
 
         // TODO - remove this when assetstools.net gets updated
         _atHook = new ILHook(typeof(AssetTypeValueIterator).GetMethod(nameof(AssetTypeValueIterator.ReadNext)), PatchATVI);

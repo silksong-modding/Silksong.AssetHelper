@@ -1,9 +1,10 @@
-﻿using Silksong.AssetHelper.BundleTools;
+﻿using MonoDetour.HookGen;
+using Silksong.AssetHelper.BundleTools;
 using Silksong.AssetHelper.BundleTools.Repacking;
 using Silksong.AssetHelper.Internal;
 using System;
+using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using RepackDataCollection = System.Collections.Generic.Dictionary<string, Silksong.AssetHelper.BundleTools.RepackedBundleData>;
@@ -13,11 +14,40 @@ namespace Silksong.AssetHelper.Plugin;
 /// <summary>
 /// Class managing the scene repacking.
 /// </summary>
-internal static class SceneAssetManager
+[MonoDetourTargets(typeof(StartManager))]
+internal static class SceneAssetRepackManager
 {
-    private static readonly Version _lastAcceptablePluginVersion = Version.Parse("0.1.0");
+    #region Hooks
+    internal static void Hook()
+    {
+        Md.StartManager.Start.Postfix(PrependStartManagerStart);
+    }
 
-    private static RepackDataCollection? _repackData;
+    private static void PrependStartManagerStart(StartManager self, ref IEnumerator returnValue)
+    {
+        bool shouldRepack = Prepare(SceneAssetAPI.SceneAssetRequest);
+        if (!shouldRepack)
+        {
+            return;
+        }
+
+        returnValue = WrapStartManagerStart(self, returnValue);
+    }
+
+    private static IEnumerator WrapStartManagerStart(StartManager self, IEnumerator original)
+    {
+        // TODO - turn this into a coroutine
+        // TODO - Add progress bar
+        Run();
+
+        yield return original;
+    }
+    #endregion
+
+    private static readonly Version _lastAcceptablePluginVersion = Version.Parse("0.1.0");
+    private static string _repackDataPath = Path.Combine(AssetPaths.RepackedSceneBundleDir, "repack_data.json");
+    
+    private static RepackDataCollection _repackData = [];
 
     /// <summary>
     /// Event raised each time a single scene is repacked.
@@ -25,14 +55,13 @@ internal static class SceneAssetManager
     internal static event Action? SingleRepackOperationCompleted;
 
     /// <summary>
-    /// Run a repacking procedure so that by the end, anything in toRepack which could be repacked has been.
+    /// Prepare the repacking request.
     /// </summary>
-    /// <param name="toRepack"></param>
-    internal static void Run(Dictionary<string, HashSet<string>> toRepack)
+    /// <param name="toRepack">The collection of {scene: object names} in the request.</param>
+    /// <returns>True if there is any repacking to be done.</returns>
+    internal static bool Prepare(Dictionary<string, HashSet<string>> toRepack)
     {
-        string repackDataPath = Path.Combine(AssetPaths.RepackedSceneBundleDir, "repack_data.json");
-
-        if (JsonExtensions.TryLoadFromFile(repackDataPath, out RepackDataCollection? repackData))
+        if (JsonExtensions.TryLoadFromFile(_repackDataPath, out RepackDataCollection? repackData))
         {
             _repackData = repackData;
         }
@@ -75,6 +104,17 @@ internal static class SceneAssetManager
                 );
         }
 
+        return true;
+    }
+
+    /// <summary>
+    /// Run the repacking procedure so that by the end, anything in the request which could be repacked has been.
+    /// </summary>
+    internal static void Run()
+    {
+        throw null;
+        Dictionary<string, HashSet<string>> updatedToRepack = [];
+
         SceneRepacker repacker = new StrippedSceneRepacker();
 
         AssetHelperPlugin.InstanceLogger.LogInfo($"Repacking {updatedToRepack.Count} scenes");
@@ -83,7 +123,7 @@ internal static class SceneAssetManager
             AssetHelperPlugin.InstanceLogger.LogInfo($"Repacking {request.Count} objects in scene {scene}");
             RepackedBundleData newData = repacker.Repack(scene, request.ToList(), Path.Combine(AssetPaths.RepackedSceneBundleDir, $"repacked_{scene}.bundle"));
             _repackData[scene] = newData;
-            _repackData.SerializeToFile(repackDataPath);
+            _repackData.SerializeToFile(_repackDataPath);
             SingleRepackOperationCompleted?.Invoke();
         }
     }

@@ -10,7 +10,7 @@ public static class SceneAssetAPI
 {
     internal static bool RequestApiAvailable { get; set; } = true;
 
-    internal static Dictionary<string, HashSet<string>> sceneAssetRequest { get; } = [];
+    internal static Dictionary<string, HashSet<string>> SceneAssetRequest { get; } = [];
 
     /// <summary>
     /// Request the given asset paths in the given scene to be repacked.
@@ -28,9 +28,9 @@ public static class SceneAssetAPI
 
         sceneName = sceneName.ToLowerInvariant();
 
-        HashSet<string> updated = sceneAssetRequest.TryGetValue(sceneName, out HashSet<string> request) ? request : [];
+        HashSet<string> updated = SceneAssetRequest.TryGetValue(sceneName, out HashSet<string> request) ? request : [];
         updated.UnionWith(assetPaths);
-        sceneAssetRequest[sceneName] = updated;
+        SceneAssetRequest[sceneName] = updated;
     }
 
     /// <summary>
