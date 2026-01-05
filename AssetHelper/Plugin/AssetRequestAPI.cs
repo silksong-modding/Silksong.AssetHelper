@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Silksong.AssetHelper.Internal;
+using System;
 using System.Collections.Generic;
 
 namespace Silksong.AssetHelper.Plugin;
@@ -11,6 +12,15 @@ public static class AssetRequestAPI
     internal static bool RequestApiAvailable { get; set; } = true;
 
     internal static Dictionary<string, HashSet<string>> SceneAssetRequest { get; } = [];
+
+    internal static DelayedAction AfterBundleCreationComplete = new();
+
+    /// <summary>
+    /// Invoke this action once AssetHelper has built the repacked scene bundles and loaded the new catalog.
+    /// 
+    /// If repacking has already been completed, the action will be invoked immediately.
+    /// </summary>
+    public static void InvokeAfterBundleCreation(Action a) => AfterBundleCreationComplete.Subscribe(a);
 
     /// <summary>
     /// Request the given asset paths in the given scene to be repacked.

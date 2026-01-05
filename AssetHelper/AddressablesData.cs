@@ -67,13 +67,13 @@ public static class AddressablesData
     /// This may change when the game updates but does not otherwise.
     /// </summary>
     public static Dictionary<string, string>? BundleKeys => BundleLocations?.ToDictionary(kvp => kvp.Key, kvp => kvp.Value.PrimaryKey);
-        
-    private static readonly List<Action> _toInvokeAfterAddressablesLoaded = [];
-    
+            
     /// <summary>
     /// This is <see langword="true"/> if Addressables has loaded the catalog, <see langword="false"/> otherwise.
     /// </summary>
     public static bool IsAddressablesLoaded => _bundleLocations != null;
+
+    private static DelayedAction _afterAddressablesLoaded = new();
 
     /// <summary>
     /// Invoke this action once Addressables has loaded the catalog.
@@ -82,17 +82,7 @@ public static class AddressablesData
     /// 
     /// This is a safe way to execute code that depends on Addressables.
     /// </summary>
-    public static void InvokeAfterAddressablesLoaded(Action a)
-    {
-        if (!IsAddressablesLoaded)
-        {
-            _toInvokeAfterAddressablesLoaded.Add(a);
-        }
-        else
-        {
-            ActionUtil.SafeInvoke(a);
-        }
-    }
+    public static void InvokeAfterAddressablesLoaded(Action a) => _afterAddressablesLoaded.Subscribe(a);
 
     
     private static readonly string BundleSuffix = @"_[0-9a-fA-F]{32}\.bundle+$";
@@ -148,10 +138,8 @@ public static class AddressablesData
         }
 
         _bundleLocations = locations;
-        foreach (Action a in _toInvokeAfterAddressablesLoaded)
-        {
-            ActionUtil.SafeInvoke(a);
-        }
+
+        _afterAddressablesLoaded.Activate();
 
         return true;
     }

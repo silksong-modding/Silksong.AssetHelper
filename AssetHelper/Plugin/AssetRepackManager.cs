@@ -64,6 +64,9 @@ internal static class AssetRepackManager
 
         AsyncOperationHandle<IResourceLocator> catalogLoadOp = Addressables.LoadContentCatalogAsync(Path.Combine(AssetPaths.CatalogFolder, $"{SCENE_ASSET_CATALOG_KEY}.bin"));
         yield return catalogLoadOp;
+
+        AssetRequestAPI.AfterBundleCreationComplete.Activate();
+
         yield return original;
         yield break;
     }
