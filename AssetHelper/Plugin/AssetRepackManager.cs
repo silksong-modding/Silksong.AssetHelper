@@ -39,9 +39,20 @@ internal static class AssetRepackManager
     {
         if (shouldRepack)
         {
-            // Yield after each repack is done
-            yield return Run();
-            CreateCatalog(_repackData);
+            IEnumerator runner = Run();
+
+            while (runner.MoveNext())
+            {
+                // Yield after each repack op is done
+                yield return null;
+            }
+
+            IEnumerator catalogCreate = CreateCatalog(_repackData);
+            while (catalogCreate.MoveNext())
+            {
+                yield return null;
+            }
+
             yield return null;
         }
 
@@ -137,7 +148,7 @@ internal static class AssetRepackManager
         }
     }
 
-    internal static string CreateCatalog(RepackDataCollection data)
+    internal static IEnumerator CreateCatalog(RepackDataCollection data)
     {
         AssetHelperPlugin.InstanceLogger.LogInfo($"Creating catalog");
         CustomCatalogBuilder cbr = new(SCENE_ASSET_CATALOG_KEY);
@@ -149,7 +160,8 @@ internal static class AssetRepackManager
 
         // TODO - add in requested child paths
 
+        yield return null;
+
         string catalogPath = cbr.Build();
-        return catalogPath;
     }
 }
