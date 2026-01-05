@@ -20,7 +20,7 @@ namespace Silksong.AssetHelper.Plugin;
 /// Class managing the scene repacking.
 /// </summary>
 [MonoDetourTargets(typeof(StartManager))]
-internal static class SceneAssetRepackManager
+internal static class AssetRepackManager
 {
     #region Hooks
     internal static void Hook()
@@ -77,7 +77,7 @@ internal static class SceneAssetRepackManager
 
         _toRepack = [];
 
-        foreach ((string scene, HashSet<string> request) in SceneAssetAPI.SceneAssetRequest)
+        foreach ((string scene, HashSet<string> request) in AssetRequestAPI.SceneAssetRequest)
         {
             if (!_repackData.TryGetValue(scene, out RepackedBundleData existingBundleData))
             {

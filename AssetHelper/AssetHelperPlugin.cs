@@ -38,7 +38,7 @@ public partial class AssetHelperPlugin : BaseUnityPlugin
 
         GameEvents.Hook();
 
-        SceneAssetRepackManager.Hook();
+        AssetRepackManager.Hook();
 
         // TODO - remove this when assetstools.net gets updated
         _atHook = new ILHook(typeof(AssetTypeValueIterator).GetMethod(nameof(AssetTypeValueIterator.ReadNext)), PatchATVI);
@@ -91,7 +91,7 @@ public partial class AssetHelperPlugin : BaseUnityPlugin
 
     private IEnumerator Start()
     {
-        SceneAssetAPI.RequestApiAvailable = false;
+        AssetRequestAPI.RequestApiAvailable = false;
 
         // Addressables isn't initialized until the next frame
         yield return null;

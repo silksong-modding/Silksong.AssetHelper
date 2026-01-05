@@ -6,7 +6,7 @@ namespace Silksong.AssetHelper.Plugin;
 /// <summary>
 /// API entrypoints for repacked scene assets.
 /// </summary>
-public static class SceneAssetAPI
+public static class AssetRequestAPI
 {
     internal static bool RequestApiAvailable { get; set; } = true;
 
