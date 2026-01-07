@@ -1,7 +1,8 @@
-﻿using MonoDetour.HookGen;
+﻿using AssetsTools.NET;
+using AssetsTools.NET.Extra;
+using MonoDetour.HookGen;
 using Silksong.AssetHelper.BundleTools;
 using Silksong.AssetHelper.BundleTools.Repacking;
-using Silksong.AssetHelper.CatalogTools;
 using Silksong.AssetHelper.Internal;
 using System;
 using System.Collections;
@@ -15,6 +16,7 @@ using UnityEngine.AddressableAssets.ResourceLocators;
 using UnityEngine.ResourceManagement.AsyncOperations;
 using UnityEngine.ResourceManagement.ResourceLocations;
 using UnityEngine.ResourceManagement.ResourceProviders;
+using UnityEngine.U2D;
 using RepackDataCollection = System.Collections.Generic.Dictionary<string, Silksong.AssetHelper.Plugin.RepackedSceneBundleData>;
 
 namespace Silksong.AssetHelper.Plugin;
@@ -69,6 +71,23 @@ internal static class AssetRepackManager
             yield return catalogLoadOp;
             AssetRequestAPI.SceneAssetLocator = catalogLoadOp.Result;
         }
+        yield return null;
+
+        IEnumerator nonSceneCatalogCreate = CreateNonSceneAssetCatalog();
+        while (nonSceneCatalogCreate.MoveNext())
+        {
+            yield return null;
+        }
+        yield return null;
+
+        // TODO - this should be conditional on whether the NSC API was used
+        if (File.Exists(NonSceneCatalogPath))
+        {
+            AsyncOperationHandle<IResourceLocator> catalogLoadOp = Addressables.LoadContentCatalogAsync(NonSceneCatalogPath);
+            yield return catalogLoadOp;
+            AssetRequestAPI.NonSceneAssetLocator = catalogLoadOp.Result;
+        }
+        yield return null;
 
         AssetRequestAPI.AfterBundleCreationComplete.Activate();
 
@@ -238,5 +257,87 @@ internal static class AssetRepackManager
         metadata.SerializeToFile(catalogMetadataPath);
 
         yield return null;
+    }
+
+    // Path to the non-scene catalog .bin file
+    private static string NonSceneCatalogPath => Path.Combine(AssetPaths.CatalogFolder, $"{CatalogKeys.NonSceneCatalogId}.bin");
+
+    private static Type GetTypeForTypeId(int typeId)
+    {
+        return typeId switch
+        {
+            (int)AssetClassID.AnimatorController => typeof(RuntimeAnimatorController),
+            (int)AssetClassID.AnimationClip => typeof(AnimationClip),
+            (int)AssetClassID.AudioClip => typeof(AudioClip),
+            (int)AssetClassID.AnimatorOverrideController => typeof(AnimatorOverrideController),
+            (int)AssetClassID.MonoBehaviour => typeof(MonoBehaviour),
+            (int)AssetClassID.SpriteAtlas => typeof(SpriteAtlas),
+            (int)AssetClassID.GameObject => typeof(GameObject),
+            (int)AssetClassID.Material => typeof(Material),
+            (int)AssetClassID.Texture2D => typeof(Texture2D),
+            (int)AssetClassID.Sprite => typeof(Sprite),
+            (int)AssetClassID.Font => typeof(Font),
+            (int)AssetClassID.Mesh => typeof(Mesh),
+            (int)AssetClassID.PhysicsMaterial2D => typeof(PhysicsMaterial2D),
+            (int)AssetClassID.LightingSettings => typeof(LightingSettings),
+            (int)AssetClassID.Shader => typeof(Shader),
+            (int)AssetClassID.TextAsset => typeof(TextAsset),
+            
+            _ => typeof(UObject)
+        };
+    }
+
+    internal static IEnumerator CreateNonSceneAssetCatalog()
+    {
+        // TODO - check metadata for cache invalidation
+        // TODO - implement non-full non scene catalog
+
+        if (!AssetRequestAPI.FullNonSceneCatalogRequested) yield break;
+        AssetHelperPlugin.InstanceLogger.LogInfo($"Creating full NS catalog");
+
+        AssetsManager mgr = new();
+        CustomCatalogBuilder cbr = new(CatalogKeys.NonSceneCatalogId);
+
+        int acc = 0;
+
+        foreach (string key in AddressablesData.BundleKeys!.Keys)
+        {
+            if (!AddressablesData.TryGetLocation(key, out IResourceLocation? location))
+            {
+                continue;
+            }
+
+            if (location.ResourceType != typeof(IAssetBundleResource))
+            {
+                continue;
+            }
+            if (location.PrimaryKey.StartsWith("scenes_scenes_scenes"))
+            {
+                continue;
+            }
+
+            using (MemoryStream ms = new(File.ReadAllBytes(location.InternalId)))
+            {
+                BundleFileInstance bun = mgr.LoadBundleFile(ms, location.InternalId);
+                AssetsFileInstance afi = mgr.LoadAssetsFileFromBundle(bun, 0);
+
+                List<(string, Type)> toAdd = mgr.EnumerateContainer(afi).Select(pair => (pair.name, GetTypeForTypeId(pair.assetTypeId))).ToList();
+
+                cbr.AddAssets(key, toAdd);
+            }
+
+            mgr.UnloadAll();
+
+            acc++;
+            if (acc%80 == 0)
+            {
+                AssetHelperPlugin.InstanceLogger.LogInfo($"Completed batch: {acc} total");
+                yield return null;
+            }
+        }
+
+        yield return null;
+
+        cbr.Build();
     }
 }

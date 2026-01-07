@@ -1,5 +1,6 @@
 ﻿using AssetsTools.NET;
 using AssetsTools.NET.Extra;
+using Silksong.AssetHelper.CatalogTools;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -280,5 +281,23 @@ public static class BundleUtils
         using FileStream fileStream = new(outBundlePath, FileMode.Create, FileAccess.Write);
         byte[] internalBuffer = ms.GetBuffer();
         fileStream.Write(internalBuffer, 0, (int)ms.Length);
+    }
+
+    /// <summary>
+    /// Enumerate all assets in the container of a given bundle.
+    /// 
+    /// The bundle should be a standard non-scene bundle with the internal asset bundle at index 1.
+    /// </summary>
+    public static IEnumerable<(string name, int assetTypeId)> EnumerateContainer(this AssetsManager mgr, AssetsFileInstance afi)
+    {
+        AssetTypeValueField iBundle = mgr.GetBaseField(afi, 1);
+
+        foreach (AssetTypeValueField ctrEntry in iBundle["m_Container.Array"].Children)
+        {
+            string name = ctrEntry["first"].AsString;
+            long pathId = ctrEntry["second.asset.m_PathID"].AsLong;
+            int assetType = afi.file.GetAssetInfo(pathId).TypeId;
+            yield return (name, assetType);
+        }
     }
 }

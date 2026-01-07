@@ -1,4 +1,6 @@
 ﻿using Silksong.AssetHelper.BundleTools;
+using Silksong.AssetHelper.CatalogTools;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -7,7 +9,7 @@ using UnityEngine.AddressableAssets.ResourceLocators;
 using UnityEngine.ResourceManagement.ResourceLocations;
 using UnityEngine.ResourceManagement.ResourceProviders;
 
-namespace Silksong.AssetHelper.CatalogTools;
+namespace Silksong.AssetHelper.Plugin;
 
 /// <summary>
 /// Class to help in building a custom catalog with base game dependencies.
@@ -87,6 +89,26 @@ internal class CustomCatalogBuilder
                 dependencyKeys,
                 $"{_primaryKeyPrefix}/Assets/{sceneName}/{objPath}"
                 );
+            _addedEntries.Add(entry);
+        }
+    }
+
+    public void AddAssets(string bundle, List<(string asset, Type assetType)> data)
+    {
+        string bundleKey = bundle.Replace(".bundle", "");
+        _includedBaseBundles.Add(bundleKey);
+        List<string> dependencyKeys = [_basePrimaryKeys[bundleKey]];
+        foreach (string dep in BundleDeps.DetermineDirectDeps(bundle))
+        {
+            string depKey = dep.Replace(".bundle", "");
+            _includedBaseBundles.Add(depKey);
+            dependencyKeys.Add(_basePrimaryKeys[depKey]);
+        }
+
+        foreach ((string asset, Type assetType) in data)
+        {
+            ContentCatalogDataEntry entry = CatalogEntryUtils.CreateAssetEntry(
+                asset, assetType, dependencyKeys, $"{_primaryKeyPrefix}/{asset}");
             _addedEntries.Add(entry);
         }
     }
