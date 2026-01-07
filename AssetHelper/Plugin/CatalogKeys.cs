@@ -6,7 +6,7 @@
 public static class CatalogKeys
 {
     /// <summary>
-    /// The ID of the catalog with repacked scene assets.
+    /// The ID of the main catalog with repacked scene assets.
     /// </summary>
     public static string SceneCatalogId => $"{nameof(AssetHelper)}-RepackedScenes";
 
