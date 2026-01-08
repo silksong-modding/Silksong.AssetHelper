@@ -1,6 +1,7 @@
 ﻿using Silksong.AssetHelper.Internal;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine.AddressableAssets.ResourceLocators;
 
 namespace Silksong.AssetHelper.Plugin;
@@ -12,14 +13,7 @@ public static class AssetRequestAPI
 {
     internal static bool RequestApiAvailable { get; set; } = true;
 
-    internal static Dictionary<string, HashSet<string>> SceneAssetRequest { get; } = [];
-
     internal static DelayedAction AfterBundleCreationComplete = new();
-
-    /// <summary>
-    /// The <see cref="IResourceLocator"/> containing scene assets.
-    /// </summary>
-    public static IResourceLocator? SceneAssetLocator { get; internal set; }
 
     /// <summary>
     /// Invoke this action once AssetHelper has built the repacked scene bundles and loaded the new catalog.
@@ -27,6 +21,14 @@ public static class AssetRequestAPI
     /// If repacking has already been completed, the action will be invoked immediately.
     /// </summary>
     public static void InvokeAfterBundleCreation(Action a) => AfterBundleCreationComplete.Subscribe(a);
+
+    #region Scene Assets
+    internal static Dictionary<string, HashSet<string>> SceneAssetRequest { get; } = [];
+
+    /// <summary>
+    /// The <see cref="IResourceLocator"/> containing scene assets.
+    /// </summary>
+    public static IResourceLocator? SceneAssetLocator { get; internal set; }
 
     /// <summary>
     /// Request the given asset paths in the given scene to be repacked.
@@ -71,6 +73,66 @@ public static class AssetRequestAPI
             RequestSceneAssets(sceneName, assetPaths);
         }
     }
+    #endregion
 
-    // TODO - non scene assets
+    #region Non scene assets
+    /// <summary>
+    /// The <see cref="IResourceLocator"/> containing catalogued non-scene assets.
+    /// </summary>
+    public static IResourceLocator? NonSceneAssetLocator { get; internal set; }
+
+
+    internal static bool FullNonSceneCatalogRequested { get; private set; }
+
+    internal static Dictionary<(string bundleName, string assetName), Type> RequestedNonSceneAssets { get; } = [];
+
+    internal static bool AnyNonSceneCatalogRequested => FullNonSceneCatalogRequested || RequestedNonSceneAssets.Count > 0;
+
+    /// <summary>
+    /// Request the full catalog of non-scene assets to be created.
+    /// 
+    /// Generating the full catalog is significantly slower than generating a catalog for specific assets,
+    /// so using <see cref="RequestNonSceneAsset{T}(string, string)"/> is generally preferred.
+    /// </summary>
+    public static void RequestFullNonSceneCatalog() => FullNonSceneCatalogRequested = true;
+
+    /// <summary>
+    /// Request that the given asset is made available via Addressables.
+    /// </summary>
+    /// <typeparam name="T">The unity type of the asset.</typeparam>
+    /// <param name="bundleName">The name of the bundle containing the asset.
+    /// This is the path to the bundle, relative to the Standalone??? dir.</param>
+    /// <param name="assetName">The name of the asset within the bundle container.</param>
+    public static void RequestNonSceneAsset<T>(string bundleName, string assetName) where T : UObject
+    {
+        bundleName = bundleName.ToLowerInvariant();
+        if (bundleName.EndsWith(".bundle"))
+        {
+            bundleName = bundleName[..^7];
+        }
+
+        if (RequestedNonSceneAssets.TryGetValue((bundleName, assetName), out Type t))
+        {
+            if (t != typeof(T))
+            {
+                AssetHelperPlugin.InstanceLogger.LogError($"Asset {bundleName} - {assetName} requested with both {t.Name} and {typeof(T).Name}");
+            }
+        }
+
+        // Always prefer the newer type, regardless of the error
+        RequestedNonSceneAssets[(bundleName, assetName)] = typeof(T);
+    }
+
+    /// <summary>
+    /// Request that the given assets of the same type within the same bundle are made available via Addressables.
+    /// </summary>
+    public static void RequestNonSceneAssets<T>(string bundleName, IEnumerable<string> assetNames) where T: UObject
+    {
+        foreach (string assetName in assetNames)
+        {
+            RequestNonSceneAsset<T>(bundleName, assetName);
+        }
+    }
+    #endregion
+
 }

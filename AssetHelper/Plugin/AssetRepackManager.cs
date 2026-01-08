@@ -1,7 +1,8 @@
-﻿using MonoDetour.HookGen;
+﻿using AssetsTools.NET;
+using AssetsTools.NET.Extra;
+using MonoDetour.HookGen;
 using Silksong.AssetHelper.BundleTools;
 using Silksong.AssetHelper.BundleTools.Repacking;
-using Silksong.AssetHelper.CatalogTools;
 using Silksong.AssetHelper.Internal;
 using System;
 using System.Collections;
@@ -15,6 +16,7 @@ using UnityEngine.AddressableAssets.ResourceLocators;
 using UnityEngine.ResourceManagement.AsyncOperations;
 using UnityEngine.ResourceManagement.ResourceLocations;
 using UnityEngine.ResourceManagement.ResourceProviders;
+using UnityEngine.U2D;
 using RepackDataCollection = System.Collections.Generic.Dictionary<string, Silksong.AssetHelper.Plugin.RepackedSceneBundleData>;
 
 namespace Silksong.AssetHelper.Plugin;
@@ -65,11 +67,30 @@ internal static class AssetRepackManager
         if (_repackData.Any())
         {
             // Only load the catalog if anyone's requested scene assets
+            AssetHelperPlugin.InstanceLogger.LogInfo($"Loading scene catalog");
             AsyncOperationHandle<IResourceLocator> catalogLoadOp = Addressables.LoadContentCatalogAsync(SceneCatalogPath);
             yield return catalogLoadOp;
             AssetRequestAPI.SceneAssetLocator = catalogLoadOp.Result;
         }
+        yield return null;
 
+        IEnumerator nonSceneCatalogCreate = CreateNonSceneAssetCatalog();
+        while (nonSceneCatalogCreate.MoveNext())
+        {
+            yield return null;
+        }
+        yield return null;
+
+        if (File.Exists(NonSceneCatalogPath) && AssetRequestAPI.AnyNonSceneCatalogRequested)
+        {
+            AssetHelperPlugin.InstanceLogger.LogInfo($"Loading non-scene catalog");
+            AsyncOperationHandle<IResourceLocator> catalogLoadOp = Addressables.LoadContentCatalogAsync(NonSceneCatalogPath);
+            yield return catalogLoadOp;
+            AssetRequestAPI.NonSceneAssetLocator = catalogLoadOp.Result;
+        }
+        yield return null;
+
+        AssetHelperPlugin.InstanceLogger.LogInfo($"{nameof(AssetHelper)} prep complete!");
         AssetRequestAPI.AfterBundleCreationComplete.Activate();
 
         yield return original;
@@ -234,9 +255,77 @@ internal static class AssetRepackManager
 
         cbr.Build();
 
-        CatalogMetadata metadata = new();
+        SceneCatalogMetadata metadata = new();
         metadata.SerializeToFile(catalogMetadataPath);
 
         yield return null;
+    }
+
+    // Path to the non-scene catalog .bin file
+    private static string NonSceneCatalogPath => Path.Combine(AssetPaths.CatalogFolder, $"{CatalogKeys.NonSceneCatalogId}.bin");
+
+    internal static IEnumerator CreateNonSceneAssetCatalog()
+    {
+        // TODO - implement full non scene catalog option
+        // TODO - probably easiest to implement as a separate catalog
+        
+        string catalogMetadataPath = Path.ChangeExtension(NonSceneCatalogPath, ".json");
+
+        AssetHelperPlugin.InstanceLogger.LogInfo($"Creating NS catalog");
+
+        Dictionary<(string bundleName, string assetName), Type> toCatalog = [];
+        bool shouldWriteCatalog = false;
+
+        if (JsonExtensions.TryLoadFromFile(catalogMetadataPath, out NonSceneCatalogMetadata? existingCatalogData)
+            && existingCatalogData.SilksongVersion == AssetPaths.SilksongVersion
+            && Version.TryParse(existingCatalogData.PluginVersion ?? string.Empty, out Version oldPluginVersion)
+            && oldPluginVersion <= Version.Parse(AssetHelperPlugin.Version)
+            && oldPluginVersion >= _lastAcceptablePluginVersion)
+        {
+            toCatalog = existingCatalogData.CatalogAssets;
+        }
+
+        foreach ((var assetKey, Type value) in AssetRequestAPI.RequestedNonSceneAssets)
+        {
+            if (!toCatalog.ContainsKey(assetKey))
+            {
+                toCatalog.Add(assetKey, value);
+                shouldWriteCatalog = true;
+                continue;
+            }
+
+            Type existingT = toCatalog[assetKey];
+            if (existingT != value)
+            {
+                AssetHelperPlugin.InstanceLogger.LogInfo($"Replacing {assetKey} :: {toCatalog[assetKey]} -> {value}");
+
+                // Existing type is probably incorrect, take the newer type
+                toCatalog[assetKey] = value;
+                shouldWriteCatalog = true;
+                continue;
+            }
+        }
+
+        if (!shouldWriteCatalog)
+        {
+            AssetHelperPlugin.InstanceLogger.LogInfo($"Not writing non-scene catalog: no new assets added");
+            yield break;
+        }
+
+        NonSceneCatalogMetadata metadata = new();
+
+        CustomCatalogBuilder cbr = new(CatalogKeys.NonSceneCatalogId);
+
+        foreach (((string bundleName, string assetName), Type assetType) in AssetRequestAPI.RequestedNonSceneAssets)
+        {
+            cbr.AddAssets(bundleName, [(assetName, assetType)]);
+            metadata.CatalogAssets.Add((bundleName, assetName), assetType);
+        }
+
+        yield return null;
+
+        AssetHelperPlugin.InstanceLogger.LogInfo($"Writing catalog");
+        cbr.Build();
+        metadata.SerializeToFile(catalogMetadataPath);
     }
 }

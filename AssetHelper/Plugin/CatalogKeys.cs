@@ -23,5 +23,23 @@ public static class CatalogKeys
         return $"{SceneCatalogId}/Assets/{sceneName.ToLowerInvariant()}/{objPath}";
     }
 
+    /// <summary>
+    /// The ID of the main catalog with non-scene assets.
+    /// </summary>
+    public static string NonSceneCatalogId => $"{nameof(AssetHelper)}-BundleAssets";
+
+    /// <summary>
+    /// Get the primary key for a non-scene bundle asset.
+    /// 
+    /// No attempt is made to check that the asset is actually available in the catalog,
+    /// or even if the asset exists, but this function returns what the key would be.
+    /// </summary>
+    /// <param name="assetName">The name of the asset in its bundle.</param>
+    /// <returns></returns>
+    public static string GetKeyForNonSceneAsset(string assetName)
+    {
+        return $"{NonSceneCatalogId}/{assetName}";
+    }
+
     // TODO - function to return a wrapped asset
 }
