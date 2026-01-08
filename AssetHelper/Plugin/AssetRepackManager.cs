@@ -1,6 +1,4 @@
-﻿using AssetsTools.NET;
-using AssetsTools.NET.Extra;
-using MonoDetour.HookGen;
+﻿using MonoDetour.HookGen;
 using Silksong.AssetHelper.BundleTools;
 using Silksong.AssetHelper.BundleTools.Repacking;
 using Silksong.AssetHelper.Internal;
@@ -16,7 +14,6 @@ using UnityEngine.AddressableAssets.ResourceLocators;
 using UnityEngine.ResourceManagement.AsyncOperations;
 using UnityEngine.ResourceManagement.ResourceLocations;
 using UnityEngine.ResourceManagement.ResourceProviders;
-using UnityEngine.U2D;
 using RepackDataCollection = System.Collections.Generic.Dictionary<string, Silksong.AssetHelper.Plugin.RepackedSceneBundleData>;
 
 namespace Silksong.AssetHelper.Plugin;
