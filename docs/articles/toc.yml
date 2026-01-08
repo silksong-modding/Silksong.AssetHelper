@@ -1,4 +1,5 @@
 - name: Getting Started
 - href: ../index.md
 - href: unity.md
+- href: addressables.md
 - href: tips.md

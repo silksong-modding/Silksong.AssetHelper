@@ -1,4 +1,4 @@
-# AssetHelper Cookbook
+# Requesting Assets
 
 - Production cookbook/examples (various ways to use AssetHelper to load assets in prod)
   - Mention that it's good to list the exact game objects you need, not their common ancestor.

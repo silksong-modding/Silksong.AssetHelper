@@ -1,27 +1,63 @@
 # Tips, tricks and common pitfalls
 
+## Gotchas
 
-TODO - turn the following to an article, with reference to the most up-to-date code
+The following are common issues that can happen with loaded assets and AssetHelper.
 
+* Never modify the asset directly! 
+This can cause issues for anyone else - including the base game - who uses
+the asset. Instead, if it is a GameObject, you should always Instantiate the
+asset before modifying it.
 
-- Common gotchas
-  - Never modify a prefab before instantiating it
-  - Stuff gets reloaded on quit to menu
-  - Construct loadable assets during Awake (at least, dependencies ideally shouldn't be calculated while in-game)
-    - I think this doesn't apply to addressable assets
-  - Make sure to tell the difference between scenes and sub-scenes
-  - Notes on object paths changing at runtime
-  Also include testing checklist:
-  - Make sure loading works in menu, even if you don't need it there, because that's the most likely
-    place for things to break
-  - Make sure loading works in remote scenes (e.g. mask shard in scenes with no mask shard), because
-    that strikes a balance between "likely to break" and "likely to matter", and is easy to verify
-	it actually works
-  - Make sure loading works in scenes where the object already is, so asset bundle clashes aren't
-    happening this is unlikely to matter)
-  - Make sure loading works in at least one scene where the object is likely to spawn, assuming that
-    there are a limited set of scenes where spawning will happen
-	- Obvious example would be a duo boss fight where boss A is added to boss B's scene
-  - Make sure to test loading and then changing scene
-  - Make sure to test loading and then returning to menu
-  - Make sure to test loading, returning to menu and then loading again
+* Make sure to apply necessary modifications to the clone
+The cloned game object may or may not have properties you don't want. Often
+you will need to:
+  - Set the name of the cloned game object
+  - Set the position of the cloned game object
+  - Remove certain components from the game object
+  In particular, a PersistentBoolItem can sometimes cause problems if not intended.
+
+### Requesting assets
+
+When requesting assets using the @"Silksong.AssetHelper.Plugin.AssetRequestAPI" API,
+the following bits of advice might be useful.
+
+* List exactly the game objects you want to spawn
+For example, if you want to spawn the following two enemies from scene Memory_Coral_Tower:
+  - `Battle Scenes/Battle Scene Chamber 2/Wave 10/Coral Brawler (1)`
+  - `Battle Scenes/Battle Scene Chamber 2/Wave 1/Coral Hunter`
+it can be tempting to request the `Battle Scenes/Battle Scene Chamber 2` parent
+and find the children directly. This is less efficient than requesting the children
+you need separately, and AssetHelper will create Addressables paths for both individual enemies.
+
+Of course, if you need access to the `Battle Scenes/Battle Scene Chamber 2` asset itself,
+then you should request it.
+
+* Distinguish between scenes and sub-scenes
+For example, if you wish to load Moorwing from Greymoor_08, you will not find it;
+that is because it is stored in Greymoor_08_boss. The correct scene/sub-scene name
+is required for AssetHelper.
+
+* Game object paths may change at runtime
+Some game objects change their parent at runtime. For example, in scene Dust_Chef,
+the kitchen_string object has path `Battle Parent/Kitchen Pipe Gong/kitchen_string_offset/kitchen_string`
+in the bundle, but during the Awake method of one of its child components it sets its
+parent to null. AssetHelper needs to know the path of the game object in the bundle,
+not the path at runtime!
+
+## Testing checklist
+
+It is not necessary to check everything on the following list, but there are several
+different scenarios in which you may want to test your asset.
+
+* In the scene that the base game object usually appears
+* In a scene that the base game object does not appear
+* Load the asset and then change scene
+* Load the asset and then return to menu
+* Load the asset, return to menu, re-enter game and then spawn the asset again
+
+Warnings of the following types indicate a dependency issue and may indicate a bug with AssetHelper.
+```
+[Warning: Unity Log] The referenced script (Unknown) on this Behaviour is missing!
+[Warning: Unity Log] The referenced script on this Behaviour (...) is missing!
+```
