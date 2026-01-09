@@ -40,6 +40,4 @@ public static class CatalogKeys
     {
         return $"{NonSceneCatalogId}/{assetName}";
     }
-
-    // TODO - function to return a wrapped asset
 }

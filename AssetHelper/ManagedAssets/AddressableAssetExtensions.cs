@@ -1,6 +1,7 @@
-﻿using System;
+﻿using Silksong.AssetHelper.Plugin;
+using System;
 
-namespace Silksong.AssetHelper.Managed;
+namespace Silksong.AssetHelper.ManagedAssets;
 
 /// <summary>
 /// Extensions for working with instances of <see cref="AddressableAsset{T}"/>.

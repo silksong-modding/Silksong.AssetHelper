@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
 
-namespace Silksong.AssetHelper.Managed;
+namespace Silksong.AssetHelper.ManagedAssets;
 
 /// <summary>
 /// Class which is a wrapper around an Addressables key, which can be freely loaded and unloaded.
@@ -25,6 +25,9 @@ public class AddressableAsset<T>(string Key)
 
     /// <summary>
     /// Construct an instance for the given scene asset.
+    /// 
+    /// Doing this during your plugin's Awake method will cause it to be requested automatically
+    /// via the <see cref="AssetRequestAPI"/> API.
     /// </summary>
     /// <param name="sceneName">The name of the scene.</param>
     /// <param name="objPath">The hierarchical path to the game object.</param>
@@ -33,7 +36,12 @@ public class AddressableAsset<T>(string Key)
     {
         if (typeof(T) != typeof(GameObject))
         {
-            AssetHelperPlugin.InstanceLogger.LogWarning($"{nameof(AddressableAsset<>)} instances for scene assets should has GameObject as the type argument!");
+            AssetHelperPlugin.InstanceLogger.LogWarning($"{nameof(AddressableAsset<>)} instances for scene assets should have GameObject as the type argument!");
+        }
+
+        if (AssetRequestAPI.RequestApiAvailable)
+        {
+            AssetRequestAPI.RequestSceneAsset(sceneName, objPath);
         }
 
         string key = CatalogKeys.GetKeyForSceneAsset(sceneName, objPath);
@@ -42,11 +50,21 @@ public class AddressableAsset<T>(string Key)
 
     /// <summary>
     /// Construct an instance for the given non-scene asset.
+    ///     
+    /// Doing this during your plugin's Awake method will cause it to be requested automatically
+    /// via the <see cref="AssetRequestAPI"/> API, provided the
+    /// <paramref name="bundleName"/> argument is supplied.
     /// </summary>
     /// <param name="assetName">The name of the asset in its bundle.</param>
+    /// <param name="bundleName">The name of the bundle containing the asset.</param>
     /// <returns></returns>
-    public static AddressableAsset<T> FromNonSceneAsset(string assetName)
+    public static AddressableAsset<T> FromNonSceneAsset(string assetName, string? bundleName = null)
     {
+        if (AssetRequestAPI.RequestApiAvailable && !string.IsNullOrEmpty(bundleName))
+        {
+            AssetRequestAPI.RequestNonSceneAsset<T>(bundleName, assetName);
+        }
+
         string key = CatalogKeys.GetKeyForNonSceneAsset(assetName);
         return new(key);
     }

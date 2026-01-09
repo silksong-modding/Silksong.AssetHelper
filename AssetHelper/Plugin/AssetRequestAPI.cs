@@ -27,6 +27,8 @@ public static class AssetRequestAPI
     /// Invoke this action once AssetHelper has built the repacked scene bundles and loaded the new catalog.
     /// 
     /// If repacking has already been completed, the action will be invoked immediately.
+    /// 
+    /// This moment is typically too early to load any assets; this should mainly be used for debugging.
     /// </summary>
     public static void InvokeAfterBundleCreation(Action a) => AfterBundleCreationComplete.Subscribe(a);
 
@@ -111,7 +113,7 @@ public static class AssetRequestAPI
     /// <param name="bundleName">The name of the bundle containing the asset.
     /// This is the path to the bundle, relative to the Standalone??? dir.</param>
     /// <param name="assetName">The name of the asset within the bundle container.</param>
-    public static void RequestNonSceneAsset<T>(string bundleName, string assetName) where T : UObject
+    public static void RequestNonSceneAsset<T>(string bundleName, string assetName)
     {
         VerifyRequest();
 

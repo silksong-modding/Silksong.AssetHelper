@@ -158,7 +158,8 @@ internal static class AssetRepackManager
             // Include everything from the old bundle - perhaps this should be a config option?
             _toRepack[scene] = new(request
                 .Union(existingBundleData.Data.GameObjectAssets?.Values ?? Enumerable.Empty<string>())
-                .Union(existingBundleData.Data.NonRepackedAssets ?? Enumerable.Empty<string>())
+                // I don't think we should try to repack failed assets unless they're re-requested
+                // .Union(existingBundleData.Data.NonRepackedAssets ?? Enumerable.Empty<string>())
                 );
         }
 

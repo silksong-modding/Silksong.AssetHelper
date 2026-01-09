@@ -53,7 +53,7 @@ a Roachcatcher, you can load it with one of the following two ways:
 the `localpoolprefabs_assets_areadust` bundle
 * A scene asset called `Roachfeeder Short` in scenes such as Dust_02
 
-It is *always* more efficient to load the non-scene asset, where possible.
+It is always more efficient to load the non-scene asset, if possible.
 
 * Prefer loading from fewer/smaller bundles
 It's hard to predict exactly how long it will take to repack a scene bundle
@@ -77,8 +77,13 @@ different scenarios in which you may want to test your asset.
 * Load the asset and then return to menu
 * Load the asset, return to menu, re-enter game and then spawn the asset again
 
-Warnings of the following types indicate a dependency issue and may indicate a bug with AssetHelper.
+Warnings of the following types typically indicate a dependency issue and may indicate a bug with AssetHelper:
 ```
-[Warning: Unity Log] The referenced script (Unknown) on this Behaviour is missing!
-[Warning: Unity Log] The referenced script on this Behaviour (...) is missing!
+[Warning: Unity Log] The referenced script ... on this Behaviour ... is missing!
+[Error  : Unity Log] The file ... is corrupted! Remove it and launch unity again!
 ```
+Often these warnings appear if you have loaded the asset too early.
+
+Many other warnings and errors in the log happen in the base game. If the warnings
+also appear when the base game asset is loaded, then they can typically be ignored.
+

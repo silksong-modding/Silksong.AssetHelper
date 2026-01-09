@@ -27,8 +27,8 @@ in this way is determined at build time.
 In a scene bundle, the only thing that can be accessed is the scene itself,
 and any game objects within the scene can only be accessed by loading the
 entire scene. This is an optimization for unmodded gameplay, as Unity doesn't need
-to figure out how to access those game objects, but is inconvenient for modded
-because it makes placing those objects in different scenes harder.
+to figure out how to access those game objects individually, but is inconvenient for
+modded because it makes placing those objects in different scenes harder.
 
 In Silksong, every bundle in the scenes_scenes_scenes folder is a scene bundle,
 and all other bundles are non-scene bundles.
@@ -62,8 +62,8 @@ with Addressables:
 
 * Addressables counts references to asset bundles.
 For example, if you load a bundle three times using Addressables, Unity will only actually
-load it once, and if you unload it twice, Unity won't unload the bundle because there's
-still one bit of the game that is still using the bundle.
+load it once, and if you unload it twice, Unity won't unload the bundle because Addressables
+knows it's still in use.
 
 * Addressables lets you load individual assets automatically.
 This only applies to certain assets set at build time (by Team Cherry). An example in Silksong
@@ -71,20 +71,24 @@ is the audio played by psalm cylinders; the CollectableRelic item has a gramapho
 field, which holds a key to an AudioClip that can be freely loaded with Addressables. (And this
 AudioClip can be loaded whenever you try to play the psalm cylinder in Whispering Vaults or Bellhome).
 
-* Addressables *can* handle dependencies
+* Addressables can handle dependencies
 Any addressables asset can be associated with dependencies,
 and Addressables will load the dependencies whenever it tries to load the asset.
 
-In Silksong, the individual assets are rarely handled by Addressables, but each bundle in the
-bundles folder is given a key to be loaded with Addressables. The non-scene bundles typically do
-not have dependencies registered with the Addressables catalog, but the scene bundles and individual assets
-all have all dependencies (including transitive dependencies) registered.
+## AssetHelper
+
+AssetHelper provides two main functions:
+
+- Repacking scene bundles to non-scene bundles.
+Any scene assets requested via the API are repacked into non-scene bundles when the game first loads.
+This only needs to be done once (until the base game gets updated and the bundles change), and allows
+the repacked assets to be loaded easily at runtime.
+
+- Creating Addressables keys for non-scene assets.
+Note that this includes all scene assets repacked via the above API, as well as any base game non-scene
+assets for which an Addressables key was requested.
 
 ## Links
 
 * [Asset bundle docs](https://docs.unity3d.com/6000.3/Documentation/Manual/AssetBundlesIntro.html)
 * [Addressables docs](https://docs.unity3d.com/Packages/com.unity.addressables@2.7/manual/index.html)
-* [UABEA](https://github.com/nesrak1/UABEANext) - a useful tool/gui for examining asset bundles.
-* [AssetsTools.NET](https://github.com/nesrak1/AssetsTools.NET/) - a useful library for examining asset bundles in C#.
-AssetsTools.NET is distributed with AssetHelper, and can be used by referencing the [Nuget](https://www.nuget.org/packages/AssetsTools.NET/) package.
-* [UnityPy](https://github.com/K0lb3/UnityPy) - a useful library for examining asset bundles with Python.

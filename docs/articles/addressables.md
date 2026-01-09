@@ -59,7 +59,9 @@ If the asset is failing to load, logging the Exception can help to figure out wh
 ## Unloading the asset
 
 To unload the asset, call `Addressables.Release(op);`. This should not be done until the asset
-is no longer in use, or things may break. It is not strictly necessary to unload the asset, but may be a good
+is no longer in use, or things may break - for example, unloading an enemy may cause its
+projectiles to fail to exist.
+It is not strictly necessary to unload the asset, but may be a good
 thing to do if the asset is unlikely to be used.
 
 For convenience, AssetHelper provides the @"Silksong.AssetHelper.Managed.AddressableAsset`1" class
