@@ -1,6 +1,5 @@
 ﻿using AssetsTools.NET;
 using AssetsTools.NET.Extra;
-using Silksong.AssetHelper.CatalogTools;
 using System;
 using System.Collections.Generic;
 using System.IO;
