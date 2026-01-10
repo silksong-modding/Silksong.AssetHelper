@@ -5,24 +5,28 @@
 The following are common issues that can happen with loaded assets and AssetHelper.
 
 * Never modify the asset directly! 
+
 This can cause issues for anyone else - including the base game - who uses
 the asset. Instead, if it is a GameObject, you should always Instantiate the
 asset before modifying it.
 
-* Make sure to apply necessary modifications to the clone
+* Make sure to apply necessary modifications to the clone.
+
 The cloned game object may or may not have properties you don't want. Often
 you will need to:
   - Set the name of the cloned game object
   - Set the position of the cloned game object
-  - Remove certain components from the game object
-  In particular, a PersistentBoolItem can sometimes cause problems if not intended.
+  - Remove certain components from the game object. Common components to remove include:
+    - PersistentBoolItem (which the base game uses to disable the game object if it has already been "activated"
+	- TestGameObjectActivator, DeactivateIfPlayerdataTrue, DeactivateIfPlayerdataFalse
 
-### Requesting assets
+## Requesting assets
 
 When requesting assets using the @"Silksong.AssetHelper.Plugin.AssetRequestAPI" API,
 the following bits of advice might be useful.
 
-* List exactly the game objects you want to spawn
+* List exactly the game objects you want to spawn.
+
 For example, if you want to spawn the following two enemies from scene Memory_Coral_Tower:
   - `Battle Scenes/Battle Scene Chamber 2/Wave 10/Coral Brawler (1)`
   - `Battle Scenes/Battle Scene Chamber 2/Wave 1/Coral Hunter`
@@ -33,19 +37,22 @@ you need separately, and AssetHelper will create Addressables paths for both ind
 Of course, if you need access to the `Battle Scenes/Battle Scene Chamber 2` asset itself,
 then you should request it.
 
-* Distinguish between scenes and sub-scenes
+* Distinguish between scenes and sub-scenes.
+
 For example, if you wish to load Moorwing from Greymoor_08, you will not find it;
 that is because it is stored in Greymoor_08_boss. The correct scene/sub-scene name
 is required for AssetHelper.
 
-* Game object paths may change at runtime
+* Game object paths may change at runtime.
+
 Some game objects change their parent at runtime. For example, in scene Dust_Chef,
 the kitchen_string object has path `Battle Parent/Kitchen Pipe Gong/kitchen_string_offset/kitchen_string`
 in the bundle, but during the Awake method of one of its child components it sets its
 parent to null. AssetHelper needs to know the path of the game object in the bundle,
 not the path at runtime!
 
-* Prefer non-scene assets
+* Prefer non-scene assets.
+
 Most assets are either only available in scenes or only available in non-scene bundles.
 However, there are a few assets which are available in both forms. For example, to load
 a Roachcatcher, you can load it with one of the following two ways:
@@ -55,7 +62,8 @@ the `localpoolprefabs_assets_areadust` bundle
 
 It is always more efficient to load the non-scene asset, if possible.
 
-* Prefer loading from fewer/smaller bundles
+* Prefer loading from fewer/smaller bundles.
+
 It's hard to predict exactly how long it will take to repack a scene bundle
 but bundles that take up more space on disk are more likely to take longer
 to repack. For example, the coral_23.bundle file is significantly larger
@@ -82,8 +90,8 @@ Warnings of the following types typically indicate a dependency issue and may in
 [Warning: Unity Log] The referenced script ... on this Behaviour ... is missing!
 [Error  : Unity Log] The file ... is corrupted! Remove it and launch unity again!
 ```
-Often these warnings appear if you have loaded the asset too early.
+These warnings may also appear if you have loaded the asset too early.
 
-Many other warnings and errors in the log happen in the base game. If the warnings
-also appear when the base game asset is loaded, then they can typically be ignored.
-
+Many other warnings and errors in the log happen in the base game. If there are warnings that
+appear in the log when the asset appears, but they also appear when you enter the asset's
+base game scene, then they can probably be safely ignored.

@@ -29,10 +29,11 @@ This is a good way to find the game object path that should be passed to AssetHe
 
 Two of the most useful tools are UnityExplorer and UABEANext.
 
-UnityExplorer lets you select a gameObject in the scene and find out its name.
+[UnityExplorer](https://thunderstore.io/c/hollow-knight-silksong/p/Yukikaco/Cinematic_Unity_Explorer/)
+lets you select a gameObject in the scene and find out its name (as well as many other functions).
 In this case, you can usually pass the path to this gameObject directly to AssetHelper,
 although you may wish to verify that the path hasn't changed (some objects change their parent,
-in which case the path in UnityExplorer may not match the actual path needed by AssetHelper).
+in which case the path found using UnityExplorer may not match the actual path needed by AssetHelper).
 
 [UABEANext](https://github.com/nesrak1/UABEANext) lets you browse an asset bundle without needing the game to be open. You can discover
 the path to a game object by clicking the hierarchy tab in the bottom left, then select a
