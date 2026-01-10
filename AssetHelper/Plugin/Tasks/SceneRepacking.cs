@@ -22,7 +22,7 @@ namespace Silksong.AssetHelper.Plugin.Tasks;
 /// <summary>
 /// Run the routine to repack scene assets, create a catalog and load it.
 /// </summary>
-internal class SceneRepacking
+internal class SceneRepacking : BaseStartupTask
 {
     // Invalidate all data on disk that's older than this version
     private static readonly Version _lastAcceptablePluginVersion = Version.Parse("0.1.0");
@@ -41,9 +41,14 @@ internal class SceneRepacking
 
     private bool _didRepack = false;
 
-    public IEnumerator RepackAndCatalogScenes()
+    public override IEnumerator Run(LoadingBar loadingBar)
     {
-        IEnumerator repack = PrepareAndRun();
+        return RepackAndCatalogScenes(loadingBar);
+    }
+
+    private IEnumerator RepackAndCatalogScenes(LoadingBar bar)
+    {
+        IEnumerator repack = PrepareAndRun(bar);
 
         while (repack.MoveNext())
         {
@@ -70,14 +75,14 @@ internal class SceneRepacking
         yield return null;
     }
 
-    private IEnumerator PrepareAndRun()
+    private IEnumerator PrepareAndRun(LoadingBar bar)
     {
         Prepare();
 
         if (_toRepack.Count > 0)
         {
             _didRepack = true;
-            return Run();
+            return RunRepacking(bar);
         }
         else
         {
@@ -172,10 +177,10 @@ internal class SceneRepacking
     /// <summary>
     /// Run the repacking procedure so that by the end, anything in the request which could be repacked has been.
     /// </summary>
-    private IEnumerator Run()
+    private IEnumerator RunRepacking(LoadingBar bar)
     {
         SceneRepacker repacker = new StrippedSceneRepacker();
-        LoadingBar bar = LoadingBar.Create();
+
         int total = _toRepack.Count;
         int count = 0;
 
@@ -213,8 +218,6 @@ internal class SceneRepacking
 
             yield return null;
         }
-
-        UObject.Destroy(bar.gameObject);
     }
 
     private IEnumerator CreateSceneAssetCatalog(RepackDataCollection data)

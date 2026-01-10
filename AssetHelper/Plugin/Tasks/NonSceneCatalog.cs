@@ -13,7 +13,7 @@ namespace Silksong.AssetHelper.Plugin.Tasks;
 /// <summary>
 /// Run the routine to create and load the catalog with requested non-scene assets.
 /// </summary>
-internal class NonSceneCatalog
+internal class NonSceneCatalog : BaseStartupTask
 {
     // Invalidate all data on disk that's older than this version
     private static readonly Version _lastAcceptablePluginVersion = Version.Parse("0.1.0");
@@ -21,7 +21,12 @@ internal class NonSceneCatalog
     // Path to the non-scene catalog .bin file
     private static string NonSceneCatalogPath => Path.Combine(AssetPaths.CatalogFolder, $"{CatalogKeys.NonSceneCatalogId}.bin");
 
-    internal IEnumerator CreateAndLoadCatalog()
+    public override IEnumerator Run(LoadingBar loadingBar)
+    {
+        return CreateAndLoadCatalog();
+    }
+
+    private IEnumerator CreateAndLoadCatalog()
     {
         IEnumerator nonSceneCatalogCreate = CreateNonSceneAssetCatalog();
         while (nonSceneCatalogCreate.MoveNext())
