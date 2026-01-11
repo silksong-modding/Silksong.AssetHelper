@@ -88,23 +88,7 @@ public static class AssetRequestAPI
     /// </summary>
     public static IResourceLocator? NonSceneAssetLocator { get; internal set; }
 
-
-    internal static bool FullNonSceneCatalogRequested { get; private set; }
-
     internal static Dictionary<(string bundleName, string assetName), Type> RequestedNonSceneAssets { get; } = [];
-
-    /// <summary>
-    /// Request the full catalog of non-scene assets to be created.
-    /// 
-    /// Generating the full catalog is significantly slower than generating a catalog for specific assets,
-    /// so using <see cref="RequestNonSceneAsset{T}(string, string)"/> is generally preferred.
-    /// </summary>
-    [Obsolete("This is currently not implemented, instead please request non-scene assets individually.")]
-    public static void RequestFullNonSceneCatalog()
-    {
-        VerifyRequest();
-        FullNonSceneCatalogRequested = true;
-    }
 
     /// <summary>
     /// Request that the given asset is made available via Addressables.
