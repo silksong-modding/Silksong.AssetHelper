@@ -78,11 +78,10 @@ public static class AssetPaths
     /// <summary>
     /// The directory where functions in <see cref="DebugTools"/> write their output.
     /// 
-    /// This defaults to a subfolder of this plugin's assembly, but can be changed.
+    /// This is a subfolder of this plugin's assembly.
     /// </summary>
     public static string DebugDataDir
     {
         get => _debugDataDir.CreateIfNeeded();
-        set => _debugDataDir = value;
     }
 }
