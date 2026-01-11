@@ -29,16 +29,8 @@ internal class ChildGameObjectProvider : ResourceProviderBase
 
     public override void Provide(ProvideHandle provideHandle)
     {
-        AssetHelperPlugin.InstanceLogger.LogInfo($"CHILD LOAD");
-        AssetHelperPlugin.InstanceLogger.LogInfo($"{provideHandle.Location.InternalId}\n{provideHandle.DependencyCount}");
-
         List<object> deps = [];
         provideHandle.GetDependencies(deps);
-
-        foreach (var thing in deps)
-        {
-            AssetHelperPlugin.InstanceLogger.LogInfo(thing);
-        }
 
         string internalId = provideHandle.Location.InternalId;
         string relativePath = internalId.Split($"/{InternalIdSeparator}/").First();
