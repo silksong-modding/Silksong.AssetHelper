@@ -1,4 +1,5 @@
 ﻿using Silksong.AssetHelper.Plugin;
+using System;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
@@ -12,16 +13,26 @@ namespace Silksong.AssetHelper.ManagedAssets;
 /// If loading before reaching the main menu, it should be done in a callback to <see cref="AssetRequestAPI.InvokeAfterBundleCreation"/>.
 /// </summary>
 /// <typeparam name="T">The type of the asset to load.</typeparam>
-/// <param name="Key">The Addressables Key used to load the asset.</param>
-public class AddressableAsset<T>(string Key)
+/// <param name="key">The Addressables Key used to load the asset.</param>
+public class AddressableAsset<T>(string key)
 {
+    /// <summary>
+    /// The Addressables Key used to load the asset.
+    /// </summary>
+    public string Key { get; } = key;
+
+    private AsyncOperationHandle<T>? _handle;
+
     /// <summary>
     /// The operation handle containing the asset. This will be null if the asset has not been loaded.
     /// 
     /// This handle should not be unloaded manually; instead, the <see cref="Unload"/> method
     /// on this instance should be used.
     /// </summary>
-    public AsyncOperationHandle<T>? Handle { get; private set; }
+    /// <exception cref="InvalidOperationException">Exception thrown if this instance has not been loaded when accessing the handle.</exception>
+    public AsyncOperationHandle<T> Handle => _handle.HasValue
+        ? _handle.Value
+        : throw new InvalidOperationException($"Addressable asset with key {Key} must be loaded before accessing the handle!");
 
     /// <summary>
     /// Construct an instance for the given scene asset.
@@ -75,12 +86,14 @@ public class AddressableAsset<T>(string Key)
     /// 
     /// This should be called prior to using the asset.
     /// </summary>
-    public void Load()
+    /// <returns>The handle used to load the asset.</returns>
+    public AsyncOperationHandle<T> Load()
     {
-        if (Handle == null)
+        if (_handle == null)
         {
-            Handle = Addressables.LoadAssetAsync<T>(Key);
+            _handle = Addressables.LoadAssetAsync<T>(Key);
         }
+        return Handle;
     }
 
     /// <summary>
@@ -90,20 +103,20 @@ public class AddressableAsset<T>(string Key)
     /// </summary>
     public void Unload()
     {
-        if (Handle.HasValue)
+        if (_handle.HasValue)
         {
-            Addressables.Release(Handle.Value);
-            Handle = null;
+            Addressables.Release(_handle.Value);
+            _handle = null;
         }
     }
 
     /// <summary>
     /// Whether or not the asset has finished loading.
     /// </summary>
-    public bool IsLoaded => Handle.HasValue && Handle.Value.IsDone;
+    public bool IsLoaded => HasBeenLoaded && Handle.IsDone;
 
     /// <summary>
     /// Whether or not the asset load request has been made.
     /// </summary>
-    public bool HasBeenLoaded => Handle.HasValue;
+    public bool HasBeenLoaded => _handle.HasValue;
 }

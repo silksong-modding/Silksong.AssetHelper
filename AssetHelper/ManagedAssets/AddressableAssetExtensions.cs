@@ -1,5 +1,4 @@
-﻿using Silksong.AssetHelper.Plugin;
-using System;
+﻿using System;
 
 namespace Silksong.AssetHelper.ManagedAssets;
 
@@ -18,6 +17,6 @@ public static class AddressableAssetExtensions
             throw new InvalidOperationException($"The asset has not finished loading!");
         }
 
-        return UObject.Instantiate(asset.Handle!.Value.Result);
+        return UObject.Instantiate(asset.Handle.Result);
     }
 }

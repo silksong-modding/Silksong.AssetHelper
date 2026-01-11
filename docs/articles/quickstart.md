@@ -76,7 +76,7 @@ public class FleaSignPlugin : BaseUnityPlugin
         yield return _fleaSign.Handle;
         
         // Check if there was an error loading the asset.
-        if (_fleaSign.Handle!.OperationException != null)
+        if (_fleaSign.Handle.OperationException != null)
         {
             Logger.LogError($"Error loading asset: {_fleaSign.Handle.OperationException}");
             // No reason to continue the coroutine because there's no asset to spawn
