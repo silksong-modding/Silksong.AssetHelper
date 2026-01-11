@@ -71,7 +71,7 @@ is the audio played by psalm cylinders; the CollectableRelic item has a gramapho
 field, which holds a key to an AudioClip that can be freely loaded with Addressables. (And this
 AudioClip can be loaded whenever you try to play the psalm cylinder in Whispering Vaults or Bellhome).
 
-* Addressables can handle dependencies
+* Addressables can handle dependencies.
 Any addressables asset can be associated with dependencies,
 and Addressables will load the dependencies whenever it tries to load the asset.
 
