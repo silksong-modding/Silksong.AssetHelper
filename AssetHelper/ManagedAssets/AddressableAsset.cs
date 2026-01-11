@@ -37,7 +37,7 @@ public class AddressableAsset<T>(string key)
     /// <summary>
     /// Construct an instance for the given scene asset.
     /// 
-    /// Doing this during your plugin's Awake method will cause it to be requested automatically
+    /// Doing this during your plugin's Awake method will cause it to be requested automatically.
     /// via the <see cref="AssetRequestAPI"/> API.
     /// </summary>
     /// <param name="sceneName">The name of the scene.</param>
@@ -62,7 +62,7 @@ public class AddressableAsset<T>(string key)
     /// <summary>
     /// Construct an instance for the given non-scene asset.
     ///     
-    /// Doing this during your plugin's Awake method will cause it to be requested automatically
+    /// Doing this during your plugin's Awake method will cause it to be requested automatically.
     /// via the <see cref="AssetRequestAPI"/> API, provided the
     /// <paramref name="bundleName"/> argument is supplied.
     /// </summary>
