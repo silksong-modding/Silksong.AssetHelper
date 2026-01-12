@@ -17,10 +17,11 @@ you will need to:
   - Set the name of the cloned game object
   - Set the position of the cloned game object
   - Remove certain components from the game object. Common components to remove include:
-    - PersistentBoolItem (which the base game uses to disable the game object if it has already been "activated"
-	- TestGameObjectActivator, DeactivateIfPlayerdataTrue, DeactivateIfPlayerdataFalse
+    - PersistentBoolItem (which the base game uses to disable the game object if it has already been "activated")
+    - TestGameObjectActivator, DeactivateIfPlayerdataTrue, DeactivateIfPlayerdataFalse
+    - ConstrainPosition
 	
-* Don't yield multiple asset loads sequentially
+* Don't yield multiple asset loads sequentially.
 
 It is a more efficient to start of each load at once, and only yield once. As an example:
 
@@ -32,17 +33,24 @@ AddressableAsset<GameObject> object3 = ...;
 // Bad
 IEnumerator LoadAll()
 {
+    // Start loading object1, and pause the coroutine until object1 is loaded
     yield return object1.Load();
+    // Start loading object2, and pause the coroutine until object1 is loaded
     yield return object2.Load();
+    // Start loading object3, and pause the coroutine until object1 is loaded
     yield return object3.Load();
 }
 
 // Better
 IEnumerator LoadAll()
 {
+    // Start loading object1
     object1.Load();
+    // Start loading object2
     object2.Load();
+    // Start loading object3
     object3.Load();
+    // {ause the coroutine until they are all loaded
     yield return new WaitUntil(() => object1.IsLoaded && object2.IsLoaded && object3.IsLoaded);
 }
 ```
