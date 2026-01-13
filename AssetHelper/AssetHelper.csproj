@@ -47,7 +47,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <AdditionalFiles Include="languages/en.json"/>
+    <AdditionalFiles Include="languages/en.json" />
   </ItemGroup>
 
   <!--
@@ -63,15 +63,15 @@
     <Publicize Include="Unity.Addressables" IncludeCompilerGeneratedMembers="false" IncludeVirtualMembers="false" />
     <Publicize Include="Unity.ResourceManager" IncludeCompilerGeneratedMembers="false" IncludeVirtualMembers="false" />
   </ItemGroup>
-  
+
   <!--Property needed by Krafs publicizer-->
   <PropertyGroup>
     <PublicizerRuntimeStrategies>Unsafe</PublicizerRuntimeStrategies>
   </PropertyGroup>
-  
+
   <ItemGroup>
     <PackageReference Include="AssetsTools.NET" Version="3.0.3" GeneratePathProperty="true" PrivateAssets="all" />
-    <PackageReference Include="AssetHelperLib" Version="0.9.3" GeneratePathProperty="true" />
+    <PackageReference Include="AssetHelperLib" Version="0.9.3" GeneratePathProperty="true" PrivateAssets="all" />
   </ItemGroup>
 
   <ItemGroup>
@@ -92,7 +92,7 @@
   <ItemGroup>
     <Using Include="UnityEngine.Object" Alias="UObject" />
   </ItemGroup>
-  
+
   <Target Name="CopyAndPackageMod" AfterTargets="PostBuildEvent">
     <ItemGroup>
       <Binaries Include="$(TargetPath)" LocalDir="/" PackDir="plugins" />
@@ -109,13 +109,24 @@
     </PropertyGroup>
 
     <!-- Local install -->
-    <Copy SourceFiles="@(Binaries)" DestinationFolder="$(SilksongPluginsFolder)/flibber-$(AssemblyTitle)/%(Binaries.LocalDir)" Condition="'$(SilksongPluginsFolder)' != '' And Exists('$(SilksongPluginsFolder)')" />
+    <Copy
+      SourceFiles="@(Binaries)"
+      DestinationFolder="$(SilksongPluginsFolder)/flibber-$(AssemblyTitle)/%(Binaries.LocalDir)"
+      Condition="'$(SilksongPluginsFolder)' != '' And Exists('$(SilksongPluginsFolder)')"
+    />
 
     <!-- Thunderstore packaging -->
     <RemoveDir Directories="$(ThunderstoreDir)/temp;$(ThunderstoreDir)/dist" />
     <MakeDir Directories="$(ThunderstoreDir)/temp" />
-    <Copy SourceFiles="@(Binaries)" DestinationFolder="$(ThunderstoreDir)/temp/%(Binaries.PackDir)" />
+    <Copy
+      SourceFiles="@(Binaries)"
+      DestinationFolder="$(ThunderstoreDir)/temp/%(Binaries.PackDir)"
+    />
     <Exec Command="dotnet tool restore" />
-    <Exec Command="dotnet tcli build --config-path &quot;$(ThunderstoreDir)/assethelper.toml&quot; --package-name &quot;$(AssemblyTitle)&quot; --package-version $(Version)" StandardOutputImportance="High" StandardErrorImportance="High" />
+    <Exec
+      Command="dotnet tcli build --config-path &quot;$(ThunderstoreDir)/assethelper.toml&quot; --package-name &quot;$(AssemblyTitle)&quot; --package-version $(Version)"
+      StandardOutputImportance="High"
+      StandardErrorImportance="High"
+    />
   </Target>
 </Project>
