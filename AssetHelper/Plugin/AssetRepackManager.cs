@@ -1,9 +1,9 @@
-﻿using MonoDetour.HookGen;
-using Silksong.AssetHelper.Core;
-using Silksong.AssetHelper.Plugin.Tasks;
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using MonoDetour.HookGen;
+using Silksong.AssetHelper.Core;
+using Silksong.AssetHelper.Plugin.Tasks;
 using UnityEngine;
 
 namespace Silksong.AssetHelper.Plugin;
@@ -48,7 +48,9 @@ internal static class AssetRepackManager
                 }
                 catch (Exception ex)
                 {
-                    AssetHelperPlugin.InstanceLogger.LogError($"Error during startup task of type {task.GetType()}\n" + ex);
+                    AssetHelperPlugin.InstanceLogger.LogError(
+                        $"Error during startup task of type {task.GetType()}\n" + ex
+                    );
                     failed = true;
                     break;
                 }
@@ -62,7 +64,10 @@ internal static class AssetRepackManager
                 }
             }
 
-            if (failed) break;
+            if (failed)
+            {
+                break;
+            }
         }
 
         if (!failed)
@@ -73,7 +78,9 @@ internal static class AssetRepackManager
         }
         else
         {
-            AssetHelperPlugin.InstanceLogger.LogWarning($"An error occurred during startup, and AssetHelper did not finish.");
+            AssetHelperPlugin.InstanceLogger.LogWarning(
+                $"An error occurred during startup, and AssetHelper did not finish."
+            );
         }
 
         // Even if there was an error, still let them into the game normally
