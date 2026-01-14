@@ -107,7 +107,7 @@ jobs:
       with:
         name: mod-bundle
         path: thunderstore/dist
-    - name: Publish to Thunderstore
+    - name: Publish AssetHelper to Thunderstore
       if: env.THUNDERSTORE_API_KEY != ''
       run: |-
         dotnet tcli publish \
