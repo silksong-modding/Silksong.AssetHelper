@@ -51,7 +51,7 @@ IEnumerator LoadAssetAndThenDoStuff()
     // Do stuff with the op, which has now finished loading
 }
 
-// Alternative, using an ManagedAsset<GameObject>
+// Alternative, using a ManagedAsset<GameObject>
 
 private ManagedAsset<GameObject> _managedAsset;  // This should be defined in the usual way
 
