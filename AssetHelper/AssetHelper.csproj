@@ -70,8 +70,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AssetsTools.NET" Version="3.0.3" GeneratePathProperty="true" PrivateAssets="all" />
-    <PackageReference Include="AssetHelperLib" Version="0.9.3" GeneratePathProperty="true" PrivateAssets="all" />
+    <PackageReference Include="AssetsTools.NET" Version="3.0.3" GeneratePathProperty="true" />
+    <PackageReference Include="AssetHelperLib" Version="0.9.3" GeneratePathProperty="true" />
   </ItemGroup>
 
   <ItemGroup>
