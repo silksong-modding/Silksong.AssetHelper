@@ -24,7 +24,7 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageIcon>icon.png</PackageIcon>
     <PackageId>Silksong.AssetHelper</PackageId>
-    <RepositoryUrl>https://github.com/silksong_modding/Silksong.AssetHelper</RepositoryUrl>
+    <RepositoryUrl>https://github.com/silksong-modding/Silksong.AssetHelper</RepositoryUrl>
     <Description>Library for helping with loading vanilla Silksong assets.</Description>
     <NeutralLanguage>EN</NeutralLanguage>
   </PropertyGroup>
