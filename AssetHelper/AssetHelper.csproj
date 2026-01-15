@@ -59,7 +59,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Silksong.GameLibs" Version="*-*" PrivateAssets="all" GeneratePathProperty="true" />
+    <PackageReference Include="Silksong.GameLibs" Version="*-*" PrivateAssets="all" />
     <Publicize Include="Unity.Addressables" IncludeCompilerGeneratedMembers="false" IncludeVirtualMembers="false" />
     <Publicize Include="Unity.ResourceManager" IncludeCompilerGeneratedMembers="false" IncludeVirtualMembers="false" />
   </ItemGroup>
