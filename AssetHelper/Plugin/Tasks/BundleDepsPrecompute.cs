@@ -29,17 +29,24 @@ internal class BundleDepsPrecompute : BaseStartupTask
 
         loadingBar.SetProgress(0);
         int ct = 0;
+        int misses = 0;
 
         foreach (string s in bundles)
         {
-            BundleMetadata.DetermineDirectDeps(s);
+            BundleMetadata.DetermineDirectDepsInternal(s, out bool cacheHit);
+
             ct++;
+
             loadingBar.SetProgress((float)ct / (float)bundles.Count);
             
-            if (ct % 5 == 0)
+            if (!cacheHit)
             {
-                // Yield after batches because at this scale the fps is contributing more than 1/3 of the time
-                yield return null;
+                misses++;
+                if (misses % 5 == 0)
+                {
+                    // Yield after batches because at this scale the fps is contributing more than 1/3 of the time
+                    yield return null;
+                }
             }
         }
 
