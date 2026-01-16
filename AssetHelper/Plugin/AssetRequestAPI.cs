@@ -35,6 +35,8 @@ public static class AssetRequestAPI
     public static void InvokeAfterBundleCreation(Action a) =>
         AfterBundleCreationComplete.Subscribe(a);
 
+    internal static bool AnyRequestMade => (RequestedNonSceneAssets.Count > 0) || (SceneAssetRequest.Count > 0);
+
     #region Scene Assets
     internal static Dictionary<string, HashSet<string>> SceneAssetRequest { get; } = [];
 

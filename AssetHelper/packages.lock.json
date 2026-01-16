@@ -67,8 +67,8 @@
       "MonoDetour": {
         "type": "Direct",
         "requested": "[*, )",
-        "resolved": "0.7.9",
-        "contentHash": "vTYpJxV51Tsjrycjt04bEGrKMIQqa/c8wf+KpqF2JhXu19ijG8k4cMeT2bXAOqCuy6e/7gn1eaBNM8yQKP847Q==",
+        "resolved": "0.7.10",
+        "contentHash": "st/61d+jjzIN/TfxU8gwTiD9NWhG36yiIRdo3ANcV1bpQhOr/i2WYUJ3j/Omi00+yX+kfwzMu43ygDufELWw/g==",
         "dependencies": {
           "MonoMod.RuntimeDetour": "21.12.13.1"
         }

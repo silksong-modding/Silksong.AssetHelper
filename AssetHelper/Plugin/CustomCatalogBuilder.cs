@@ -78,7 +78,7 @@ internal class CustomCatalogBuilder
         // Get dependency list
         List<string> dependencyKeys = [repackedSceneBundleKey];
         foreach (
-            string dep in BundleMetadata.DetermineDirectDeps(
+            string dep in BundleMetadata.DetermineCatalogDeps(
                 $"scenes_scenes_scenes/{sceneName}.bundle"
             )
         )
@@ -106,7 +106,7 @@ internal class CustomCatalogBuilder
         string bundleKey = bundle.Replace(".bundle", "");
         _includedBaseBundles.Add(bundleKey);
         List<string> dependencyKeys = [_basePrimaryKeys[bundleKey]];
-        foreach (string dep in BundleMetadata.DetermineDirectDeps(bundle))
+        foreach (string dep in BundleMetadata.DetermineTransitiveDeps(bundle))
         {
             string depKey = dep.Replace(".bundle", "");
             _includedBaseBundles.Add(depKey);

@@ -27,6 +27,8 @@ internal class NonSceneCatalog : BaseStartupTask
     {
         IEnumerator nonSceneCatalogCreate = CreateNonSceneAssetCatalog();
         bar.SetText(LanguageKeys.BUILDING_NON_SCENE.GetLocalized());
+        yield return null;
+
         while (nonSceneCatalogCreate.MoveNext())
         {
             yield return null;
@@ -36,6 +38,8 @@ internal class NonSceneCatalog : BaseStartupTask
         if (File.Exists(NonSceneCatalogPath) && AssetRequestAPI.RequestedNonSceneAssets.Count > 0)
         {
             bar.SetText(LanguageKeys.LOADING_NON_SCENE.GetLocalized());
+            yield return null;
+
             AssetHelperPlugin.InstanceLogger.LogInfo($"Loading non-scene catalog");
             AsyncOperationHandle<IResourceLocator> catalogLoadOp = Addressables.LoadContentCatalogAsync(NonSceneCatalogPath);
             yield return catalogLoadOp;

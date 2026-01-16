@@ -48,6 +48,8 @@ internal class SceneRepacking : BaseStartupTask
         IEnumerator repack = PrepareAndRun(bar);
 
         bar.SetText(LanguageKeys.REPACKING_SCENE.GetLocalized());
+        yield return null;
+
         while (repack.MoveNext())
         {
             // Yield after each repack op is done
@@ -56,6 +58,8 @@ internal class SceneRepacking : BaseStartupTask
         bar.SetProgress(1f);
 
         bar.SetText(LanguageKeys.BULDING_SCENE.GetLocalized());
+        yield return null;
+
         IEnumerator catalogCreate = CreateSceneAssetCatalog(_repackData);
         while (catalogCreate.MoveNext())
         {
@@ -68,6 +72,8 @@ internal class SceneRepacking : BaseStartupTask
         if (_repackData.Count > 0)
         {
             bar.SetText(LanguageKeys.LOADING_SCENE.GetLocalized());
+            yield return null;
+
             AssetHelperPlugin.InstanceLogger.LogInfo($"Loading scene catalog");
             AsyncOperationHandle<IResourceLocator> catalogLoadOp = Addressables.LoadContentCatalogAsync(SceneCatalogPath);
             yield return catalogLoadOp;

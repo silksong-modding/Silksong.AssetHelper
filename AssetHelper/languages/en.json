@@ -1,4 +1,5 @@
 {
+    "COMPUTING_BUNDLE_DEPS": "Computing bundle dependencies",
     "BUILDING_NON_SCENE": "Building non-scene catalog",
     "LOADING_NON_SCENE": "Loading non-scene catalog",
     "REPACKING_SCENE": "Repacking scenes",
