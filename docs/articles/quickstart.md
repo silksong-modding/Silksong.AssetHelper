@@ -19,6 +19,8 @@ However, this will often break; in general, it is best to wait either until the 
 asset should be in use or until the player enters the game, but at the very least it
 should not be prior to GameManager.Awake.
 
+- NB: Never apply any modifications (add/remove components, change the name, etc) to the loaded assets as it will affect the rest of the GameObjects that need this asset. Always apply the modification to a cloned instance of the asset as described below.
+
 ## Instantiate your assets
 
 The assets can be instantiated at any time from the ManagedAsset instance (provided it has been loaded),
