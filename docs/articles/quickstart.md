@@ -19,6 +19,12 @@ However, this will often break; in general, it is best to wait either until the 
 asset should be in use or until the player enters the game, but at the very least it
 should not be prior to GameManager.Awake.
 
+* Never modify the asset directly! 
+
+This will cause issues for anyone else - including the base game - who uses
+the asset. Instead, if it is a GameObject, you should always Instantiate the
+asset before modifying it.
+
 ## Instantiate your assets
 
 The assets can be instantiated at any time from the ManagedAsset instance (provided it has been loaded),

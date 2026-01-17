@@ -6,7 +6,7 @@ The following are common issues that can happen with loaded assets and AssetHelp
 
 * Never modify the asset directly! 
 
-This can cause issues for anyone else - including the base game - who uses
+This will cause issues for anyone else - including the base game - who uses
 the asset. Instead, if it is a GameObject, you should always Instantiate the
 asset before modifying it.
 
