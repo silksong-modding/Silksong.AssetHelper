@@ -86,8 +86,8 @@ _crowman = ManagedAsset<GameObject>.FromSceneAsset(
 private IEnumerator LoadCrowman()
 {
     yield return _cip.Load();  // This should be loaded first
-	yield return _crowman.Load();
-	
-	// Instantiate the crowman and do stuff with it as normal
+    yield return _crowman.Load();
+
+    // Instantiate the crowman and do stuff with it as normal
 }
 ```
