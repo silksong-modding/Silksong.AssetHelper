@@ -120,7 +120,8 @@ different scenarios in which you may want to test your asset.
 * Load the asset and then return to menu
 * Load the asset, return to menu, re-enter game and then spawn the asset again
 
-Warnings of the following types typically indicate a dependency issue and may indicate a bug with AssetHelper:
+Warnings of the following types typically indicate a dependency issue and may indicate a dependency-related issue;
+see <xref:DepsArticle> for more information.
 ```
 [Warning: Unity Log] The referenced script ... on this Behaviour ... is missing!
 [Error  : Unity Log] The file ... is corrupted! Remove it and launch unity again!
