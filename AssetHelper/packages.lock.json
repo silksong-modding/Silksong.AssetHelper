@@ -76,8 +76,8 @@
       "MonoDetour.HookGen": {
         "type": "Direct",
         "requested": "[0.7.*, )",
-        "resolved": "0.7.6",
-        "contentHash": "LVaOXo0eBk1LbR9gfrEd7e2YfB8ha5LgEzGOvq8XVtEyGZpNMABkd6LmROFWaqRZ3YL7HS+PNCKTds41fW5F8w==",
+        "resolved": "0.7.11",
+        "contentHash": "qqxEiu34oCGprNFYFKLvCBXq4vCyS62uZ4mTyS0HcpYYHStoHXO8/dqECKp/VaJjLyPfcgk7qCtDlunL4nKELA==",
         "dependencies": {
           "MonoDetour": "0.5.0"
         }
