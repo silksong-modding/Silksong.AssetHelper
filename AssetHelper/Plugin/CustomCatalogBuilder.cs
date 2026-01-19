@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using AssetHelperLib.BundleTools;
 using Silksong.AssetHelper.CatalogTools;
@@ -62,6 +63,25 @@ internal class CustomCatalogBuilder
         }
     }
 
+    /// <summary>
+    /// Declare that the given base game bundle must be included in the catalog.
+    /// </summary>
+    /// <param name="bundleName">The name of the bundle (including or excluding .bundle).</param>
+    /// <param name="primaryKey">The primary key of the bundle.</param>
+    /// <returns>False if the given bundle was not found.</returns>
+    public bool TryDeclareBundleDep(string bundleName, [NotNullWhen(true)] out string? primaryKey)
+    {
+        string bundleKey = bundleName.ToLowerInvariant().Replace(".bundle", "");
+
+        if (!_basePrimaryKeys.TryGetValue(bundleKey, out primaryKey))
+        {
+            return false;
+        }
+        
+        _includedBaseBundles.Add(bundleKey);
+        return true;
+    }
+
     public void AddRepackedSceneData(string sceneName, RepackedBundleData data, string bundlePath)
     {
         // Create an entry for the bundle
@@ -83,9 +103,13 @@ internal class CustomCatalogBuilder
             )
         )
         {
-            string depKey = dep.Replace(".bundle", "");
-            _includedBaseBundles.Add(depKey);
-            dependencyKeys.Add(_basePrimaryKeys[depKey]);
+            if (!TryDeclareBundleDep(dep, out string? primaryKey))
+            {
+                AssetHelperPlugin.InstanceLogger.LogWarning($"Error adding asset from scene {sceneName} with alien dep {dep}");
+                continue;
+            }
+
+            dependencyKeys.Add(primaryKey);
         }
 
         // Create entries for the assets
@@ -103,14 +127,21 @@ internal class CustomCatalogBuilder
 
     public void AddAssets(string bundle, List<(string asset, Type assetType)> data)
     {
-        string bundleKey = bundle.Replace(".bundle", "");
-        _includedBaseBundles.Add(bundleKey);
-        List<string> dependencyKeys = [_basePrimaryKeys[bundleKey]];
+        if (!TryDeclareBundleDep(bundle, out string? mainPkey))
+        {
+            throw new ArgumentException($"Error adding assets from bundle {bundle}: bundle not recognized");
+        }
+        List<string> dependencyKeys = [mainPkey];
+
         foreach (string dep in BundleMetadata.DetermineTransitiveDeps(bundle))
         {
-            string depKey = dep.Replace(".bundle", "");
-            _includedBaseBundles.Add(depKey);
-            dependencyKeys.Add(_basePrimaryKeys[depKey]);
+            if (!TryDeclareBundleDep(dep, out string? pkey))
+            {
+                AssetHelperPlugin.InstanceLogger.LogWarning($"Error adding asset from {bundle}: unrecognized T-dep {dep}");
+                continue;
+            }
+
+            dependencyKeys.Add(pkey);
         }
 
         foreach ((string asset, Type assetType) in data)
