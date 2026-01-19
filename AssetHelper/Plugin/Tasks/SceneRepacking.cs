@@ -246,6 +246,9 @@ internal class SceneRepacking : BaseStartupTask
         }
 
         AssetHelperPlugin.InstanceLogger.LogInfo($"Creating catalog");
+
+        Stopwatch sw = Stopwatch.StartNew();
+
         CustomCatalogBuilder cbr = new(CatalogKeys.SceneCatalogId);
         foreach ((string sceneName, RepackedSceneBundleData repackBunData) in data)
         {
@@ -282,9 +285,15 @@ internal class SceneRepacking : BaseStartupTask
             }
         }
 
+        sw.Stop();
+        AssetHelperPlugin.InstanceLogger.LogInfo($"Prepared catalog in {sw.ElapsedMilliseconds} ms");
+        
         yield return null;
 
+        sw = Stopwatch.StartNew();
         cbr.Build();
+        sw.Stop();
+        AssetHelperPlugin.InstanceLogger.LogInfo($"Finished writing catalog in {sw.ElapsedMilliseconds} ms");
 
         SceneCatalogMetadata metadata = new();
         metadata.SerializeToFile(catalogMetadataPath);
