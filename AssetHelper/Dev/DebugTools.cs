@@ -135,6 +135,8 @@ public static class DebugTools
 
     /// <summary>
     /// Write a list of all Addressable assets in the catalog given by the provided locator.
+    /// 
+    /// The output includes a json dictionary of type {primary key -> list of location infos}.
     /// </summary>
     /// <param name="locator"></param>
     /// <param name="fileName">The name of the file within the debug data dir.</param>
@@ -147,14 +149,17 @@ public static class DebugTools
         bool includeDependencyNames = false
     )
     {
-        List<AddressablesAssetInfo> assetInfos = [];
+        Dictionary<string, List<AddressablesAssetInfo>> assetInfosByKey = [];
 
-        foreach (IResourceLocation loc in locator.AllLocations)
+        foreach (string pkey in locator.Keys.OfType<string>())
         {
-            assetInfos.Add(AddressablesAssetInfo.FromLocation(loc, includeDependencyNames));
+            if (locator.Locate(pkey, null, out IList<IResourceLocation> locs))
+            {
+                assetInfosByKey[pkey] = locs.Select(x => AddressablesAssetInfo.FromLocation(x, includeDependencyNames)).ToList();
+            }
         }
 
-        LocatorInfo locatorInfo = new() { LocatorID = locator.LocatorId, Infos = assetInfos };
+        LocatorInfo locatorInfo = new() { LocatorID = locator.LocatorId, Infos = assetInfosByKey };
 
         locatorInfo.SerializeToFileInBackground(Path.Combine(DebugDataDir, fileName));
     }
@@ -162,7 +167,7 @@ public static class DebugTools
     private class LocatorInfo
     {
         public string? LocatorID { get; init; }
-        public List<AddressablesAssetInfo> Infos { get; init; } = [];
+        public Dictionary<string, List<AddressablesAssetInfo>> Infos { get; init; } = [];
     }
 
     private class AddressablesAssetInfo
@@ -173,6 +178,7 @@ public static class DebugTools
         public List<string>? Dependencies { get; init; }
         public string? PrimaryKey { get; init; }
         public Type? ResourceType { get; init; }
+        public Type? AuxDataType { get; init; }
 
         public static AddressablesAssetInfo FromLocation(
             IResourceLocation loc,
@@ -192,6 +198,7 @@ public static class DebugTools
                 Dependencies = depNames,
                 PrimaryKey = loc.PrimaryKey,
                 ResourceType = loc.ResourceType,
+                AuxDataType = loc.Data?.GetType(),
             };
         }
     }
