@@ -44,7 +44,14 @@ internal class CachedObject<T>
         return true;
     }
 
-    public static CachedObject<T> CreateSynced(string filename, Func<T> createDefault)
+    /// <summary>
+    /// Create a cached object.
+    /// </summary>
+    /// <param name="filename">Filename in the cache folder. Should end in .json</param>
+    /// <param name="createDefault"></param>
+    /// <param name="mutable">If true, the object will be reserialized on application quit.</param>
+    /// <returns></returns>
+    public static CachedObject<T> CreateSynced(string filename, Func<T> createDefault, bool mutable = true)
     {
         string filePath = Path.Combine(AssetPaths.CacheDirectory, filename);
 
@@ -69,7 +76,11 @@ internal class CachedObject<T>
             PluginVersion = AssetHelperPlugin.Version,
             Value = createDefault(),
         };
-        AssetHelperPlugin.OnQuitApplication += () => created.SerializeToFile(filePath);
+        created.SerializeToFile(filePath);
+        if (mutable)
+        {
+            AssetHelperPlugin.OnQuitApplication += () => created.SerializeToFile(filePath);
+        }
         return created;
     }
 }

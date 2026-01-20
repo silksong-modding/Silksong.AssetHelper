@@ -39,7 +39,7 @@ public partial class AssetHelperPlugin : BaseUnityPlugin
 
         InitLibLogging();
         AssetsToolsPatch.Init();
-        BundleMetadata.Setup();
+        AddressablesData.InvokeAfterAddressablesLoaded(BundleMetadata.Setup);
         StartupOverrideManager.Hook();
         Addressables.ResourceManager.ResourceProviders.Add(new ChildGameObjectProvider());
 

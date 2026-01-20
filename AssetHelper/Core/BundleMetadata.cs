@@ -13,17 +13,20 @@ namespace Silksong.AssetHelper.Core;
 
 /// <summary>
 /// Helpers for determining bundle metadata, with the results automatically cached.
+/// 
+/// This class is not safe to use until Addressables has loaded.
 /// </summary>
 public static class BundleMetadata
 {
     internal static void Setup()
     {
         CabLookup = CachedObject<IReadOnlyDictionary<string, string>>
-            .CreateSynced("cabs.json", GenerateCabLookup)
+            .CreateSynced("cabs.json", GenerateCabLookup, mutable: false)
             .Value;
         DirectDependencyLookup = CachedObject<Dictionary<string, List<string>>>.CreateSynced(
             "direct_deps.json",
-            () => []
+            () => [],
+            mutable: true
         );
     }
 
@@ -45,19 +48,28 @@ public static class BundleMetadata
 
         Dictionary<string, string> lookup = [];
 
-        foreach (
-            string f in Directory.EnumerateFiles(
-                bundleFolder,
-                "*.bundle",
-                SearchOption.AllDirectories
-            )
-        )
+        foreach (string f in AddressablesData.BundleKeys!.Keys)
         {
-            string key = Path.GetRelativePath(bundleFolder, f).Replace("\\", "/");
+            string key = f.Replace("\\", "/");
+            if (!key.EndsWith(".bundle"))
+            {
+                key += ".bundle";
 
-            BundleFileInstance bun = mgr.LoadBundleFile(f);
+            }
+
+            string filepath = Path.Combine(bundleFolder, key);
+
+            BundleFileInstance bun = mgr.LoadBundleFile(filepath);
             string cab = bun.file.GetFileName(0).Split(".")[0].ToLowerInvariant();
-            lookup[cab] = key;
+
+            if (lookup.ContainsKey(cab))
+            {
+                AssetHelperPlugin.InstanceLogger.LogWarning($"Duplicate cab detected! {cab}: {lookup[cab]} -> {key}");
+            }
+            else
+            {
+                lookup[cab] = key;
+            }
             mgr.UnloadAll();
         }
 
