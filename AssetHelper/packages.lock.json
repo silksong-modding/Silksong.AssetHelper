@@ -4,9 +4,9 @@
     ".NETStandard,Version=v2.1": {
       "AssetHelperLib": {
         "type": "Direct",
-        "requested": "[0.9.3, )",
-        "resolved": "0.9.3",
-        "contentHash": "D9DmzMFD8XMafE7Jy+DpOSJrO2E/7/rUaHzl0f8EEAY3nQTm4Hz2FtYt+q8yZymdaN8ZKH5+my35aIkFnX5yGA=="
+        "requested": "[0.10.0, )",
+        "resolved": "0.10.0",
+        "contentHash": "J9wqIP+u2FPxpUEs07tTSQLQw8wSCRHnDx1UV0QwWFdra7CPP98Xj65ya3224hBklU2K0tb/cYWSEJ1hBA9ZwA=="
       },
       "AssetsTools.NET": {
         "type": "Direct",
