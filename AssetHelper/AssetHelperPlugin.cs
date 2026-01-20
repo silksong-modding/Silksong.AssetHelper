@@ -43,7 +43,7 @@ public partial class AssetHelperPlugin : BaseUnityPlugin
         StartupOverrideManager.Hook();
         Addressables.ResourceManager.ResourceProviders.Add(new ChildGameObjectProvider());
 
-        Logger.LogInfo($"Silksong version: {VersionData.SilksongVersion}");
+        Logger.LogInfo($"Silksong version: {VersionData.SilksongVersion} // OS String: {AssetPaths.OSFolderName}");
         Logger.LogInfo($"Plugin {Name} ({Id}) has loaded!");
     }
 

@@ -16,6 +16,17 @@ public static class AssetPaths
     }
 
     /// <summary>
+    /// The folder within StreamingAssets/aa containing the bundles.
+    /// </summary>
+    public static string OSFolderName => Application.platform switch
+    {
+        RuntimePlatform.WindowsPlayer => "StandaloneWindows64",
+        RuntimePlatform.OSXPlayer => "StandaloneOSX",
+        RuntimePlatform.LinuxPlayer => "StandaloneLinux64",
+        _ => "",
+    };
+
+    /// <summary>
     /// The base game folder containing asset bundles.
     /// </summary>
     public static string BundleFolder
@@ -23,14 +34,7 @@ public static class AssetPaths
         get
         {
             string rootFolder = Application.streamingAssetsPath;
-            string osFolder = Application.platform switch
-            {
-                RuntimePlatform.WindowsPlayer => "StandaloneWindows64",
-                RuntimePlatform.OSXPlayer => "StandaloneOSX",
-                RuntimePlatform.LinuxPlayer => "StandaloneLinux64",
-                _ => "",
-            };
-            return Path.Combine(rootFolder, "aa", osFolder);
+            return Path.Combine(rootFolder, "aa", OSFolderName);
         }
     }
 
