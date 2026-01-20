@@ -78,9 +78,9 @@ private ManagedAsset<GameObject> _crowman;
 
 // in Awake
 _cip = ManagedAsset<GameObject>.FromNonSceneAsset(
-    "localpoolprefabs_assets_areagreymoor", "Assets/Prefabs/Items/Collectable Item Pickup Feather.prefab");
+    "Assets/Prefabs/Items/Collectable Item Pickup Feather.prefab", "localpoolprefabs_assets_areagreymoor");
 _crowman = ManagedAsset<GameObject>.FromSceneAsset(
-    "Crowman Dagger (1)", "greymoor_15");
+    "greymoor_15", "Crowman Dagger (1)");
 
 // To load the crowman, the dependency must be loaded first
 private IEnumerator LoadCrowman()
