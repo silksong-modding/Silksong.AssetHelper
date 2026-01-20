@@ -51,6 +51,6 @@ internal class BundleDepsPrecompute : BaseStartupTask
         }
 
         sw.Stop();
-        AssetHelperPlugin.InstanceLogger.LogInfo($"Time {sw.ElapsedMilliseconds} ms");
+        AssetHelperPlugin.InstanceLogger.LogInfo($"Computed bundle deps in {sw.ElapsedMilliseconds} ms.");
     }
 }
