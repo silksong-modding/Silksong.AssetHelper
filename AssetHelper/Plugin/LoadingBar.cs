@@ -89,7 +89,7 @@ internal class LoadingBar : MonoBehaviour
         textRect.anchorMin = new Vector2(0.5f, 0.5f);
         textRect.anchorMax = new Vector2(0.5f, 0.5f);
         textRect.pivot = new Vector2(0.5f, 0f);
-        textRect.sizeDelta = new Vector2(400, 50);
+        textRect.sizeDelta = new Vector2(800, 50);
         textRect.anchoredPosition = new Vector2(0, 45);
 
         // For testing
