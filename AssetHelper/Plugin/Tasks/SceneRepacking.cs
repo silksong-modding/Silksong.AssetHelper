@@ -1,5 +1,5 @@
 ﻿using AssetHelperLib.BundleTools;
-using AssetHelperLib.BundleTools.Repacking;
+using AssetHelperLib.Repacking;
 using Silksong.AssetHelper.CatalogTools;
 using Silksong.AssetHelper.Internal;
 using AssetHelperLib.Util;
@@ -200,12 +200,15 @@ internal class SceneRepacking : BaseStartupTask
         {
             Stopwatch sw = Stopwatch.StartNew();
             AssetHelperPlugin.InstanceLogger.LogInfo($"Repacking {request.Count} objects in scene {scene}");
-            RepackedBundleData repackData = repacker.Repack(
-                AssetPaths.GetScenePath(scene),
-                request.ToList(),
-                $"{nameof(AssetHelper)}/{scene}",
-                GetBundlePathForScene(scene)
-                );
+
+            RepackingParams rParams = new()
+            {
+                SceneBundlePath = AssetPaths.GetScenePath(scene),
+                ObjectNames = request.ToList(),
+                ContainerPrefix = $"{nameof(AssetHelper)}/{scene}",
+                OutBundlePath = GetBundlePathForScene(scene),
+            };
+            RepackedBundleData repackData = repacker.Repack(rParams);
 
             string? hash = null;
             if (AddressablesData.TryGetLocationForScene(scene, out IResourceLocation? location) && location.Data is AssetBundleRequestOptions opts)

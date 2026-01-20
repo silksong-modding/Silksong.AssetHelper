@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using AssetHelperLib.BundleTools;
+using AssetHelperLib.Repacking;
 using Silksong.AssetHelper.CatalogTools;
 using Silksong.AssetHelper.Core;
 using UnityEngine;
