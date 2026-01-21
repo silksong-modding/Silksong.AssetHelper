@@ -53,6 +53,10 @@ public partial class AssetHelperPlugin : BaseUnityPlugin
         AssetHelperLib.Logging.OnLog += libLogger.LogInfo;
         AssetHelperLib.Logging.OnLogWarning += libLogger.LogWarning;
         AssetHelperLib.Logging.OnLogError += libLogger.LogError;
+
+#if DEBUG
+        AssetHelperLib.Logging.OnLogDebug += libLogger.LogInfo;
+#endif
     }
 
     private IEnumerator Start()

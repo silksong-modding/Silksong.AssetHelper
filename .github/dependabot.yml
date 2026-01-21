@@ -6,6 +6,8 @@ updates:
       - dependency-name: BepInEx.Core
       - dependency-name: HarmonyX
       - dependency-name: UnityEngine.Modules
+      # Exclude AssetHelperLib because any changes to it may constitute breaking changes
+      - dependency-name: AssetHelperLib
     schedule:
       interval: daily
   - directory: /
