@@ -21,12 +21,13 @@ public static class BundleMetadata
     internal static void Setup()
     {
         CabLookup = CachedObject<IReadOnlyDictionary<string, string>>
-            .CreateSynced("cabs.json", GenerateCabLookup, mutable: false)
+            .CreateSynced("cabs.json", GenerateCabLookup, mutable: false, out _)
             .Value;
         DirectDependencyLookup = CachedObject<Dictionary<string, List<string>>>.CreateSynced(
             "direct_deps.json",
             () => [],
-            mutable: true
+            mutable: true,
+            out _
         );
     }
 

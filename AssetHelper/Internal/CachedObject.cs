@@ -50,9 +50,13 @@ internal class CachedObject<T>
     /// <param name="filename">Filename in the cache folder. Should end in .json</param>
     /// <param name="createDefault"></param>
     /// <param name="mutable">If true, the object will be reserialized on application quit.</param>
+    /// <param name="syncHandle">Dispose this to serialize the object and no longer serialize on application quit.
+    /// This will be null if <paramref name="mutable"/> is false.</param>
     /// <returns></returns>
-    public static CachedObject<T> CreateSynced(string filename, Func<T> createDefault, bool mutable = true)
+    public static CachedObject<T> CreateSynced(string filename, Func<T> createDefault, bool mutable, out IDisposable? syncHandle)
     {
+        syncHandle = null;
+
         string filePath = Path.Combine(AssetPaths.CacheDirectory, filename);
 
         // Check if the object already exists
@@ -65,7 +69,11 @@ internal class CachedObject<T>
         {
             if (fromCache.Value is not null && fromCache.IsValid())
             {
-                AssetHelperPlugin.OnQuitApplication += () => fromCache.SerializeToFile(filePath);
+                if (mutable)
+                {
+                    syncHandle = new CachedObjectSyncHandle<T>(fromCache, filePath);
+                }
+                
                 return fromCache;
             }
         }
@@ -79,8 +87,30 @@ internal class CachedObject<T>
         created.SerializeToFile(filePath);
         if (mutable)
         {
-            AssetHelperPlugin.OnQuitApplication += () => created.SerializeToFile(filePath);
+            syncHandle = new CachedObjectSyncHandle<T>(created, filePath);
         }
         return created;
+    }
+}
+
+file class CachedObjectSyncHandle<T> : IDisposable where T : class
+{
+    private CachedObject<T> _obj;
+    private string _filepath;
+
+    public CachedObjectSyncHandle(CachedObject<T> obj, string filepath)
+    {
+        _obj = obj;
+        _filepath = filepath;
+
+        AssetHelperPlugin.OnQuitApplication += SyncObj;
+    }
+
+    private void SyncObj() => _obj.SerializeToFile(_filepath);
+
+    public void Dispose()
+    {
+        SyncObj();
+        AssetHelperPlugin.OnQuitApplication -= SyncObj;
     }
 }

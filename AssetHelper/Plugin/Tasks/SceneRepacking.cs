@@ -16,6 +16,7 @@ using RepackDataCollection = System.Collections.Generic.Dictionary<string, Silks
 using Silksong.AssetHelper.Core;
 using AssetHelperLib.PreloadTable;
 using CPPCache = System.Collections.Generic.Dictionary<string, AssetHelperLib.PreloadTable.ContainerPointerPreloadsBundleData>;
+using System;
 
 namespace Silksong.AssetHelper.Plugin.Tasks;
 
@@ -222,12 +223,15 @@ internal class SceneRepacking : BaseStartupTask
     /// </summary>
     private IEnumerator RunRepacking(LoadingBar bar)
     {
-        CachedObject<CPPCache> SyncedCppCache = CachedObject<CPPCache>.CreateSynced("container_pointer_preloads_cache.json", () => new(), mutable: true);
+        CachedObject<CPPCache> SyncedCppCache = CachedObject<CPPCache>.CreateSynced(
+            "container_pointer_preloads_cache.json", () => new(), mutable: true, out IDisposable? handle);
 
         ContainerPointerPreloads cpp = new(ResolveCab) { Cache = SyncedCppCache.Value };
         PreloadTableResolver resolver = new([new DefaultPreloadTableResolver(), cpp]);
 
         SceneRepacker repacker = new StrippedSceneRepacker(resolver);
+
+        Stopwatch mainSw = Stopwatch.StartNew();
 
         int total = _toRepack.Count;
         int count = 0;
@@ -269,6 +273,11 @@ internal class SceneRepacking : BaseStartupTask
 
             yield return null;
         }
+
+        mainSw.Stop();
+        AssetHelperPlugin.InstanceLogger.LogInfo($"Finished scene repacking after {mainSw.ElapsedMilliseconds} ms");
+
+        handle?.Dispose();
     }
 
     private IEnumerator CreateSceneAssetCatalog(RepackDataCollection data)
