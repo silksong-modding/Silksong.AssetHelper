@@ -13,7 +13,7 @@ internal class BundleDepsPrecompute : BaseStartupTask
 {
     public override IEnumerator Run(LoadingBar loadingBar)
     {
-        if (AssetRequestAPI.RequestedNonSceneAssets.Count == 0)
+        if (AssetRequestAPI.Request.NonSceneAssets.Count == 0)
         {
             // Only need to precompute bundle deps if there're non-scene assets requested
             yield break;

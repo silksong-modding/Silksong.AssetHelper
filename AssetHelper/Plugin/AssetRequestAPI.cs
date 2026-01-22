@@ -25,6 +25,8 @@ public static class AssetRequestAPI
 
     internal static DelayedAction AfterBundleCreationComplete = new();
 
+    internal static AssetRequest Request { get; } = new();
+
     /// <summary>
     /// Invoke this action once AssetHelper has built the repacked scene bundles and loaded the new catalog.
     ///
@@ -35,11 +37,7 @@ public static class AssetRequestAPI
     public static void InvokeAfterBundleCreation(Action a) =>
         AfterBundleCreationComplete.Subscribe(a);
 
-    internal static bool AnyRequestMade => (RequestedNonSceneAssets.Count > 0) || (SceneAssetRequest.Count > 0);
-
     #region Scene Assets
-    internal static Dictionary<string, HashSet<string>> SceneAssetRequest { get; } = [];
-
     /// <summary>
     /// The <see cref="IResourceLocator"/> containing scene assets.
     /// </summary>
@@ -58,14 +56,14 @@ public static class AssetRequestAPI
 
         sceneName = sceneName.ToLowerInvariant();
 
-        HashSet<string> updated = SceneAssetRequest.TryGetValue(
+        HashSet<string> updated = Request.SceneAssets.TryGetValue(
             sceneName,
             out HashSet<string> request
         )
             ? request
             : [];
         updated.UnionWith(assetPaths);
-        SceneAssetRequest[sceneName] = updated;
+        Request.SceneAssets[sceneName] = updated;
     }
 
     /// <summary>
@@ -99,11 +97,6 @@ public static class AssetRequestAPI
     /// </summary>
     public static IResourceLocator? NonSceneAssetLocator { get; internal set; }
 
-    internal static Dictionary<
-        (string bundleName, string assetName),
-        Type
-    > RequestedNonSceneAssets { get; } = [];
-
     /// <summary>
     /// Request that the given asset is made available via Addressables.
     /// </summary>
@@ -124,7 +117,7 @@ public static class AssetRequestAPI
             bundleName = bundleName[..^7];
         }
 
-        if (RequestedNonSceneAssets.TryGetValue((bundleName, assetName), out Type t))
+        if (Request.NonSceneAssets.TryGetValue((bundleName, assetName), out Type t))
         {
             if (t != assetType)
             {
@@ -135,7 +128,7 @@ public static class AssetRequestAPI
         }
 
         // Always prefer the newer type, regardless of the error
-        RequestedNonSceneAssets[(bundleName, assetName)] = assetType;
+        Request.NonSceneAssets[(bundleName, assetName)] = assetType;
     }
 
     /// <summary>

@@ -35,7 +35,7 @@ internal class NonSceneCatalog : BaseStartupTask
         }
         yield return null;
 
-        if (File.Exists(NonSceneCatalogPath) && AssetRequestAPI.RequestedNonSceneAssets.Count > 0)
+        if (File.Exists(NonSceneCatalogPath) && AssetRequestAPI.Request.NonSceneAssets.Count > 0)
         {
             bar.SetText(LanguageKeys.LOADING_NON_SCENE.GetLocalized());
             yield return null;
@@ -64,7 +64,7 @@ internal class NonSceneCatalog : BaseStartupTask
             toCatalog = existingCatalogData.CatalogAssets;
         }
 
-        foreach ((var assetKey, Type value) in AssetRequestAPI.RequestedNonSceneAssets)
+        foreach ((var assetKey, Type value) in AssetRequestAPI.Request.NonSceneAssets)
         {
             if (!toCatalog.ContainsKey(assetKey))
             {
@@ -95,7 +95,7 @@ internal class NonSceneCatalog : BaseStartupTask
 
         CustomCatalogBuilder cbr = new(CatalogKeys.NonSceneCatalogId);
 
-        foreach (((string bundleName, string assetName), Type assetType) in AssetRequestAPI.RequestedNonSceneAssets)
+        foreach (((string bundleName, string assetName), Type assetType) in AssetRequestAPI.Request.NonSceneAssets)
         {
             cbr.AddAssets(bundleName, [(assetName, assetType)]);
             metadata.CatalogAssets.Add((bundleName, assetName), assetType);

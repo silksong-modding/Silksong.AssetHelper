@@ -122,7 +122,7 @@ internal class SceneRepacking : BaseStartupTask
 
         _toRepack = [];
 
-        foreach ((string scene, HashSet<string> request) in AssetRequestAPI.SceneAssetRequest)
+        foreach ((string scene, HashSet<string> request) in AssetRequestAPI.Request.SceneAssets)
         {
             if (!_repackData.TryGetValue(scene, out RepackedSceneBundleData existingBundleData))
             {
@@ -306,7 +306,7 @@ internal class SceneRepacking : BaseStartupTask
             cbr.AddRepackedSceneData(sceneName, repackBunData.Data, bundlePath);
 
             // Add in requested child paths
-            if (AssetRequestAPI.SceneAssetRequest.TryGetValue(sceneName, out HashSet<string> requested))
+            if (AssetRequestAPI.Request.SceneAssets.TryGetValue(sceneName, out HashSet<string> requested))
             {
                 foreach (string child in requested)
                 {

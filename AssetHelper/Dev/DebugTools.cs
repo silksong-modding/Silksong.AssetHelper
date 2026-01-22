@@ -8,6 +8,7 @@ using AssetsTools.NET.Extra;
 using BepInEx.Logging;
 using Silksong.AssetHelper.Core;
 using Silksong.AssetHelper.Internal;
+using Silksong.AssetHelper.Plugin;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.AddressableAssets.ResourceLocators;
@@ -316,5 +317,14 @@ public static class DebugTools
         cInfos.SerializeToFile(outPath);
 
         mgr.UnloadAll();
+    }
+
+    /// <summary>
+    /// Dump the overall asset request to the debug data dir.
+    /// </summary>
+    public static void SerializeAssetRequest(string filename = "asset_request.json")
+    {
+        AssetRequestAPI.Request.SerializeToFile(
+            Path.Combine(DebugDataDir, filename));
     }
 }
