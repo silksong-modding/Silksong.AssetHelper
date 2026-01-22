@@ -1,11 +1,11 @@
-﻿using AssetsTools.NET;
-using AssetsTools.NET.Extra;
-using Silksong.AssetHelper.Internal;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using AssetsTools.NET;
+using AssetsTools.NET.Extra;
+using Silksong.AssetHelper.Internal;
 using UnityEngine.ResourceManagement.ResourceLocations;
 using UnityEngine.ResourceManagement.ResourceProviders;
 
@@ -13,7 +13,7 @@ namespace Silksong.AssetHelper.Core;
 
 /// <summary>
 /// Helpers for determining bundle metadata, with the results automatically cached.
-/// 
+///
 /// This class is not safe to use until Addressables has loaded.
 /// </summary>
 public static class BundleMetadata
@@ -33,7 +33,7 @@ public static class BundleMetadata
 
     /// <summary>
     /// Lookup for cab name to bundle path.
-    /// 
+    ///
     /// Keys: CAB name (lowercase)
     /// Values: Bundle path, relative to the bundle folder, with .bundle at the end.
     /// </summary>
@@ -55,7 +55,6 @@ public static class BundleMetadata
             if (!key.EndsWith(".bundle"))
             {
                 key += ".bundle";
-
             }
 
             string filepath = Path.Combine(bundleFolder, key);
@@ -65,7 +64,9 @@ public static class BundleMetadata
 
             if (lookup.ContainsKey(cab))
             {
-                AssetHelperPlugin.InstanceLogger.LogWarning($"Duplicate cab detected! {cab}: {lookup[cab]} -> {key}");
+                AssetHelperPlugin.InstanceLogger.LogWarning(
+                    $"Duplicate cab detected! {cab}: {lookup[cab]} -> {key}"
+                );
             }
             else
             {
@@ -91,8 +92,8 @@ public static class BundleMetadata
     /// </summary>
     /// <param name="bundleName"></param>
     /// <returns>A list of bundle paths, with .bundle included.</returns>
-    public static List<string> DetermineDirectDeps(string bundleName)
-        => DetermineDirectDepsInternal(bundleName, out _);
+    public static List<string> DetermineDirectDeps(string bundleName) =>
+        DetermineDirectDepsInternal(bundleName, out _);
 
     internal static List<string> DetermineDirectDepsInternal(string bundleName, out bool cacheHit)
     {
@@ -173,7 +174,7 @@ public static class BundleMetadata
     /// <summary>
     /// Determine all dependencies of the given bundle, direct and transitive, as listed in
     /// the Addressables catalog entry for the scene.
-    /// 
+    ///
     /// The scene bundle itself will not be included in the list.
     /// </summary>
     /// <param name="sceneBundle">The scene name or bundle path.</param>
@@ -190,15 +191,24 @@ public static class BundleMetadata
 
         if (AddressablesData.MainLocator == null)
         {
-            throw new InvalidOperationException("Cannot inspect catalog until after Addressables has loaded");
+            throw new InvalidOperationException(
+                "Cannot inspect catalog until after Addressables has loaded"
+            );
         }
 
-        string key = AddressablesData.MainLocator.Keys.OfType<string>().Where(s =>
-            s.StartsWith("Scenes/")
-            && s.Substring(7).Equals(sceneName, StringComparison.InvariantCultureIgnoreCase)
-        ).First();
+        string key = AddressablesData
+            .MainLocator.Keys.OfType<string>()
+            .Where(s =>
+                s.StartsWith("Scenes/")
+                && s.Substring(7).Equals(sceneName, StringComparison.InvariantCultureIgnoreCase)
+            )
+            .First();
 
-        AddressablesData.MainLocator.Locate(key, typeof(SceneInstance), out IList<IResourceLocation> locations);
+        AddressablesData.MainLocator.Locate(
+            key,
+            typeof(SceneInstance),
+            out IList<IResourceLocation> locations
+        );
         IResourceLocation location = locations.First();
 
         List<string> deps = [];

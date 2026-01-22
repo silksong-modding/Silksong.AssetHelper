@@ -104,7 +104,8 @@ public static class AssetRequestAPI
     /// <param name="bundleName">The name of the bundle containing the asset.
     /// This is the path to the bundle, relative to the Standalone??? dir.</param>
     /// <param name="assetName">The name of the asset within the bundle container.</param>
-    public static void RequestNonSceneAsset<T>(string bundleName, string assetName) => RequestNonSceneAsset(bundleName, assetName, typeof(T));
+    public static void RequestNonSceneAsset<T>(string bundleName, string assetName) =>
+        RequestNonSceneAsset(bundleName, assetName, typeof(T));
 
     /// <inheritdoc cref="RequestNonSceneAsset{T}(string, string)" />
     public static void RequestNonSceneAsset(string bundleName, string assetName, Type assetType)

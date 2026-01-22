@@ -1,11 +1,11 @@
-﻿using Silksong.AssetHelper.Core;
-using Silksong.AssetHelper.Internal;
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using Silksong.AssetHelper.Core;
+using Silksong.AssetHelper.Internal;
 
 namespace Silksong.AssetHelper.Plugin.Tasks;
 
@@ -25,7 +25,9 @@ internal class BundleDepsPrecompute : BaseStartupTask
 
         Stopwatch sw = Stopwatch.StartNew();
 
-        List<string> bundles = AddressablesData.BundleKeys!.Keys.Where(x => !x.Contains("scenes_scenes_scenes")).ToList();
+        List<string> bundles = AddressablesData
+            .BundleKeys!.Keys.Where(x => !x.Contains("scenes_scenes_scenes"))
+            .ToList();
 
         loadingBar.SetProgress(0);
         int ct = 0;
@@ -38,7 +40,7 @@ internal class BundleDepsPrecompute : BaseStartupTask
             ct++;
 
             loadingBar.SetProgress((float)ct / (float)bundles.Count);
-            
+
             if (!cacheHit)
             {
                 misses++;
@@ -51,6 +53,8 @@ internal class BundleDepsPrecompute : BaseStartupTask
         }
 
         sw.Stop();
-        AssetHelperPlugin.InstanceLogger.LogInfo($"Computed bundle deps in {sw.ElapsedMilliseconds} ms.");
+        AssetHelperPlugin.InstanceLogger.LogInfo(
+            $"Computed bundle deps in {sw.ElapsedMilliseconds} ms."
+        );
     }
 }

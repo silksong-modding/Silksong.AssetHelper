@@ -77,7 +77,7 @@ internal class CustomCatalogBuilder
         {
             return false;
         }
-        
+
         _includedBaseBundles.Add(bundleKey);
         return true;
     }
@@ -105,7 +105,9 @@ internal class CustomCatalogBuilder
         {
             if (!TryDeclareBundleDep(dep, out string? primaryKey))
             {
-                AssetHelperPlugin.InstanceLogger.LogWarning($"Error adding asset from scene {sceneName} with alien dep {dep}");
+                AssetHelperPlugin.InstanceLogger.LogWarning(
+                    $"Error adding asset from scene {sceneName} with alien dep {dep}"
+                );
                 continue;
             }
 
@@ -129,7 +131,9 @@ internal class CustomCatalogBuilder
     {
         if (!TryDeclareBundleDep(bundle, out string? mainPkey))
         {
-            throw new ArgumentException($"Error adding assets from bundle {bundle}: bundle not recognized");
+            throw new ArgumentException(
+                $"Error adding assets from bundle {bundle}: bundle not recognized"
+            );
         }
         List<string> dependencyKeys = [mainPkey];
 
@@ -137,7 +141,9 @@ internal class CustomCatalogBuilder
         {
             if (!TryDeclareBundleDep(dep, out string? pkey))
             {
-                AssetHelperPlugin.InstanceLogger.LogWarning($"Error adding asset from {bundle}: unrecognized T-dep {dep}");
+                AssetHelperPlugin.InstanceLogger.LogWarning(
+                    $"Error adding asset from {bundle}: unrecognized T-dep {dep}"
+                );
                 continue;
             }
 

@@ -136,7 +136,7 @@ public static class DebugTools
 
     /// <summary>
     /// Write a list of all Addressable assets in the catalog given by the provided locator.
-    /// 
+    ///
     /// The output includes a json dictionary of type {primary key -> list of location infos}.
     /// </summary>
     /// <param name="locator"></param>
@@ -156,7 +156,10 @@ public static class DebugTools
         {
             if (locator.Locate(pkey, null, out IList<IResourceLocation> locs))
             {
-                assetInfosByKey[pkey] = locs.Select(x => AddressablesAssetInfo.FromLocation(x, includeDependencyNames)).ToList();
+                assetInfosByKey[pkey] = locs.Select(x =>
+                        AddressablesAssetInfo.FromLocation(x, includeDependencyNames)
+                    )
+                    .ToList();
             }
         }
 
@@ -239,7 +242,12 @@ public static class DebugTools
         }
 
         _bundleNameLookup ??= CachedObject<Dictionary<string, string>>
-            .CreateSynced("bundle_name_lookup.json", GenerateBundleNameLookup, mutable: false, out _)
+            .CreateSynced(
+                "bundle_name_lookup.json",
+                GenerateBundleNameLookup,
+                mutable: false,
+                out _
+            )
             .Value;
 
         List<string> names = [];
@@ -324,7 +332,6 @@ public static class DebugTools
     /// </summary>
     public static void SerializeAssetRequest(string filename = "asset_request.json")
     {
-        AssetRequestAPI.Request.SerializeToFile(
-            Path.Combine(DebugDataDir, filename));
+        AssetRequestAPI.Request.SerializeToFile(Path.Combine(DebugDataDir, filename));
     }
 }

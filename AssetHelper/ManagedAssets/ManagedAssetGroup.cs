@@ -156,7 +156,7 @@ public class ManagedAssetGroup<T> : IManagedAsset
         }
 
         return SysTask.WhenAll(_handles.Values.Select(x => x.Task));
-    } 
+    }
 
     /// <summary>
     /// Access a loaded asset by name.
@@ -186,7 +186,7 @@ public class ManagedAssetGroup<T> : IManagedAsset
     {
         if (_handles != null)
         {
-            foreach (var handle in _handles.Values)
+            foreach (AsyncOperationHandle<T> handle in _handles.Values)
             {
                 Addressables.Release(handle);
             }

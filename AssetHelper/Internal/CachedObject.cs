@@ -53,7 +53,12 @@ internal class CachedObject<T>
     /// <param name="syncHandle">Dispose this to serialize the object and no longer serialize on application quit.
     /// This will be null if <paramref name="mutable"/> is false.</param>
     /// <returns></returns>
-    public static CachedObject<T> CreateSynced(string filename, Func<T> createDefault, bool mutable, out IDisposable? syncHandle)
+    public static CachedObject<T> CreateSynced(
+        string filename,
+        Func<T> createDefault,
+        bool mutable,
+        out IDisposable? syncHandle
+    )
     {
         syncHandle = null;
 
@@ -73,7 +78,7 @@ internal class CachedObject<T>
                 {
                     syncHandle = new CachedObjectSyncHandle<T>(fromCache, filePath);
                 }
-                
+
                 return fromCache;
             }
         }
@@ -93,7 +98,8 @@ internal class CachedObject<T>
     }
 }
 
-file class CachedObjectSyncHandle<T> : IDisposable where T : class
+file class CachedObjectSyncHandle<T> : IDisposable
+    where T : class
 {
     private CachedObject<T> _obj;
     private string _filepath;

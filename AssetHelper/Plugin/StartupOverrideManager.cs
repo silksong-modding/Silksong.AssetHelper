@@ -14,7 +14,7 @@ namespace Silksong.AssetHelper.Plugin;
 [MonoDetourTargets(typeof(StartManager))]
 internal static class StartupOverrideManager
 {
-    // StartManager.Start should never 
+    // StartManager.Start should never execute twice but we check just in case
     private static bool _startupRun = false;
 
     internal static void Hook()
@@ -30,7 +30,12 @@ internal static class StartupOverrideManager
         }
     }
 
-    private static List<BaseStartupTask> _tasks = [new BundleDepsPrecompute(), new SceneRepacking(), new NonSceneCatalog()];
+    private static List<BaseStartupTask> _tasks =
+    [
+        new BundleDepsPrecompute(),
+        new SceneRepacking(),
+        new NonSceneCatalog(),
+    ];
 
     private static IEnumerator WrapStartManagerStart(StartManager self, IEnumerator original)
     {

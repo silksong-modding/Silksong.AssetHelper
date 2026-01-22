@@ -43,7 +43,9 @@ public partial class AssetHelperPlugin : BaseUnityPlugin
         StartupOverrideManager.Hook();
         Addressables.ResourceManager.ResourceProviders.Add(new ChildGameObjectProvider());
 
-        Logger.LogInfo($"Silksong version: {VersionData.SilksongVersion} // OS String: {AssetPaths.OSFolderName}");
+        Logger.LogInfo(
+            $"Silksong version: {VersionData.SilksongVersion} // OS String: {AssetPaths.OSFolderName}"
+        );
         Logger.LogInfo($"Plugin {Name} ({Id}) has loaded!");
     }
 
@@ -55,7 +57,9 @@ public partial class AssetHelperPlugin : BaseUnityPlugin
         AssetHelperLib.Logging.OnLogError += libLogger.LogError;
 
 #if DEBUG
-        ManualLogSource libDebugLogger = BepInEx.Logging.Logger.CreateLogSource("AssetHelper.Lib.Debug");
+        ManualLogSource libDebugLogger = BepInEx.Logging.Logger.CreateLogSource(
+            "AssetHelper.Lib.Debug"
+        );
         AssetHelperLib.Logging.OnLogDebug += libDebugLogger.LogInfo;
 #endif
     }
