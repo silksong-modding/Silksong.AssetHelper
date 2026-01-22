@@ -55,7 +55,8 @@ public partial class AssetHelperPlugin : BaseUnityPlugin
         AssetHelperLib.Logging.OnLogError += libLogger.LogError;
 
 #if DEBUG
-        AssetHelperLib.Logging.OnLogDebug += libLogger.LogInfo;
+        ManualLogSource libDebugLogger = BepInEx.Logging.Logger.CreateLogSource("AssetHelper.Lib.Debug");
+        AssetHelperLib.Logging.OnLogDebug += libDebugLogger.LogInfo;
 #endif
     }
 
