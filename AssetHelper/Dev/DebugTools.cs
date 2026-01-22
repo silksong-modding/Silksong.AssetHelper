@@ -238,7 +238,7 @@ public static class DebugTools
         }
 
         _bundleNameLookup ??= CachedObject<Dictionary<string, string>>
-            .CreateSynced("bundle_name_lookup.json", GenerateBundleNameLookup, mutable: false)
+            .CreateSynced("bundle_name_lookup.json", GenerateBundleNameLookup, mutable: false, out _)
             .Value;
 
         List<string> names = [];

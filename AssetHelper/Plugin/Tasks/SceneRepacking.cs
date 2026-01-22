@@ -1,9 +1,7 @@
-﻿using AssetHelperLib.BundleTools;
-using AssetHelperLib.Repacking;
+﻿using AssetHelperLib.Repacking;
 using Silksong.AssetHelper.CatalogTools;
 using Silksong.AssetHelper.Internal;
 using AssetHelperLib.Util;
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -16,6 +14,9 @@ using UnityEngine.ResourceManagement.ResourceLocations;
 using UnityEngine.ResourceManagement.ResourceProviders;
 using RepackDataCollection = System.Collections.Generic.Dictionary<string, Silksong.AssetHelper.Plugin.RepackedSceneBundleData>;
 using Silksong.AssetHelper.Core;
+using AssetHelperLib.PreloadTable;
+using CPPCache = System.Collections.Generic.Dictionary<string, AssetHelperLib.PreloadTable.ContainerPointerPreloadsBundleData>;
+using System;
 
 namespace Silksong.AssetHelper.Plugin.Tasks;
 
@@ -185,12 +186,52 @@ internal class SceneRepacking : BaseStartupTask
         return true;
     }
 
+    private static bool ResolveCab(string cabName, out string? bundlePath)
+    {
+        bundlePath = null;
+
+        if (cabName.Contains("unity"))
+        {
+            // this isn't a game bundle (not a cab name) so we should skip
+            return true;
+        }
+
+        if (!BundleMetadata.CabLookup.TryGetValue(cabName.ToLowerInvariant(), out string? bundleName))
+        {
+            return false;
+        }
+
+        if (bundleName.Contains("monoscripts") || bundleName.Contains("builtinassets"))
+        {
+            // Skip these because we shouldn't follow any deps there
+            return true;
+        }
+
+        // Technically we can't touch this bundle until AT.NET gets updated (or I write another IL hook)
+        // but this bundle isn't useful anyway
+        if (bundleName.Contains("audioobjects"))
+        {
+            return true;
+        }
+
+        bundlePath = Path.Combine(AssetPaths.BundleFolder, bundleName);
+        return true;
+    }
+
     /// <summary>
     /// Run the repacking procedure so that by the end, anything in the request which could be repacked has been.
     /// </summary>
     private IEnumerator RunRepacking(LoadingBar bar)
     {
-        SceneRepacker repacker = new StrippedSceneRepacker();
+        CachedObject<CPPCache> SyncedCppCache = CachedObject<CPPCache>.CreateSynced(
+            "container_pointer_preloads_cache.json", () => new(), mutable: true, out IDisposable? handle);
+
+        ContainerPointerPreloads cpp = new(ResolveCab) { Cache = SyncedCppCache.Value };
+        PreloadTableResolver resolver = new([new DefaultPreloadTableResolver(), cpp]);
+
+        SceneRepacker repacker = new StrippedSceneRepacker(resolver);
+
+        Stopwatch mainSw = Stopwatch.StartNew();
 
         int total = _toRepack.Count;
         int count = 0;
@@ -232,6 +273,11 @@ internal class SceneRepacking : BaseStartupTask
 
             yield return null;
         }
+
+        mainSw.Stop();
+        AssetHelperPlugin.InstanceLogger.LogInfo($"Finished scene repacking after {mainSw.ElapsedMilliseconds} ms");
+
+        handle?.Dispose();
     }
 
     private IEnumerator CreateSceneAssetCatalog(RepackDataCollection data)
