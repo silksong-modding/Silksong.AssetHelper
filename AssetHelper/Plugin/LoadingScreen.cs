@@ -8,6 +8,7 @@ internal class LoadingScreen : MonoBehaviour, ILoadingScreen
     private GameObject _canvasObject;
     private CanvasGroup _canvasGroup;
     private Text _statusText;
+    private Text _subText;
 
     void Awake()
     {
@@ -68,22 +69,43 @@ internal class LoadingScreen : MonoBehaviour, ILoadingScreen
         _fillImageRect.sizeDelta = Vector2.zero;
         _fillImageRect.anchoredPosition = Vector2.zero;
 
-        GameObject textObj = new("StatusText");
-        textObj.transform.SetParent(_canvasObject.transform);
-        _statusText = textObj.AddComponent<Text>();
+        {
+            GameObject textObj = new("StatusText");
+            textObj.transform.SetParent(_canvasObject.transform);
+            _statusText = textObj.AddComponent<Text>();
 
-        _statusText.font = Resources.GetBuiltinResource<Font>("Arial.ttf");
-        _statusText.text = string.Empty;
-        _statusText.fontSize = 30;
-        _statusText.alignment = TextAnchor.MiddleCenter;
-        _statusText.color = Color.white;
+            _statusText.font = Resources.GetBuiltinResource<Font>("Arial.ttf");
+            _statusText.text = string.Empty;
+            _statusText.fontSize = 30;
+            _statusText.alignment = TextAnchor.MiddleCenter;
+            _statusText.color = Color.white;
 
-        RectTransform textRect = _statusText.rectTransform;
-        textRect.anchorMin = new Vector2(0.5f, 0.5f);
-        textRect.anchorMax = new Vector2(0.5f, 0.5f);
-        textRect.pivot = new Vector2(0.5f, 0f);
-        textRect.sizeDelta = new Vector2(800, 50);
-        textRect.anchoredPosition = new Vector2(0, 45);
+            RectTransform textRect = _statusText.rectTransform;
+            textRect.anchorMin = new Vector2(0.5f, 0.5f);
+            textRect.anchorMax = new Vector2(0.5f, 0.5f);
+            textRect.pivot = new Vector2(0.5f, 0f);
+            textRect.sizeDelta = new Vector2(800, 50);
+            textRect.anchoredPosition = new Vector2(0, 60);
+        }
+
+        {
+            GameObject subtextObj = new("SubText");
+            subtextObj.transform.SetParent(_canvasObject.transform);
+            _subText = subtextObj.AddComponent<Text>();
+
+            _subText.font = Resources.GetBuiltinResource<Font>("Arial.ttf");
+            _subText.text = string.Empty;
+            _subText.fontSize = 20;
+            _subText.alignment = TextAnchor.MiddleCenter;
+            _subText.color = Color.white;
+
+            RectTransform subtextRect = _subText.rectTransform;
+            subtextRect.anchorMin = new Vector2(0.5f, 0.5f);
+            subtextRect.anchorMax = new Vector2(0.5f, 0.5f);
+            subtextRect.pivot = new Vector2(0.5f, 1f);
+            subtextRect.sizeDelta = new Vector2(800, 50);
+            subtextRect.anchoredPosition = new Vector2(0, -45);
+        }
 
         // For testing
         _statusText.text = "Loading...";
@@ -103,6 +125,11 @@ internal class LoadingScreen : MonoBehaviour, ILoadingScreen
     public void SetText(string text)
     {
         _statusText.text = text;
+    }
+
+    public void SetSubtext(string text)
+    {
+        _subText.text = text;
     }
 
     private void OnDestroy()

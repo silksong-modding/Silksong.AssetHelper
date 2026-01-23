@@ -9,6 +9,8 @@ internal interface ILoadingScreen
 {
     public void SetText(string text);
 
+    public void SetSubtext(string text);
+
     public void SetProgress(float progress);
 
     public void SetVisible(bool visible);
@@ -27,6 +29,8 @@ internal static class LoadingScreenExtensions
     public static void Reset(this ILoadingScreen self)
     {
         self.SetText(string.Empty);
+        self.SetSubtext(string.Empty);
         self.SetProgress(0);
+        self.SetVisible(true);
     }
 }

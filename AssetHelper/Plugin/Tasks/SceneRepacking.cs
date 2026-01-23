@@ -56,12 +56,12 @@ internal class SceneRepacking : BaseStartupTask
             // Yield after each repack op is done
             yield return null;
         }
-        bar.SetProgress(1f);
+        bar.Reset();
 
         bar.SetText(LanguageKeys.BULDING_SCENE.GetLocalized());
         yield return null;
 
-        IEnumerator catalogCreate = CreateSceneAssetCatalog(_repackData);
+        IEnumerator catalogCreate = CreateSceneAssetCatalog(_repackData, bar);
         while (catalogCreate.MoveNext())
         {
             yield return null;
@@ -217,7 +217,7 @@ internal class SceneRepacking : BaseStartupTask
     private IEnumerator RunRepacking(ILoadingScreen bar)
     {
         CachedObject<CPPCache> SyncedCppCache = CachedObject<CPPCache>.CreateSynced(
-            "container_pointer_preloads_cache.json", () => new(), mutable: true, out IDisposable? handle);
+            "container_pointer_preloads_cache.json", () => new(), mutable: true, out IDisposable? cppSyncHandle);
 
         ContainerPointerPreloads cpp = new(ResolveCab) { Cache = SyncedCppCache.Value };
         PreloadTableResolver resolver = new([new DefaultPreloadTableResolver(), cpp]);
@@ -234,6 +234,7 @@ internal class SceneRepacking : BaseStartupTask
         {
             Stopwatch sw = Stopwatch.StartNew();
             AssetHelperPlugin.InstanceLogger.LogInfo($"Repacking {request.Count} objects in scene {scene}");
+            bar.SetSubtext(scene);
 
             RepackingParams rParams = new()
             {
@@ -270,10 +271,11 @@ internal class SceneRepacking : BaseStartupTask
         mainSw.Stop();
         AssetHelperPlugin.InstanceLogger.LogInfo($"Finished scene repacking after {mainSw.ElapsedMilliseconds} ms");
 
-        handle?.Dispose();
+        bar.Reset();
+        cppSyncHandle?.Dispose();
     }
 
-    private IEnumerator CreateSceneAssetCatalog(RepackDataCollection data)
+    private IEnumerator CreateSceneAssetCatalog(RepackDataCollection data, ILoadingScreen screen)
     {
         string catalogMetadataPath = Path.ChangeExtension(SceneCatalogPath, ".json");
 
@@ -329,7 +331,8 @@ internal class SceneRepacking : BaseStartupTask
 
         sw.Stop();
         AssetHelperPlugin.InstanceLogger.LogInfo($"Prepared catalog in {sw.ElapsedMilliseconds} ms");
-        
+
+        screen.SetText(LanguageKeys.WRITING_SCENE.GetLocalized());
         yield return null;
 
         sw = Stopwatch.StartNew();

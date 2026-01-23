@@ -4,5 +4,6 @@
     "LOADING_NON_SCENE": "Loading non-scene catalog",
     "REPACKING_SCENE": "Repacking scenes",
     "BULDING_SCENE": "Building scene catalog",
+    "WRITING_SCENE": "Writing scene catalog",
     "LOADING_SCENE": "Loading scene catalog"
 }
