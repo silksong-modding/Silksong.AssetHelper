@@ -39,12 +39,12 @@ internal class SceneRepacking : BaseStartupTask
 
     private bool _didRepack = false;
 
-    public override IEnumerator Run(LoadingBar loadingBar)
+    public override IEnumerator Run(ILoadingScreen loadingScreen)
     {
-        return RepackAndCatalogScenes(loadingBar);
+        return RepackAndCatalogScenes(loadingScreen);
     }
 
-    private IEnumerator RepackAndCatalogScenes(LoadingBar bar)
+    private IEnumerator RepackAndCatalogScenes(ILoadingScreen bar)
     {
         IEnumerator repack = PrepareAndRun(bar);
 
@@ -83,7 +83,7 @@ internal class SceneRepacking : BaseStartupTask
         yield return null;
     }
 
-    private IEnumerator PrepareAndRun(LoadingBar bar)
+    private IEnumerator PrepareAndRun(ILoadingScreen bar)
     {
         Prepare();
 
@@ -214,7 +214,7 @@ internal class SceneRepacking : BaseStartupTask
     /// <summary>
     /// Run the repacking procedure so that by the end, anything in the request which could be repacked has been.
     /// </summary>
-    private IEnumerator RunRepacking(LoadingBar bar)
+    private IEnumerator RunRepacking(ILoadingScreen bar)
     {
         CachedObject<CPPCache> SyncedCppCache = CachedObject<CPPCache>.CreateSynced(
             "container_pointer_preloads_cache.json", () => new(), mutable: true, out IDisposable? handle);

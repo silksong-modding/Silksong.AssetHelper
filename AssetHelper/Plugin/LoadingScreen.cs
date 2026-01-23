@@ -1,20 +1,13 @@
-﻿using UnityEngine;
+﻿using Silksong.AssetHelper.Plugin;
+using UnityEngine;
 using UnityEngine.UI;
 
-internal class LoadingBar : MonoBehaviour
+internal class LoadingScreen : MonoBehaviour, ILoadingScreen
 {
     private RectTransform _fillImageRect;
     private GameObject _canvasObject;
     private CanvasGroup _canvasGroup;
     private Text _statusText;
-
-    public static LoadingBar Create()
-    {
-        GameObject go = new("AssetHelper LoadingBar");
-        LoadingBar ret = go.AddComponent<LoadingBar>();
-        go.SetActive(true);
-        return ret;
-    }
 
     void Awake()
     {

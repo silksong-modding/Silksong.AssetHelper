@@ -11,7 +11,7 @@ namespace Silksong.AssetHelper.Plugin.Tasks;
 
 internal class BundleDepsPrecompute : BaseStartupTask
 {
-    public override IEnumerator Run(LoadingBar loadingBar)
+    public override IEnumerator Run(ILoadingScreen loadingScreen)
     {
         if (AssetRequestAPI.Request.NonSceneAssets.Count == 0)
         {
@@ -19,7 +19,7 @@ internal class BundleDepsPrecompute : BaseStartupTask
             yield break;
         }
 
-        loadingBar.SetText(LanguageKeys.COMPUTING_BUNDLE_DEPS.GetLocalized());
+        loadingScreen.SetText(LanguageKeys.COMPUTING_BUNDLE_DEPS.GetLocalized());
         yield return null;
         AssetHelperPlugin.InstanceLogger.LogInfo("Computing bundle deps");
 
@@ -29,7 +29,7 @@ internal class BundleDepsPrecompute : BaseStartupTask
             .BundleKeys!.Keys.Where(x => !x.Contains("scenes_scenes_scenes"))
             .ToList();
 
-        loadingBar.SetProgress(0);
+        loadingScreen.SetProgress(0);
         int ct = 0;
         int misses = 0;
 
@@ -39,7 +39,7 @@ internal class BundleDepsPrecompute : BaseStartupTask
 
             ct++;
 
-            loadingBar.SetProgress((float)ct / (float)bundles.Count);
+            loadingScreen.SetProgress((float)ct / (float)bundles.Count);
 
             if (!cacheHit)
             {
