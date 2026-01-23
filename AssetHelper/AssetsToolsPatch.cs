@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Buffers;
 using System.IO;
+using System.Reflection;
 using AssetsTools.NET;
 using AssetsTools.NET.Extra;
+using Mono.Cecil.Cil;
 using MonoMod.Cil;
 using MonoMod.RuntimeDetour;
 
@@ -11,19 +13,74 @@ namespace Silksong.AssetHelper;
 // TODO - remove this when assetstools.net gets updated
 internal static class AssetsToolsPatch
 {
+    private static readonly MethodInfo _readNextMethod 
+        = typeof(AssetTypeValueIterator).GetMethod(nameof(AssetTypeValueIterator.ReadNext));
+
     private static ILHook? _atIteratorHook;
+    private static ILHook? _atInteratorHook2;
     private static Hook? _atCopyHook;
 
     public static void Init()
     {
         _atIteratorHook = new ILHook(
-            typeof(AssetTypeValueIterator).GetMethod(nameof(AssetTypeValueIterator.ReadNext)),
+            _readNextMethod,
             PatchATVI
         );
+
+        _atInteratorHook2 = new ILHook(
+            _readNextMethod,
+            PatchATVI2
+        );
+
         _atCopyHook = new Hook(
             typeof(Net35Polyfill).GetMethod(nameof(Net35Polyfill.CopyToCompat)),
             PatchC2C
         );
+    }
+
+    /// <summary>
+    /// See https://github.com/nesrak1/AssetsTools.NET/commit/57357f193fa4532c31b7569d4b0f9b74d04d12e8
+    /// </summary>
+    private static void PatchATVI2(ILContext il)
+    {
+        ILCursor cursor = new(il);
+
+        Instruction? newTarget = null;
+        Instruction? source = null;
+
+        if (!cursor.TryGotoNext(
+            MoveType.Before,
+            i => i.MatchLdloc(0),
+            i => i.MatchCallOrCallvirt(out _),
+            i => i.MatchCallvirt<AssetTypeTemplateField>($"get_{nameof(AssetTypeTemplateField.IsArray)}"),
+            i => { source = i; return i.MatchBrfalse(out _); },
+
+            i => i.MatchLdloc(0),
+            i => i.MatchCallOrCallvirt(out _),
+            i => i.MatchCallvirt<AssetTypeTemplateField>($"get_{nameof(AssetTypeTemplateField.ValueType)}"),
+            i => i.MatchLdcI4((int)AssetValueType.ByteArray),
+            i => i.MatchBeq(out _),
+
+            i => { newTarget = i; return i.MatchLdloc(0); },
+            i => i.MatchCallOrCallvirt(out _),
+            i => i.MatchCallvirt<AssetTypeTemplateField>($"get_{nameof(AssetTypeTemplateField.IsAligned)}"),
+            i => i.MatchBrfalse(out _)
+            ))
+        {
+            AssetHelperPlugin.InstanceLogger.LogWarning($"ATVI IL hook 2: failed to find instrs");
+            return;
+        }
+
+        if (source == null || newTarget == null)
+        {
+            AssetHelperPlugin.InstanceLogger.LogWarning($"ATVI IL hook 2: failed to assign source/target");
+            return;
+        }
+
+        cursor.Goto(newTarget);
+        ILLabel label = cursor.MarkLabel();
+
+        source.Operand = label;
     }
 
     /// <summary>

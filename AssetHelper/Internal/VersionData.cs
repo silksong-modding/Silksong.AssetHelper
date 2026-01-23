@@ -1,5 +1,5 @@
-﻿using System;
-using System.Reflection;
+﻿using HarmonyLib;
+using System;
 
 namespace Silksong.AssetHelper.Internal;
 
@@ -20,12 +20,11 @@ internal static class VersionData
     private static string? _silksongVersion;
 
     private static string GetSilksongVersion() =>
-        typeof(Constants)
-            .GetField(
-                nameof(Constants.GAME_VERSION),
-                BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Static
-            )
-            ?.GetRawConstantValue() as string
+        AccessTools.Field(
+            typeof(Constants),
+            nameof(Constants.GAME_VERSION)
+        )
+        ?.GetRawConstantValue() as string
         ?? "UNKNOWN";
 
     /// <summary>

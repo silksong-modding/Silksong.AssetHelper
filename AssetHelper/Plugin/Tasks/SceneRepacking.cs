@@ -207,13 +207,6 @@ internal class SceneRepacking : BaseStartupTask
             return true;
         }
 
-        // Technically we can't touch this bundle until AT.NET gets updated (or I write another IL hook)
-        // but this bundle isn't useful anyway
-        if (bundleName.Contains("audioobjects"))
-        {
-            return true;
-        }
-
         bundlePath = Path.Combine(AssetPaths.BundleFolder, bundleName);
         return true;
     }
