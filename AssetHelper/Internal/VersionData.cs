@@ -39,7 +39,7 @@ internal static class VersionData
     ///
     /// This should be increased to invalidate cached repacked bundles and catalogs.
     /// </summary>
-    internal static Version EarliestAcceptableSceneRepackVersion { get; } = Version.Parse("1.0.1");
+    internal static Version EarliestAcceptableSceneRepackVersion { get; } = Version.Parse("1.1.0");
 
     /// <summary>
     /// The earliest acceptable plugin version for the non-scene catalog.

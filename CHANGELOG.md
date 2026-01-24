@@ -5,6 +5,8 @@ with certain assets.
 
 Avoid hanging the game while building large catalogs.
 
+Show slightly more information while repacking.
+
 ### v1.0.2
 
 Fix behaviour if users have unrecognized asset bundles in their
