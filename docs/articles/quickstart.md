@@ -52,6 +52,9 @@ public class FleaSignPlugin : BaseUnityPlugin
     void Awake()
     {
         // Constructing this object during Awake means it is automatically requested to be repacked.
+        // NOTE - if you construct this object after Awake, it will not be loadable unless the
+        // request has been made during Awake, either through the AssetRequestAPI or by
+        // constructing a different managed asset instance with the same parameters.
         _fleaSign = ManagedAsset<GameObject>.FromSceneAsset(
             // Note - scene names are case-insensitive, this could also be Bone_02
             sceneName: "bone_02",

@@ -119,6 +119,7 @@ different scenarios in which you may want to test your asset.
 * Load the asset and then change scene
 * Load the asset and then return to menu
 * Load the asset, return to menu, re-enter game and then spawn the asset again
+* Test on a fresh mod profile where you've only installed AssetHelper and your mod (plus dependencies)
 
 Warnings of the following types typically indicate a dependency issue;
 see <xref:DepsArticle> for more information.

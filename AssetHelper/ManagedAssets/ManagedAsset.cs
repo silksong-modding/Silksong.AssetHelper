@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Silksong.AssetHelper.Plugin;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
@@ -59,6 +60,15 @@ public class ManagedAsset<T>(string key) : IManagedAsset
         {
             AssetRequestAPI.RequestSceneAsset(sceneName, objPath);
         }
+        else
+        {
+            if (!AssetRequestAPI.Request.SceneAssets.TryGetValue(sceneName.ToLowerInvariant(), out HashSet<string> objNames)
+                || !objNames.Contains(objPath))
+            {
+                AssetHelperPlugin.InstanceLogger.LogWarning(
+                    $"Constructing managed asset from scene {sceneName}, {objPath} after Awake may not work unless the asset has been requested first!");
+            }
+        }
 
         string key = CatalogKeys.GetKeyForSceneAsset(sceneName, objPath);
         return new(key);
@@ -80,6 +90,8 @@ public class ManagedAsset<T>(string key) : IManagedAsset
         {
             AssetRequestAPI.RequestNonSceneAsset<T>(bundleName, assetName);
         }
+        // TODO - include log message if this is constructed too late and the key isn't in the request;
+        // this requires more complex normalization so I am skipping for now
 
         string key = CatalogKeys.GetKeyForNonSceneAsset(assetName);
         return new(key);
