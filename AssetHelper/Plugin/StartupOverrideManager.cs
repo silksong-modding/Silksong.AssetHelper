@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using MonoDetour.HookGen;
 using Silksong.AssetHelper.Core;
+using Silksong.AssetHelper.Plugin.LoadingPage;
 using Silksong.AssetHelper.Plugin.Tasks;
 using UnityEngine;
 

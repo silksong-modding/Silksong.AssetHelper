@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Silksong.AssetHelper.Plugin;
+namespace Silksong.AssetHelper.Plugin.LoadingPage;
 
 /// <summary>
 /// Interface defining the contract for a loading screen.

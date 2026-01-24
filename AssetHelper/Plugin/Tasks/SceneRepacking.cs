@@ -17,6 +17,7 @@ using Silksong.AssetHelper.Core;
 using AssetHelperLib.PreloadTable;
 using CPPCache = System.Collections.Generic.Dictionary<string, AssetHelperLib.PreloadTable.ContainerPointerPreloadsBundleData>;
 using System;
+using Silksong.AssetHelper.Plugin.LoadingPage;
 
 namespace Silksong.AssetHelper.Plugin.Tasks;
 

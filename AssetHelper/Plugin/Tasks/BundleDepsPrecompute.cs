@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using Silksong.AssetHelper.Core;
 using Silksong.AssetHelper.Internal;
+using Silksong.AssetHelper.Plugin.LoadingPage;
 
 namespace Silksong.AssetHelper.Plugin.Tasks;
 

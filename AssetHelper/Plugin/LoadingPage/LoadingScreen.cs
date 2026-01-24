@@ -1,6 +1,7 @@
-﻿using Silksong.AssetHelper.Plugin;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
+
+namespace Silksong.AssetHelper.Plugin.LoadingPage;
 
 internal class LoadingScreen : MonoBehaviour, ILoadingScreen
 {
