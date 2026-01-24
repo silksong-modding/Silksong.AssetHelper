@@ -46,8 +46,11 @@ internal static class CatalogUtils
     /// </summary>
     /// <param name="locationEntries">List of entries to serialize into the catalog</param>
     /// <param name="catalogId">Unique name of the catalog.</param>
-    /// <returns>A path to the catalog bin.</returns>
-    public static string WriteCatalog(
+    /// <returns>
+    /// An enumerator that yields the number of location entries that have been serialized.
+    /// This enumerator must be consumed in order to finish serialization.
+    /// </returns>
+    public static IEnumerator<int> WriteCatalogRoutine(
         List<ContentCatalogDataEntry> locationEntries,
         string catalogId
     )
@@ -68,7 +71,12 @@ internal static class CatalogUtils
             catalogSerializer
         );
 
-        catalogSerializer.Serialize(catalogWriter, ccd);
+        using IEnumerator<int> serializationRoutine = catalogSerializer.SerializeRoutine(catalogWriter, ccd);
+        while (serializationRoutine.MoveNext())
+        {
+            yield return serializationRoutine.Current;
+        }
+        
         byte[] catalogBytes = catalogWriter.SerializeToByteArray();
 
         Hash128 outhash = Hash(catalogBytes);
@@ -79,7 +87,5 @@ internal static class CatalogUtils
             Path.Combine(AssetPaths.CatalogFolder, $"{catalogId}.hash"),
             outhash.ToString()
         );
-
-        return catalogBinPath;
     }
 }

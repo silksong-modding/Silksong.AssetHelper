@@ -164,7 +164,7 @@ internal class CustomCatalogBuilder
 
     public void AddCatalogEntry(ContentCatalogDataEntry entry) => _addedEntries.Add(entry);
 
-    public string Build(string? catalogId = null)
+    public IEnumerator<float> BuildRoutine(string? catalogId = null)
     {
         catalogId ??= _primaryKeyPrefix;
 
@@ -174,8 +174,11 @@ internal class CustomCatalogBuilder
             .. _addedEntries,
         ];
 
-        string catalogPath = CatalogUtils.WriteCatalog(allEntries, catalogId);
+        using IEnumerator<int> serializationRoutine = CatalogUtils.WriteCatalogRoutine(allEntries, catalogId);
 
-        return catalogPath;
+        while (serializationRoutine.MoveNext())
+        {
+            yield return (float)serializationRoutine.Current / allEntries.Count;
+        }
     }
 }

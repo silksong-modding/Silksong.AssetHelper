@@ -26,7 +26,7 @@ internal class NonSceneCatalog : BaseStartupTask
 
     private IEnumerator CreateAndLoadCatalog(ILoadingScreen bar)
     {
-        IEnumerator nonSceneCatalogCreate = CreateNonSceneAssetCatalog();
+        IEnumerator nonSceneCatalogCreate = CreateNonSceneAssetCatalog(bar);
         bar.SetText(LanguageKeys.BUILDING_NON_SCENE.GetLocalized());
         yield return null;
 
@@ -49,7 +49,7 @@ internal class NonSceneCatalog : BaseStartupTask
         yield return null;
     }
 
-    private IEnumerator CreateNonSceneAssetCatalog()
+    private IEnumerator CreateNonSceneAssetCatalog(ILoadingScreen screen)
     {
         string catalogMetadataPath = Path.ChangeExtension(NonSceneCatalogPath, ".json");
 
@@ -105,7 +105,20 @@ internal class NonSceneCatalog : BaseStartupTask
         yield return null;
 
         AssetHelperPlugin.InstanceLogger.LogInfo($"Writing catalog");
-        cbr.Build();
+        
+        int count = 0;
+        using IEnumerator<float> serializationRoutine = cbr.BuildRoutine();
+        while (serializationRoutine.MoveNext())
+        {
+            float progress = serializationRoutine.Current;
+            count++;
+            if (count % 10 == 0)
+            {
+                screen.SetProgress(progress);
+                yield return null;
+            }
+        }
+
         metadata.SerializeToFile(catalogMetadataPath);
     }
 }
