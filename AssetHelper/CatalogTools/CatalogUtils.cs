@@ -71,7 +71,7 @@ internal static class CatalogUtils
             catalogSerializer
         );
 
-        IEnumerator<int> serializationRoutine = catalogSerializer.SerializeRoutine(catalogWriter, ccd);
+        using IEnumerator<int> serializationRoutine = catalogSerializer.SerializeRoutine(catalogWriter, ccd);
         while (serializationRoutine.MoveNext())
         {
             yield return serializationRoutine.Current;

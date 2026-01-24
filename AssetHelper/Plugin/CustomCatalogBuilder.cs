@@ -164,7 +164,7 @@ internal class CustomCatalogBuilder
 
     public void AddCatalogEntry(ContentCatalogDataEntry entry) => _addedEntries.Add(entry);
 
-    public IEnumerator<float> BuildRoutine(string? catalogId = null, Action<float>? progressCallback = null)
+    public IEnumerator<float> BuildRoutine(string? catalogId = null)
     {
         catalogId ??= _primaryKeyPrefix;
 
@@ -174,7 +174,7 @@ internal class CustomCatalogBuilder
             .. _addedEntries,
         ];
 
-        IEnumerator<int> serializationRoutine = CatalogUtils.WriteCatalogRoutine(allEntries, catalogId);
+        using IEnumerator<int> serializationRoutine = CatalogUtils.WriteCatalogRoutine(allEntries, catalogId);
 
         while (serializationRoutine.MoveNext())
         {

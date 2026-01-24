@@ -339,7 +339,7 @@ internal class SceneRepacking : BaseStartupTask
         sw = Stopwatch.StartNew();
 
         int count = 0;
-        IEnumerator<float> serializationRoutine = cbr.BuildRoutine();
+        using IEnumerator<float> serializationRoutine = cbr.BuildRoutine();
         while (serializationRoutine.MoveNext())
         {
             float progress = serializationRoutine.Current;

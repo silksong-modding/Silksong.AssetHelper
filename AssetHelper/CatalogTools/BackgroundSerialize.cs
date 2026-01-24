@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Silksong.AssetHelper.Internal;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine.AddressableAssets.ResourceLocators;
 using UnityEngine.ResourceManagement.Util;
@@ -9,9 +10,13 @@ namespace Silksong.AssetHelper.CatalogTools;
 internal static class BackgroundSerialize
 {
     /// <summary>
-    /// Code copy-pasted from ContentCatalogData.Serializer.Serialize with yields added
+    /// Code copy-pasted from ContentCatalogData.Serializer.Serialize in ILSpy, with yields added.
+    /// 
+    /// After the n'th entry is serialized (1-indexed), yields n. The slow part of this function
+    /// is serializing catalog entries with many dependencies.
+    /// 
+    /// To serialize immediately, call <see cref="EnumeratorExtensions.Consume"/>.
     /// </summary>
-    /// <returns></returns>
     public static IEnumerator<int> SerializeRoutine(
         this ContentCatalogData.Serializer self,
         BinaryStorageBuffer.Writer writer,
