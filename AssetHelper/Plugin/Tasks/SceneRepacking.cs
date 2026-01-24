@@ -337,7 +337,20 @@ internal class SceneRepacking : BaseStartupTask
         yield return null;
 
         sw = Stopwatch.StartNew();
-        cbr.Build();
+
+        int count = 0;
+        IEnumerator<float> serializationRoutine = cbr.BuildRoutine();
+        while (serializationRoutine.MoveNext())
+        {
+            float progress = serializationRoutine.Current;
+            count++;
+            if (count%10 == 0)
+            {
+                screen.SetProgress(progress);
+                yield return null;
+            }
+        }
+
         sw.Stop();
         AssetHelperPlugin.InstanceLogger.LogInfo($"Finished writing catalog in {sw.ElapsedMilliseconds} ms");
 

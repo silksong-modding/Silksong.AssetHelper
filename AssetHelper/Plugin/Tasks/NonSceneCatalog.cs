@@ -105,7 +105,12 @@ internal class NonSceneCatalog : BaseStartupTask
         yield return null;
 
         AssetHelperPlugin.InstanceLogger.LogInfo($"Writing catalog");
-        cbr.Build();
+        IEnumerator<float> serializationRoutine = cbr.BuildRoutine();
+        while (serializationRoutine.MoveNext())
+        {
+            // Consume the enumerator, but no real need to yield here
+        }
+
         metadata.SerializeToFile(catalogMetadataPath);
     }
 }
