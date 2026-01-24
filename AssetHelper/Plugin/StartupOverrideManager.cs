@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using MonoDetour.HookGen;
 using Silksong.AssetHelper.Core;
+using Silksong.AssetHelper.Plugin.LoadingPage;
 using Silksong.AssetHelper.Plugin.Tasks;
 using UnityEngine;
 
@@ -42,13 +43,13 @@ internal static class StartupOverrideManager
         // This should already be the case, but we should check just in case it matters.
         yield return new WaitUntil(() => AddressablesData.IsAddressablesLoaded);
 
-        LoadingBar bar = LoadingBar.Create();
+        LoadingScreen screen = LoadingScreenExtensions.Create<LoadingScreen>();
 
         bool failed = false;
         foreach (BaseStartupTask task in _tasks)
         {
             // We have to enumerate like this because you can't yield from within a try-catch block
-            IEnumerator enumerator = task.Run(bar);
+            IEnumerator enumerator = task.Run(screen);
 
             while (true)
             {
@@ -86,7 +87,7 @@ internal static class StartupOverrideManager
             AssetHelperPlugin.InstanceLogger.LogInfo($"{nameof(AssetHelper)} prep complete!");
             AssetRequestAPI.AfterBundleCreationComplete.Activate();
             _startupRun = true;
-            bar.SetProgress(1);
+            screen.SetProgress(1);
         }
         else
         {
@@ -96,7 +97,7 @@ internal static class StartupOverrideManager
         }
 
         // Even if there was an error, still let them into the game normally
-        UObject.Destroy(bar);
+        UObject.Destroy(screen);
         yield return null;
 
         yield return original;

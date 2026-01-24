@@ -1,5 +1,6 @@
 ﻿using Silksong.AssetHelper.Core;
 using Silksong.AssetHelper.Internal;
+using Silksong.AssetHelper.Plugin.LoadingPage;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -18,12 +19,12 @@ internal class NonSceneCatalog : BaseStartupTask
     // Path to the non-scene catalog .bin file
     private static string NonSceneCatalogPath => Path.Combine(AssetPaths.CatalogFolder, $"{CatalogKeys.NonSceneCatalogId}.bin");
 
-    public override IEnumerator Run(LoadingBar loadingBar)
+    public override IEnumerator Run(ILoadingScreen loadingScreen)
     {
-        return CreateAndLoadCatalog(loadingBar);
+        return CreateAndLoadCatalog(loadingScreen);
     }
 
-    private IEnumerator CreateAndLoadCatalog(LoadingBar bar)
+    private IEnumerator CreateAndLoadCatalog(ILoadingScreen bar)
     {
         IEnumerator nonSceneCatalogCreate = CreateNonSceneAssetCatalog();
         bar.SetText(LanguageKeys.BUILDING_NON_SCENE.GetLocalized());

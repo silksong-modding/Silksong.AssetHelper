@@ -17,6 +17,7 @@ using Silksong.AssetHelper.Core;
 using AssetHelperLib.PreloadTable;
 using CPPCache = System.Collections.Generic.Dictionary<string, AssetHelperLib.PreloadTable.ContainerPointerPreloadsBundleData>;
 using System;
+using Silksong.AssetHelper.Plugin.LoadingPage;
 
 namespace Silksong.AssetHelper.Plugin.Tasks;
 
@@ -39,12 +40,12 @@ internal class SceneRepacking : BaseStartupTask
 
     private bool _didRepack = false;
 
-    public override IEnumerator Run(LoadingBar loadingBar)
+    public override IEnumerator Run(ILoadingScreen loadingScreen)
     {
-        return RepackAndCatalogScenes(loadingBar);
+        return RepackAndCatalogScenes(loadingScreen);
     }
 
-    private IEnumerator RepackAndCatalogScenes(LoadingBar bar)
+    private IEnumerator RepackAndCatalogScenes(ILoadingScreen bar)
     {
         IEnumerator repack = PrepareAndRun(bar);
 
@@ -56,12 +57,12 @@ internal class SceneRepacking : BaseStartupTask
             // Yield after each repack op is done
             yield return null;
         }
-        bar.SetProgress(1f);
+        bar.Reset();
 
         bar.SetText(LanguageKeys.BULDING_SCENE.GetLocalized());
         yield return null;
 
-        IEnumerator catalogCreate = CreateSceneAssetCatalog(_repackData);
+        IEnumerator catalogCreate = CreateSceneAssetCatalog(_repackData, bar);
         while (catalogCreate.MoveNext())
         {
             yield return null;
@@ -83,7 +84,7 @@ internal class SceneRepacking : BaseStartupTask
         yield return null;
     }
 
-    private IEnumerator PrepareAndRun(LoadingBar bar)
+    private IEnumerator PrepareAndRun(ILoadingScreen bar)
     {
         Prepare();
 
@@ -214,10 +215,10 @@ internal class SceneRepacking : BaseStartupTask
     /// <summary>
     /// Run the repacking procedure so that by the end, anything in the request which could be repacked has been.
     /// </summary>
-    private IEnumerator RunRepacking(LoadingBar bar)
+    private IEnumerator RunRepacking(ILoadingScreen bar)
     {
         CachedObject<CPPCache> SyncedCppCache = CachedObject<CPPCache>.CreateSynced(
-            "container_pointer_preloads_cache.json", () => new(), mutable: true, out IDisposable? handle);
+            "container_pointer_preloads_cache.json", () => new(), mutable: true, out IDisposable? cppSyncHandle);
 
         ContainerPointerPreloads cpp = new(ResolveCab) { Cache = SyncedCppCache.Value };
         PreloadTableResolver resolver = new([new DefaultPreloadTableResolver(), cpp]);
@@ -234,6 +235,7 @@ internal class SceneRepacking : BaseStartupTask
         {
             Stopwatch sw = Stopwatch.StartNew();
             AssetHelperPlugin.InstanceLogger.LogInfo($"Repacking {request.Count} objects in scene {scene}");
+            bar.SetSubtext(scene);
 
             RepackingParams rParams = new()
             {
@@ -270,10 +272,11 @@ internal class SceneRepacking : BaseStartupTask
         mainSw.Stop();
         AssetHelperPlugin.InstanceLogger.LogInfo($"Finished scene repacking after {mainSw.ElapsedMilliseconds} ms");
 
-        handle?.Dispose();
+        bar.Reset();
+        cppSyncHandle?.Dispose();
     }
 
-    private IEnumerator CreateSceneAssetCatalog(RepackDataCollection data)
+    private IEnumerator CreateSceneAssetCatalog(RepackDataCollection data, ILoadingScreen screen)
     {
         string catalogMetadataPath = Path.ChangeExtension(SceneCatalogPath, ".json");
 
@@ -329,7 +332,8 @@ internal class SceneRepacking : BaseStartupTask
 
         sw.Stop();
         AssetHelperPlugin.InstanceLogger.LogInfo($"Prepared catalog in {sw.ElapsedMilliseconds} ms");
-        
+
+        screen.SetText(LanguageKeys.WRITING_SCENE.GetLocalized());
         yield return null;
 
         sw = Stopwatch.StartNew();

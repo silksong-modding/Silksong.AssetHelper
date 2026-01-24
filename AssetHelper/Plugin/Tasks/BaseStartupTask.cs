@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using Silksong.AssetHelper.Plugin.LoadingPage;
+using System.Collections;
 
 namespace Silksong.AssetHelper.Plugin.Tasks;
 
@@ -11,6 +12,6 @@ internal abstract class BaseStartupTask
     /// Run the startup task. The objects yielded by this enumerator will
     /// be passed through to Unity.
     /// </summary>
-    /// <param name="loadingBar">A loading bar.</param>
-    public abstract IEnumerator Run(LoadingBar loadingBar);
+    /// <param name="loadingScreen">A loading screen.</param>
+    public abstract IEnumerator Run(ILoadingScreen loadingScreen);
 }
