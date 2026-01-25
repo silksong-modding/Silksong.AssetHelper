@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using AssetHelperLib.BundleTools;
+using AssetHelperLib.Repacking;
 using AssetsTools.NET.Extra;
 using BepInEx.Logging;
 using Silksong.AssetHelper.Core;
@@ -20,6 +21,11 @@ using NameListLookup = System.Collections.Generic.Dictionary<
     string,
     System.Collections.Generic.List<string>
 >;
+using RepackDataCollection = System.Collections.Generic.Dictionary<
+    string,
+    Silksong.AssetHelper.Plugin.RepackedSceneBundleData
+>;
+
 
 namespace Silksong.AssetHelper.Dev;
 
@@ -251,13 +257,14 @@ public static class DebugTools
             .Value;
 
         List<string> names = [];
+        List<string> repackedScenes = [];
         List<string> unknown = [];
 
         foreach (string bunName in AssetBundle.GetAllLoadedAssetBundles().Select(b => b.name))
         {
             if (_bundleNameLookup.TryGetValue(bunName, out string name))
             {
-                names.Add(name);
+                names.Add(name + ".bundle");
             }
             else
             {
@@ -265,7 +272,47 @@ public static class DebugTools
             }
         }
 
-        return new(names, unknown);
+        // For each unknown bundle name, check if it's a repacked scene
+        if (unknown.Count > 0)
+        {
+            _repackBundleNameLookup ??= CreateRepackBundleNameLookup();
+
+            List<string> newUnknown = [];
+            foreach (string bundleName in unknown)
+            {
+                if (_repackBundleNameLookup.TryGetValue(bundleName, out string sceneName))
+                {
+                    repackedScenes.Add(sceneName);
+                }
+                else
+                {
+                    newUnknown.Add(bundleName);
+                }
+            }
+            unknown = newUnknown;
+        }
+
+        return new(names, repackedScenes, unknown);
+    }
+
+    private static Dictionary<string, string>? _repackBundleNameLookup = null;
+
+    private static Dictionary<string, string> CreateRepackBundleNameLookup()
+    {
+        Dictionary<string, string> lookup = [];
+
+        if (JsonExtensions.TryLoadFromFile(AssetPaths.RepackedSceneBundleMetadataPath, out RepackDataCollection? repackData))
+        {
+            foreach (RepackedSceneBundleData sceneData in repackData.Values)
+            {
+                if (sceneData.Data?.BundleName != null)
+                {
+                    lookup[sceneData.Data.BundleName] = sceneData.SceneName;
+                }
+            }
+        }
+
+        return lookup;
     }
 
     /// <summary>
@@ -280,15 +327,17 @@ public static class DebugTools
     /// <summary>
     /// Class encapsulating the names of loaded asset bundles.
     /// </summary>
-    public class LoadedBundleNames(List<string> names, List<string> unknown)
+    public class LoadedBundleNames(List<string> names, List<string> repacked, List<string> unknown)
     {
         /// <summary>
         /// Readable names given as paths relative to the bundle base dir.
         /// </summary>
         public List<string> VanillaBundleNames = names;
 
-        // TODO - figure out a sensible way to include repacked bundles
-        // public List<string> RepackedSceneBundles = repacked;
+        /// <summary>
+        /// Names of scenes whose repacked bundle is loaded.
+        /// </summary>
+        public List<string> RepackedSceneBundles = repacked;
 
         /// <summary>
         /// Internal names of bundles that could not be found in the bundle base dir (e.g. modded bundles).
