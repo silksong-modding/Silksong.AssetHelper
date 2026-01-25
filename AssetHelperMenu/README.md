@@ -13,4 +13,3 @@ Additional notes:
 Paths in here are paths in the bundle and are the paths
 needed to request assets with AssetHelper; these may not match the paths in the scene
 if changes have been made at runtime.
-

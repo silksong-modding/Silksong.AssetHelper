@@ -62,6 +62,9 @@ public partial class AssetHelperMenuPlugin : BaseUnityPlugin, IModMenuCustomMenu
                     DumpGameObjectPaths(USceneManager.GetSceneAt(i).name);
                 }
             });
+
+            // TODO - add a button to dump a scene by name - blocked by ModMenu needing a text entry field
+
             PaginatedMenuScreen sceneSubpage = sceneSubpageBuilder.Build();
 
             builder.AddSubpageButton(sceneSubpage);
