@@ -269,6 +269,15 @@ public static class DebugTools
     }
 
     /// <summary>
+    /// Call <see cref="GetLoadedBundleNames"/>, and dump the result to a file in the debug data folder.
+    /// </summary>
+    public static void DumpLoadedBundleNames()
+    {
+        LoadedBundleNames names = GetLoadedBundleNames();
+        names.SerializeToFile(Path.Combine(DebugDataDir, "loaded_bundle_names.json"));
+    }
+
+    /// <summary>
     /// Class encapsulating the names of loaded asset bundles.
     /// </summary>
     public class LoadedBundleNames(List<string> names, List<string> unknown)
@@ -300,7 +309,11 @@ public static class DebugTools
         string outPath = Path.Combine(DebugDataDir, name);
 
         AssetsManager mgr = BundleUtils.CreateDefaultManager();
-        BundleFileInstance bunInst = mgr.LoadBundleFile(AssetPaths.GetScenePath(sceneName));
+        string scenePath = AssetPaths.GetScenePath(sceneName);
+        using MemoryStream ms = new(File.ReadAllBytes(scenePath));
+        BundleFileInstance bunInst = mgr.LoadBundleFile(ms, scenePath);
+        
+        
         if (!mgr.TryFindAssetsFiles(bunInst, out BundleUtils.SceneBundleInfo sceneBundleInfo))
         {
             return;

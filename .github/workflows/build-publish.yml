@@ -114,6 +114,13 @@ jobs:
           --config-path thunderstore/assethelper.toml \
           --file thunderstore/dist/*-AssetHelper-*.zip \
           --token $THUNDERSTORE_API_KEY
+    - name: Publish AssetHelperMenu to Thunderstore
+      if: env.THUNDERSTORE_API_KEY != ''
+      run: |-
+        dotnet tcli publish \
+          --config-path thunderstore/assethelpermenu.toml \
+          --file thunderstore/dist/*-AssetHelperMenu-*.zip \
+          --token $THUNDERSTORE_API_KEY
 
   # Publish to NuGet so that other mods can depend on it in CI
   release-nuget:
