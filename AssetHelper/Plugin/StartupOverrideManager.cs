@@ -25,7 +25,7 @@ internal static class StartupOverrideManager
 
     private static void PrependStartManagerStart(StartManager self, ref IEnumerator returnValue)
     {
-        if (!_startupRun)
+        if (!_startupRun && AssetRequestAPI.Request.AnyRequestMade)
         {
             returnValue = WrapStartManagerStart(self, returnValue);
         }
