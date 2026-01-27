@@ -44,7 +44,7 @@ jobs:
     - name: Check status 1
       run: tree thunderstore
     - name: Pack
-      run: dotnet pack -o nuget/
+      run: dotnet pack -o nuget/ --no-build -c Release
     - name: Get Version
       id: version
       run: |-
