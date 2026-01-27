@@ -108,6 +108,29 @@ internal class LoadingScreen : MonoBehaviour, ILoadingScreen
             subtextRect.anchoredPosition = new Vector2(0, -45);
         }
 
+#if DEBUG
+        {
+            GameObject memTextObj = new("MemText");
+            memTextObj.transform.SetParent(_canvasObject.transform);
+            Text _memText = memTextObj.AddComponent<Text>();
+
+            _memText.font = Resources.GetBuiltinResource<Font>("Arial.ttf");
+            _memText.text = string.Empty;
+            _memText.fontSize = 20;
+            _memText.alignment = TextAnchor.MiddleCenter;
+            _memText.color = Color.white;
+
+            RectTransform memtextRect = _memText.rectTransform;
+            memtextRect.anchorMin = new Vector2(0.5f, 0.5f);
+            memtextRect.anchorMax = new Vector2(0.5f, 0.5f);
+            memtextRect.pivot = new Vector2(0.5f, 1f);
+            memtextRect.sizeDelta = new Vector2(800, 100);
+            memtextRect.anchoredPosition = new Vector2(0, -90);
+
+            memTextObj.AddComponent<MemoryWatcher>();
+        }
+#endif
+
         // For testing
         _statusText.text = "Loading...";
     }
