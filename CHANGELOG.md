@@ -1,3 +1,8 @@
+### v1.1.1
+
+Fix bug where users with accents in their username could not load
+scene assets.
+
 ### v1.1.0
 
 More intelligent asset dependency resolution, fixing various crashes
