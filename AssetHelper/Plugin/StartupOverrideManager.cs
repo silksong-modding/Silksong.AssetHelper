@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Buffers;
 using System.Collections;
 using System.Collections.Generic;
+using AssetHelperLib.IO;
 using MonoDetour.HookGen;
 using Silksong.AssetHelper.Core;
 using Silksong.AssetHelper.Plugin.LoadingPage;
@@ -42,6 +44,9 @@ internal static class StartupOverrideManager
     {
         // This should already be the case, but we should check just in case it matters.
         yield return new WaitUntil(() => AddressablesData.IsAddressablesLoaded);
+
+        // Assign the shared array pool for IO at the start of the procedure
+        RentedFileArray.Pool = ArrayPool<byte>.Create(250 * 1024 * 1024, 5);
 
         LoadingScreen screen = LoadingScreenExtensions.Create<LoadingScreen>();
 
@@ -98,6 +103,10 @@ internal static class StartupOverrideManager
 
         // Even if there was an error, still let them into the game normally
         UObject.Destroy(screen);
+
+        // Clear the pool now that it's no longer in use; in theory the GC can reclaim it/when if it wants.
+        RentedFileArray.Pool = null;
+        
         yield return null;
 
         yield return original;

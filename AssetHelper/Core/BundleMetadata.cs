@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using AssetHelperLib.IO;
 using AssetsTools.NET;
 using AssetsTools.NET.Extra;
 using Silksong.AssetHelper.Internal;
@@ -113,8 +114,8 @@ public static class BundleMetadata
 
         AssetsManager mgr = new();
         string sceneBundlePath = Path.Combine(AssetPaths.BundleFolder, bundleFile);
-        using MemoryStream ms = new(File.ReadAllBytes(sceneBundlePath));
-        BundleFileInstance bun = mgr.LoadBundleFile(ms, sceneBundlePath);
+        using RentedFileArray rfa = new(sceneBundlePath);
+        BundleFileInstance bun = mgr.LoadBundleFile(rfa.Stream, sceneBundlePath);
 
         AssetsFileInstance afileInst = mgr.LoadAssetsFileFromBundle(bun, 0, false);
         AssetsFile afile = afileInst.file;
