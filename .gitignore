@@ -1,5 +1,6 @@
 SilksongPath.props
 thunderstore/temp
+thunderstore/menu_temp
 thunderstore/dist
 
 ## Ignore Visual Studio temporary files, build results, and
