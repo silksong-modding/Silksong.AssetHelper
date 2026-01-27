@@ -41,6 +41,8 @@ jobs:
         dotnet-version: 10.x
     - name: Build
       run: dotnet build -c Release --verbosity normal
+    - name: Check status 1
+      run: tree thunderstore
     - name: Pack
       run: dotnet pack -o nuget/
     - name: Get Version
@@ -49,7 +51,7 @@ jobs:
         VERSION=$(dotnet build AssetHelper/AssetHelper.csproj -getProperty:Version)
         echo Version is $VERSION
         echo "version=$VERSION" >> $GITHUB_OUTPUT
-    - name: Check status
+    - name: Check status 2
       run: tree thunderstore
     - name: Upload thunderstore artifact
       uses: actions/upload-artifact@v6
