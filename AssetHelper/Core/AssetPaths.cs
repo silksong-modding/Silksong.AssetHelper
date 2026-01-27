@@ -72,7 +72,9 @@ public static class AssetPaths
     /// <summary>
     /// Directory storing repacked scenes.
     /// </summary>
-    internal static string RepackedSceneBundleDir =>
+    /// <remarks>This is public so that it can be accessed by Addressables; it should probably not be used
+    /// by user code.</remarks>
+    public static string RepackedSceneBundleDir =>
         Path.Combine(CacheDirectory, "repacked_scenes").CreateIfNeeded();
 
     /// <summary>

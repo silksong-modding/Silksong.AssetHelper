@@ -35,8 +35,11 @@ public static class AddressablesData
 
     /// <summary>
     /// Mapping from bundle file name to the key Addressables uses to load it.
+    /// 
+    /// The keys in this dictionary are paths relative to the bundle directory, with no .bundle suffix.
+    /// The values are strings that can be used as primary keys in Addressables.
     ///
-    /// This may change when the game updates but does not otherwise.
+    /// The values may change when the game updates but does not otherwise.
     /// </summary>
     public static IReadOnlyDictionary<string, string>? BundleKeys =>
         _bundleKeys == null ? null : new ReadOnlyDictionary<string, string>(_bundleKeys);

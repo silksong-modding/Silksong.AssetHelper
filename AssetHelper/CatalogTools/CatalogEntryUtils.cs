@@ -20,11 +20,15 @@ internal static class CatalogEntryUtils
     /// <param name="internalBundleName">The name of the AssetBundle asset in the bundle.</param>
     /// <param name="dependencyKeys">List of all the primary keys of the bundle dependencies.
     /// Note: All keys found in the dependencies must have their corresponding entry in the catalog.</param>
+    /// <param name="serializedBundlePath">The bundle path as it appears in the catalog.
+    /// This may be different to the bundle path if the bundle path should be serialized relative
+    /// to a prefix; see AddressablesRuntimeProperties.EvaluateProperty.</param>
     public static ContentCatalogDataEntry CreateBundleEntry(
         string primaryKey,
         string bundlePath,
         string internalBundleName,
-        List<string> dependencyKeys
+        List<string> dependencyKeys,
+        string? serializedBundlePath = null
     )
     {
         AssetBundleRequestOptions requestOptions = new AssetBundleRequestOptions();
@@ -42,7 +46,7 @@ internal static class CatalogEntryUtils
 
         ContentCatalogDataEntry bundleEntry = new(
             typeof(IAssetBundleResource),
-            bundlePath,
+            serializedBundlePath ?? bundlePath,
             "UnityEngine.ResourceManagement.ResourceProviders.AssetBundleProvider",
             new object[] { primaryKey },
             dependencyKeys,

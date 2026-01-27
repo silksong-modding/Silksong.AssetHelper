@@ -82,7 +82,7 @@ internal class CustomCatalogBuilder
         return true;
     }
 
-    public void AddRepackedSceneData(string sceneName, RepackedBundleData data, string bundlePath)
+    public void AddRepackedSceneData(string sceneName, RepackedBundleData data, string bundlePath, string? serializedBundlePath = null)
     {
         // Create an entry for the bundle
         string repackedSceneBundleKey = $"{_primaryKeyPrefix}/SceneBundles/{sceneName}";
@@ -91,7 +91,8 @@ internal class CustomCatalogBuilder
             repackedSceneBundleKey,
             bundlePath,
             data.BundleName!,
-            []
+            [],
+            serializedBundlePath: serializedBundlePath
         );
         _addedEntries.Add(bundleEntry);
 

@@ -148,6 +148,11 @@ internal class SceneRepacking : BaseStartupTask
         }
     }
 
+    private static string GetSerializedBundleDirPrefix()
+    {
+        return $$"""{Silksong.{{nameof(AssetHelper)}}.Core.{{nameof(AssetPaths)}}.{{nameof(AssetPaths.RepackedSceneBundleDir)}}}""";
+    }
+
     private static string GetBundlePathForScene(string sceneName)
     {
         return Path.Combine(AssetPaths.RepackedSceneBundleDir, $"repacked_{sceneName}.bundle");
@@ -296,7 +301,9 @@ internal class SceneRepacking : BaseStartupTask
         {
             if (repackBunData.Data == null) continue;
             string bundlePath = GetBundlePathForScene(sceneName);
-            cbr.AddRepackedSceneData(sceneName, repackBunData.Data, bundlePath);
+            string bundleFileName = Path.GetFileName(bundlePath);
+            string serializedBundlePath = $"{GetSerializedBundleDirPrefix()}/{bundleFileName}";
+            cbr.AddRepackedSceneData(sceneName, repackBunData.Data, bundlePath, serializedBundlePath);
 
             // Add in requested child paths
             if (AssetRequestAPI.Request.SceneAssets.TryGetValue(sceneName, out HashSet<string> requested))
