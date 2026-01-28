@@ -78,6 +78,12 @@ public static class AssetPaths
         Path.Combine(CacheDirectory, "repacked_scenes").CreateIfNeeded();
 
     /// <summary>
+    /// File containing metadata for repacked scene data.
+    /// </summary>
+    internal static string RepackedSceneBundleMetadataPath =>
+        Path.Combine(RepackedSceneBundleDir, "repack_data.json");
+
+    /// <summary>
     /// Path to the AssetHelper catalog folder.
     /// </summary>
     internal static string CatalogFolder =>

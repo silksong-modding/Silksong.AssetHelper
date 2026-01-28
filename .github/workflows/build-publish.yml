@@ -41,14 +41,21 @@ jobs:
         dotnet-version: 10.x
     - name: Build
       run: dotnet build -c Release --verbosity normal
+    - name: Check thunderstore status
+      run: tree thunderstore
     - name: Pack
-      run: dotnet pack -o nuget/
+      # No build because it's already built by the build step
+      # Building here would fail to build the thunderstore package
+      # for assethelpermenu
+      run: dotnet pack -o nuget/ --no-build -c Release
     - name: Get Version
       id: version
       run: |-
         VERSION=$(dotnet build AssetHelper/AssetHelper.csproj -getProperty:Version)
         echo Version is $VERSION
         echo "version=$VERSION" >> $GITHUB_OUTPUT
+    - name: Check thunderstore status 2
+      run: tree thunderstore
     - name: Upload thunderstore artifact
       uses: actions/upload-artifact@v6
       with:
@@ -113,6 +120,13 @@ jobs:
         dotnet tcli publish \
           --config-path thunderstore/assethelper.toml \
           --file thunderstore/dist/*-AssetHelper-*.zip \
+          --token $THUNDERSTORE_API_KEY
+    - name: Publish AssetHelperMenu to Thunderstore
+      if: env.THUNDERSTORE_API_KEY != ''
+      run: |-
+        dotnet tcli publish \
+          --config-path thunderstore/assethelpermenu.toml \
+          --file thunderstore/dist/*-AssetHelperMenu-*.zip \
           --token $THUNDERSTORE_API_KEY
 
   # Publish to NuGet so that other mods can depend on it in CI

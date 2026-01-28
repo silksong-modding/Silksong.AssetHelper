@@ -26,9 +26,6 @@ namespace Silksong.AssetHelper.Plugin.Tasks;
 /// </summary>
 internal class SceneRepacking : BaseStartupTask
 {
-    // Path to the metadata for the repacked scene bundles
-    private static string _repackDataPath = Path.Combine(AssetPaths.RepackedSceneBundleDir, "repack_data.json");
-
     // Path to the scene catalog .bin file
     private static string SceneCatalogPath => Path.Combine(AssetPaths.CatalogFolder, $"{CatalogKeys.SceneCatalogId}.bin");
 
@@ -105,7 +102,7 @@ internal class SceneRepacking : BaseStartupTask
     /// <returns>True if there is any repacking to be done.</returns>
     private void Prepare()
     {
-        if (JsonExtensions.TryLoadFromFile(_repackDataPath, out RepackDataCollection? repackData))
+        if (JsonExtensions.TryLoadFromFile(AssetPaths.RepackedSceneBundleMetadataPath, out RepackDataCollection? repackData))
         {
             _repackData = repackData;
         }
@@ -265,7 +262,7 @@ internal class SceneRepacking : BaseStartupTask
             };
 
             _repackData[scene] = sceneRepackData;
-            _repackData.SerializeToFile(_repackDataPath);
+            _repackData.SerializeToFile(AssetPaths.RepackedSceneBundleMetadataPath);
             AssetHelperPlugin.InstanceLogger.LogInfo($"Repacked {scene} in {sw.ElapsedMilliseconds} ms");
 
             count++;
