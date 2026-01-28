@@ -44,6 +44,9 @@ jobs:
     - name: Check thunderstore status
       run: tree thunderstore
     - name: Pack
+      # No build because it's already built by the build step
+      # Building here would fail to build the thunderstore package
+      # for assethelpermenu
       run: dotnet pack -o nuget/ --no-build -c Release
     - name: Get Version
       id: version
