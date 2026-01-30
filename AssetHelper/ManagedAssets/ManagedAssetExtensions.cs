@@ -31,11 +31,15 @@ public static class ManagedAssetExtensions
     /// This method should not be used to load the asset. The expected use case is
     /// that you are loading the asset elsewhere (e.g. when the player enters a save file),
     /// and want to guard against a slim chance of the asset not having been loaded.
+    /// 
+    /// This method does not check if there was an exception when loading the asset.
     /// </remarks>
     public static void EnsureLoaded<T>(this ManagedAsset<T> asset)
     {
         if (!asset.HasBeenLoaded)
         {
+            AssetHelperPlugin.InstanceLogger.LogWarning(
+                $"{nameof(EnsureLoaded)} has been called on {asset.Key} before loading the asset!");
             asset.Load();
         }
         if (!asset.IsLoaded)

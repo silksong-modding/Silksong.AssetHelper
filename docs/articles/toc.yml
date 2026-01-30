@@ -1,6 +1,7 @@
 - name: Getting Started
 - href: ../index.md
 - href: quickstart.md
+- href: load.md
 - href: addressables.md
 - href: find.md
 - href: tips.md
