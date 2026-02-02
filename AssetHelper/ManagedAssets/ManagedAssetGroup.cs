@@ -11,7 +11,7 @@ namespace Silksong.AssetHelper.ManagedAssets;
 
 /// <summary>
 /// Class representing a collection of Addressable assets of the same type that are
-/// loaded together.
+/// typically loaded or managed together.
 /// </summary>
 public class ManagedAssetGroup<T> : IManagedAsset
 {
@@ -29,7 +29,7 @@ public class ManagedAssetGroup<T> : IManagedAsset
     /// <param name="AssetName">The name of the asset within the bundle.</param>
     public record NonSceneAssetInfo(string BundleName, string AssetName);
 
-    private Dictionary<string, string> _keyLookup;
+    private readonly Dictionary<string, string> _keyLookup;
 
     /// <summary>
     /// Construct an Addressable asset group from a mapping {name -> key}.
@@ -162,6 +162,7 @@ public class ManagedAssetGroup<T> : IManagedAsset
     /// Access a loaded asset by name.
     /// </summary>
     /// <param name="name">The name as provided when creating this instance.</param>
+    /// <exception cref="InvalidOperationException">Raised if trying to access handles prior to loading.</exception>
     public AsyncOperationHandle<T> this[string name]
     {
         get
@@ -175,6 +176,17 @@ public class ManagedAssetGroup<T> : IManagedAsset
 
             return _handles![name];
         }
+    }
+
+    /// <summary>
+    /// Get a <see cref="ManagedAsset{T}"/> instance that manages the individual asset keyed by <paramref name="name"/>.
+    /// 
+    /// The returned instance is loaded and unloaded independently from this,
+    /// and starts out as unloaded regardless of whether this is loaded or unloaded.
+    /// </summary>
+    public ManagedAsset<T> GetIndividualAsset(string name)
+    {
+        return new(_keyLookup[name]);
     }
 
     /// <summary>
