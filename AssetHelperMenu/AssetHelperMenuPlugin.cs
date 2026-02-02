@@ -7,6 +7,7 @@ using System.Diagnostics;
 using Silksong.AssetHelper.Dev;
 using BepInEx.Configuration;
 using USceneManager = UnityEngine.SceneManagement.SceneManager;
+using Silksong.AssetHelper.Core;
 
 namespace AssetHelperMenu;
 
@@ -33,8 +34,9 @@ public partial class AssetHelperMenuPlugin : BaseUnityPlugin, IModMenuCustomMenu
 
         ConfigEntryFactory factory = new();
 
-        // Open folder button
+        // Open folder buttons
         builder.AddButton("Open debug folder", () => Process.Start(DebugTools.DebugDataDir));
+        builder.AddButton("Open cache folder", () => Process.Start(AssetPaths.CacheDirectory));
         
         // Simple dumps
         builder.AddButton("Dump asset names", DebugTools.DumpAllAssetNames);

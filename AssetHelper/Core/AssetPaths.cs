@@ -66,14 +66,19 @@ public static class AssetPaths
     /// <summary>
     /// Directory storing cached information and data for this version of Silksong.
     /// </summary>
-    internal static string CacheDirectory =>
+    /// <remarks>
+    /// This property should not be used in production code, and may be changed at any time.
+    /// </remarks>
+    public static string CacheDirectory =>
         Path.Combine(Paths.CachePath, CacheSubfolder).CreateIfNeeded();
 
     /// <summary>
     /// Directory storing repacked scenes.
     /// </summary>
-    /// <remarks>This is public so that it can be accessed by Addressables; it should probably not be used
-    /// by user code.</remarks>
+    /// <remarks>
+    /// This is public so that it can be accessed by Addressables.
+    /// This property should not be used in production code, and may be changed at any time.
+    /// </remarks>
     public static string RepackedSceneBundleDir =>
         Path.Combine(CacheDirectory, "repacked_scenes").CreateIfNeeded();
 
