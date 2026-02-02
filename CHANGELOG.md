@@ -1,3 +1,9 @@
+### v1.2.0
+
+Create AssetHelperMenu mod as a separate thunderstore package.
+
+Minor memory improvements.
+
 ### v1.1.1
 
 Fix bug where users with accents in their username could not load
