@@ -32,7 +32,8 @@ public static class ManagedAssetExtensions
     /// that you are loading the asset elsewhere (e.g. when the player enters a save file),
     /// and want to guard against a slim chance of the asset not having been loaded.
     /// 
-    /// This method does not check if there was an exception when loading the asset.
+    /// This method will write an error message to the log if there was an exception during loading,
+    /// but this method will not throw.
     /// </remarks>
     public static void EnsureLoaded<T>(this ManagedAsset<T> asset)
     {
@@ -45,6 +46,11 @@ public static class ManagedAssetExtensions
         if (!asset.IsLoaded)
         {
             asset.Handle.WaitForCompletion();
+        }
+
+        if (asset.Handle.OperationException != null)
+        {
+            AssetHelperPlugin.InstanceLogger.LogError($"Operation exception when loading asset with key {asset.Key}\n" + asset.Handle.OperationException);
         }
     }
 
