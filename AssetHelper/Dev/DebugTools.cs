@@ -33,6 +33,8 @@ namespace Silksong.AssetHelper.Dev;
 /// Class providing tools to help find information about the asset database.
 ///
 /// The methods on this class should not be used in production code, and may be changed at any time.
+/// 
+/// The separate AssetHelperMenu plugin provides an interface to some of the methods on this class through the ModMenu.
 /// </summary>
 public static class DebugTools
 {
