@@ -1,3 +1,8 @@
+### v1.2.1
+
+Fix bugs when different mods request assets from the same scene
+with a parent-child relationship.
+
 ### v1.2.0
 
 Create AssetHelperMenu mod as a separate thunderstore package.
