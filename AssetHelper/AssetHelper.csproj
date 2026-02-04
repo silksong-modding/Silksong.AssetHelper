@@ -76,7 +76,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="MonoDetour.HookGen" Version="0.7.*" PrivateAssets="all" />
+    <PackageReference Include="MonoDetour.HookGen" Version="0.7.12" PrivateAssets="all" />
     <PackageReference Include="MonoDetour" Version="*" />
   </ItemGroup>
 
