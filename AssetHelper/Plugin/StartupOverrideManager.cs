@@ -3,7 +3,6 @@ using System.Buffers;
 using System.Collections;
 using System.Collections.Generic;
 using AssetHelperLib.IO;
-using MonoDetour.HookGen;
 using Silksong.AssetHelper.Core;
 using Silksong.AssetHelper.Plugin.LoadingPage;
 using Silksong.AssetHelper.Plugin.Tasks;
@@ -14,7 +13,6 @@ namespace Silksong.AssetHelper.Plugin;
 /// <summary>
 /// Class managing the scene repacking.
 /// </summary>
-[MonoDetourTargets(typeof(StartManager))]
 internal static class StartupOverrideManager
 {
     // StartManager.Start should never execute twice but we check just in case
