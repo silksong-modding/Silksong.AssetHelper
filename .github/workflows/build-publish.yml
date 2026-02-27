@@ -57,12 +57,12 @@ jobs:
     - name: Check thunderstore status 2
       run: tree thunderstore
     - name: Upload thunderstore artifact
-      uses: actions/upload-artifact@v6
+      uses: actions/upload-artifact@v7
       with:
         name: mod-bundle
         path: thunderstore/dist
     - name: Upload nuget artifact
-      uses: actions/upload-artifact@v6
+      uses: actions/upload-artifact@v7
       with:
         name: nuget
         path: nuget/
