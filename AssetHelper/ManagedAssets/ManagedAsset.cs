@@ -137,4 +137,17 @@ public class ManagedAsset<T>(string key) : IManagedAsset
     /// Whether or not the asset load request has been made.
     /// </summary>
     public bool HasBeenLoaded => _handle.HasValue;
+
+    /// <summary>
+    /// Create a new <see cref="ManagedAsset{T}" /> instance that wraps the same underlying asset.
+    /// The new instance starts out unloaded.
+    /// 
+    /// If a library has defined a <see cref="ManagedAsset{T}" /> instance but it is not
+    /// guaranteed to be loaded, then you should clone the instance and load the clone
+    /// rather than loading the instance owned by the library.
+    /// </summary>
+    public ManagedAsset<T> Clone()
+    {
+        return new(Key);
+    }
 }
