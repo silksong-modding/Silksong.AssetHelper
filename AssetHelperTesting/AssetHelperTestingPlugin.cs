@@ -1,4 +1,6 @@
+using AssetHelperTesting.Tests;
 using BepInEx;
+using BepInEx.Logging;
 using Silksong.AssetHelper.Dev;
 using Silksong.AssetHelper.Plugin;
 
@@ -8,9 +10,13 @@ namespace AssetHelperTesting
     [BepInAutoPlugin(id: "org.silksong-modding.assethelpertesting")]
     public partial class AssetHelperTestingPlugin : BaseUnityPlugin
     {
+        internal static ManualLogSource InstanceLogger { get; private set; }
+
         private void Awake()
         {
-            EnemySpawn.Prepare();
+            InstanceLogger = Logger;
+
+            PrepareTests();
 
             // Put your initialization logic here
             Logger.LogInfo($"Plugin {Name} ({Id}) has loaded!");
@@ -18,6 +24,11 @@ namespace AssetHelperTesting
             AssetRequestAPI.InvokeAfterBundleCreation(
                 () => DebugTools.DumpAllAddressableAssets(AssetRequestAPI.SceneAssetLocator!, "scene_locator.json")
             );
+        }
+
+        private void PrepareTests()
+        {
+            MultiGoSpawn.Prepare();
         }
     }
 }
