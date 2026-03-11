@@ -82,7 +82,7 @@
   </PropertyGroup>
   
   <ItemGroup Condition="'$(AssetHelperLibDevelopment)' == 'false'">
-    <PackageReference Include="AssetHelperLib" Version="0.11.0" GeneratePathProperty="true" />
+    <PackageReference Include="AssetHelperLib" Version="0.12.0" GeneratePathProperty="true" />
   </ItemGroup>
   
   <ItemGroup Condition="'$(AssetHelperLibDevelopment)' == 'true'">
