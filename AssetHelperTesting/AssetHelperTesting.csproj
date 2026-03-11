@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <!-- 
   Imports silksong path properties only if present in order to allow CI builds. The file should be gitignored.
   If you are checking out from git and need to create a new one, you can use `dotnet new silksongpath` to generate one.
@@ -38,13 +38,14 @@
     </PackageReference>
     <PackageReference Include="UnityEngine.Modules" Version="6000.0.50" IncludeAssets="compile" />
     <PackageReference Include="Silksong.UnityHelper" Version="1.1.1" />
+    <PackageReference Include="Silksong.FsmUtil" Version="0.3.14" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\AssetHelper\AssetHelper.csproj" />
   </ItemGroup>
 
-    <ItemGroup>
+  <ItemGroup>
     <PackageReference Include="Silksong.GameLibs" Version="*-*" PrivateAssets="all" />
   </ItemGroup>
 
@@ -63,9 +64,6 @@
       <Binaries Include="$(TargetPath)" LocalDir="/" PackDir="/" />
       <Binaries Include="$(TargetDir)/$(TargetName).pdb" LocalDir="/" PackDir="/" />
     </ItemGroup>
-    <PropertyGroup>
-      <ThunderstoreDir>$(ProjectDir)/thunderstore</ThunderstoreDir>
-    </PropertyGroup>
 
     <!-- Local install -->
     <Copy SourceFiles="@(Binaries)" DestinationFolder="$(SilksongPluginsFolder)/silksong_modding-$(AssemblyTitle)/%(Binaries.LocalDir)" Condition="'$(SilksongPluginsFolder)' != '' And Exists('$(SilksongPluginsFolder)')" />
