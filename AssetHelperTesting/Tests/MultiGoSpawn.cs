@@ -1,4 +1,6 @@
-﻿using Silksong.AssetHelper.Plugin;
+﻿using Silksong.AssetHelper.ManagedAssets;
+using Silksong.AssetHelper.Plugin;
+using Silksong.UnityHelper.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -8,11 +10,13 @@ using UnityEngine.AddressableAssets;
 namespace AssetHelperTesting.Tests;
 
 /// <summary>
-/// Tests associated with multiple game objects having the same name.
+/// Test associated with multiple game objects having the same name.
 /// </summary>
 public class MultiGoSpawn : MonoBehaviour
 {
     public KeyCode RootHotkey { get; set; }
+
+    private static ManagedAssetList<GameObject> _groupAsset;
 
     public static void Prepare(KeyCode rootHotkey = KeyCode.H)
     {
@@ -24,30 +28,24 @@ public class MultiGoSpawn : MonoBehaviour
 
     void Awake()
     {
-        AssetRequestAPI.RequestSceneAsset("Weave_08", "Group");
+        _groupAsset = ManagedAssetList<GameObject>.FromSceneAsset(sceneName: "Weave_08", objPath: "Group");
+        Md.HeroController.Start.Postfix(DoLoad);
     }
+
+    private void DoLoad(HeroController self)
+    {
+        _groupAsset.Load();
+    }
+
 
     void Update()
     {
         if (!Input.GetKeyDown(RootHotkey)) return;
 
-        string key = CatalogKeys.GetKeyForSceneAsset("Weave_08", "Group");
+        _groupAsset.EnsureLoaded();
 
-        var handle = Addressables.LoadAssetsAsync<GameObject>(key);
-        handle.WaitForCompletion();
-        IList<GameObject> result = handle.Result;
-
-        AssetHelperTestingPlugin.InstanceLogger.LogInfo($"Num assets: {result.Count}");
-
-        foreach (GameObject go in result)
-        {
-            AssetHelperTestingPlugin.InstanceLogger.LogInfo(go.name);
-            foreach (Transform t in go.transform)
-            {
-                AssetHelperTestingPlugin.InstanceLogger.LogInfo($"- {t.gameObject.name}");
-            }
-            AssetHelperTestingPlugin.InstanceLogger.LogInfo("");
-        }
+        GameObject spawnedGroup = _groupAsset.InstantiateAsset(go => go.FindChild("Inspect Region (1)") != null);
+        spawnedGroup.transform.position = HeroController.instance.transform.position + new Vector3(5, 0, 0);
+        spawnedGroup.SetActive(true);
     }
-
 }

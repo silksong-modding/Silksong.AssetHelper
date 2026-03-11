@@ -145,7 +145,7 @@ public static class AddressablesData
     }
 
     /// <summary>
-    /// Convert a name to an asset bundle key.
+    /// Convert a name to an asset bundle (addressables) key.
     /// </summary>
     public static string ToBundleKey(string name)
     {

@@ -35,12 +35,12 @@ public static class ManagedAssetExtensions
     /// This method will write an error message to the log if there was an exception during loading,
     /// but this method will not throw.
     /// </remarks>
-    public static void EnsureLoaded<T>(this ManagedAsset<T> asset)
+    public static void EnsureLoaded<T>(this ManagedAssetBase<T> asset)
     {
         if (!asset.HasBeenLoaded)
         {
             AssetHelperPlugin.InstanceLogger.LogWarning(
-                $"{nameof(EnsureLoaded)} has been called on {asset.Key} before loading the asset!");
+                $"{nameof(EnsureLoaded)} has been called on {asset.Identifier} before loading the asset!");
             asset.Load();
         }
         if (!asset.IsLoaded)
@@ -50,7 +50,8 @@ public static class ManagedAssetExtensions
 
         if (asset.Handle.OperationException != null)
         {
-            AssetHelperPlugin.InstanceLogger.LogError($"Operation exception when loading asset with key {asset.Key}\n" + asset.Handle.OperationException);
+            AssetHelperPlugin.InstanceLogger.LogError(
+                $"Operation exception when loading asset {asset.Identifier}\n" + asset.Handle.OperationException);
         }
     }
 
@@ -66,5 +67,35 @@ public static class ManagedAssetExtensions
         }
 
         return UObject.Instantiate(group[key].Result);
+    }
+
+    /// <summary>
+    /// Instantiate an asset from a <see cref="ManagedAssetList{T}"/>.
+    /// If multiple assets match the predicate then the first will be instantiated;
+    /// which one this is will be arbitrary.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="asset"></param>
+    /// <param name="predicate">Function used to check if a given asset is the one being looked for. Commonly
+    /// this will inspect the children or components of the given asset.
+    /// This function should not mutate the argument.</param>
+    /// <returns></returns>
+    /// <exception cref="InvalidOperationException">If none of the assets match the predicate.</exception>
+    public static T InstantiateAsset<T>(this ManagedAssetList<T> asset, Func<T, bool> predicate) where T : UObject
+    {
+        if (!asset.IsLoaded)
+        {
+            throw new InvalidOperationException($"The asset has not finished loading!");
+        }
+
+        foreach (T t in asset.Handle.Result)
+        {
+            if (predicate(t))
+            {
+                return UObject.Instantiate(t);
+            }
+        }
+
+        throw new InvalidOperationException($"No matching asset for managed asset list with key {asset.Key} was found!");
     }
 }
