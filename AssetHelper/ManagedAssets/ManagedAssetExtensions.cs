@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 
 namespace Silksong.AssetHelper.ManagedAssets;
 
@@ -54,6 +55,13 @@ public static class ManagedAssetExtensions
                 $"Operation exception when loading asset {asset.Identifier}\n" + asset.Handle.OperationException);
         }
     }
+
+    /// <summary>
+    /// Obsolete overload of <see cref="EnsureLoaded{T}(ManagedAssetBase{T})"/> kept for backward compatibility.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    public static void EnsureLoaded<T>(this ManagedAsset<T> asset)
+        => EnsureLoaded<T>((ManagedAssetBase<T>)asset);
 
     /// <summary>
     /// Instantiate an asset in this group accessed by key.

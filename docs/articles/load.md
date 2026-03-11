@@ -26,7 +26,7 @@ with `yield return managedAsset.Load();` executed before using the asset.
 If the function loading the asset is not the one using the asset but the asset
 is expected to be loaded , for instance
 if the asset is being loaded on enter game, then it may be sensible to use the
-@"Silksong.AssetHelper.ManagedAssets.ManagedAssetExtensions.EnsureLoaded``1(Silksong.AssetHelper.ManagedAssets.ManagedAsset{``0})"
+@"Silksong.AssetHelper.ManagedAssets.ManagedAssetExtensions.EnsureLoaded``1(Silksong.AssetHelper.ManagedAssets.ManagedAssetBase{``0})"
 method to ensure the asset is loaded before using it.
 
 ## Unloading assets
