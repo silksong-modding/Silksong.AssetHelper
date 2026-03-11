@@ -56,6 +56,7 @@ public static class ManagedAssetExtensions
         }
     }
 
+    // Kept for backward compatibility
     /// <inheritdoc cref="EnsureLoaded{T}(ManagedAssetBase{T})" />
     [EditorBrowsable(EditorBrowsableState.Never)]
     public static void EnsureLoaded<T>(this ManagedAsset<T> asset)
