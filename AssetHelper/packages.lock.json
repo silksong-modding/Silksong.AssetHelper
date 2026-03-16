@@ -32,9 +32,9 @@
       },
       "DataDrivenConstants": {
         "type": "Direct",
-        "requested": "[1.1.0, )",
-        "resolved": "1.1.0",
-        "contentHash": "HwaWo9+GHQjS8DQnV9L+sPyXfgpkBItQCRbOZ4jaDmYxsJnF2JJWS+wCFFMx5tKDupaaxK8y4m0CkwWRPX3tHA=="
+        "requested": "[1.2.0, )",
+        "resolved": "1.2.0",
+        "contentHash": "yV+PEyozKoc4CYN8em0wlBODMAc3z6qF7uZDgoAipOX/5U77j9HdInASXctlpsRxpl8AFvxJXlSlP23Q+HRtWw=="
       },
       "Hamunii.BepInEx.AutoPlugin": {
         "type": "Direct",
@@ -67,8 +67,8 @@
       "MonoDetour": {
         "type": "Direct",
         "requested": "[*, )",
-        "resolved": "0.7.10",
-        "contentHash": "st/61d+jjzIN/TfxU8gwTiD9NWhG36yiIRdo3ANcV1bpQhOr/i2WYUJ3j/Omi00+yX+kfwzMu43ygDufELWw/g==",
+        "resolved": "0.7.13",
+        "contentHash": "A1v0WMKfTbRv3O1l6Myel56AGWfC1SRaXvkXqhLgHL31sttxwMww/ncJS9jpsclqs4hPx8zqcM29AkrqM8WDAg==",
         "dependencies": {
           "MonoMod.RuntimeDetour": "21.12.13.1"
         }
@@ -76,8 +76,8 @@
       "MonoDetour.HookGen": {
         "type": "Direct",
         "requested": "[0.7.*, )",
-        "resolved": "0.7.12",
-        "contentHash": "h9UhcqMDiXqlO5omQ8J3n17n/3vVT3IzxiL14HQ9QxYnGVX8kBiSkIV0mT+sZ2yccmgEu3daJwHQxUFphVrwpA==",
+        "resolved": "0.7.13",
+        "contentHash": "HqlAZ6wiGAPIfnnhHsA8f7O/dKGmEbYPo8EDAD12XhTz/FOYv5qJAzV12SeGnWPbCygAEFMe7LDuiDLg1o4yeA==",
         "dependencies": {
           "MonoDetour": "0.5.0"
         }
