@@ -50,7 +50,7 @@ IEnumerator LoadAll()
     object2.Load();
     // Start loading object3
     object3.Load();
-    // {ause the coroutine until they are all loaded
+    // Pause the coroutine until they are all loaded
     yield return new WaitUntil(() => object1.IsLoaded && object2.IsLoaded && object3.IsLoaded);
 }
 ```
