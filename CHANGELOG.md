@@ -1,3 +1,7 @@
+### v1.3.1
+
+Fixes for ModMenu breaking update
+
 ### v1.3.0
 
 Add proper support for game objects which have the same name as

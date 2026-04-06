@@ -27,7 +27,7 @@ public partial class AssetHelperMenuPlugin : BaseUnityPlugin, IModMenuCustomMenu
         Logger.LogInfo($"Plugin {Name} ({Id}) has loaded!");
     }
 
-    public string ModMenuName() => "AssetHelper";
+    public LocalizedText ModMenuName() => "AssetHelper";
 
     public AbstractMenuScreen BuildCustomMenu()
     {
