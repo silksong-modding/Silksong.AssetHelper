@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Silksong.AssetHelper.Plugin;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
@@ -76,8 +77,21 @@ public class ManagedAsset<T>(string key) : ManagedAssetBase<T>
         {
             AssetRequestAPI.RequestNonSceneAsset<T>(bundleName, assetName);
         }
-        // TODO - include log message if this is constructed too late and the key isn't in the request;
-        // this requires more complex normalization so I am skipping for now
+        else
+        {
+            if (!string.IsNullOrEmpty(bundleName)) 
+            { 
+                if (!AssetRequestAPI.Request.NonSceneAssets.ContainsKey((bundleName, assetName)))
+                {
+                    AssetHelperPlugin.InstanceLogger.LogWarning(
+                        $"Constructing managed asset {assetName} from non-scene bundle {bundleName} after Awake may not work unless the asset has been requested first!");
+                }
+            } 
+
+            // Other cases are not logged as it could lead to false positives.
+            // Ensure the bundleName is included in the request if you want its assets catalogued
+
+        }
 
         string key = CatalogKeys.GetKeyForNonSceneAsset(assetName);
         return new(key);

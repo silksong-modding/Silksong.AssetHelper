@@ -1,7 +1,7 @@
-﻿using System;
+﻿using Silksong.AssetHelper.Plugin;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using Silksong.AssetHelper.Plugin;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
@@ -55,12 +55,6 @@ public class ManagedAssetGroup<T> : IManagedAsset
         Dictionary<string, NonSceneAssetInfo>? nonSceneAssets = null
     )
     {
-        if (!AssetRequestAPI.RequestApiAvailable)
-        {
-            throw new InvalidOperationException(
-                "Asset requests should be made during or before a plugin's Awake method!"
-            );
-        }
 
         Dictionary<string, string> keyLookup = [];
 
@@ -75,7 +69,21 @@ public class ManagedAssetGroup<T> : IManagedAsset
 
             foreach ((string name, SceneAssetInfo asset) in sceneAssets)
             {
-                AssetRequestAPI.RequestSceneAsset(asset.SceneName, asset.ObjPath);
+                
+                if (AssetRequestAPI.RequestApiAvailable)
+                {
+                    AssetRequestAPI.RequestSceneAsset(asset.SceneName, asset.ObjPath);
+                } 
+                else
+                {
+                    if (!AssetRequestAPI.Request.SceneAssets.TryGetValue(asset.SceneName.ToLowerInvariant(), out HashSet<string> objNames)
+                        || !objNames.Contains(asset.ObjPath))
+                    {
+                        AssetHelperPlugin.InstanceLogger.LogWarning(
+                            $"Constructing managed asset from scene {asset.SceneName}, {asset.ObjPath} after Awake may not work unless the asset has been requested first!");
+                    }
+                }       
+
                 keyLookup.Add(
                     name,
                     CatalogKeys.GetKeyForSceneAsset(asset.SceneName, asset.ObjPath)
@@ -87,7 +95,19 @@ public class ManagedAssetGroup<T> : IManagedAsset
         {
             foreach ((string name, NonSceneAssetInfo asset) in nonSceneAssets)
             {
-                AssetRequestAPI.RequestNonSceneAsset<T>(asset.BundleName, asset.AssetName);
+                if (AssetRequestAPI.RequestApiAvailable)
+                {
+                    AssetRequestAPI.RequestNonSceneAsset<T>(asset.BundleName, asset.AssetName);
+                }
+                else
+                {
+                    if (!AssetRequestAPI.Request.NonSceneAssets.ContainsKey((asset.BundleName, asset.AssetName)))
+                    {
+                        AssetHelperPlugin.InstanceLogger.LogWarning(
+                            $"Constructing managed asset {asset.AssetName} from non-scene bundle {asset.BundleName} after Awake may not work unless the asset has been requested first!");
+                    }
+                }
+
                 keyLookup.Add(name, CatalogKeys.GetKeyForNonSceneAsset(asset.AssetName));
             }
         }
