@@ -47,7 +47,7 @@
     "template": [
       "default",
       "modern",
-      "silksong-modding-style-docfx"
+      "silksong-modding"
     ],
     "globalMetadata": {
       "_appName": "AssetHelper",
