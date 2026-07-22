@@ -68,7 +68,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AssetsTools.NET" Version="3.0.4" GeneratePathProperty="true" />
+    <PackageReference Include="AssetsTools.NET" Version="3.0.5" GeneratePathProperty="true" />
   </ItemGroup>
 
   <!--AssetHelperLib dependency-->
