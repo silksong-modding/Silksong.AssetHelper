@@ -53,7 +53,7 @@
   We use the Krafs publicizer because BepInEx doesn't seem to like publicizing individual dlls in a package.
   -->
   <ItemGroup>
-    <PackageReference Include="Krafs.Publicizer" Version="2.3.0">
+    <PackageReference Include="Krafs.Publicizer" Version="2.3.1">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
