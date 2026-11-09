@@ -8,7 +8,7 @@ namespace = "silksong_modding"
 description = "Addon to AssetHelper which adds a menu exposing tools for developers."
 
 # Replace this with a correct repo URL if the default is not accurate
-websiteUrl = "https://github.com/silksong-modding/Silksong.AssetHelper"
+websiteUrl = "https://git.silksong-modding.org/silksong-modding/Silksong.AssetHelper"
 containsNsfwContent = false
 
 

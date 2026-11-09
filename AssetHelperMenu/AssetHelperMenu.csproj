@@ -17,7 +17,7 @@
     <!-- Shortens and anonymizes paths in debug symbols relative to the project directory. Breakpoints will not work, however. -->
     <PathMap Condition="'$(Configuration)' == 'Release'">$(MSBuildProjectDirectory)=/</PathMap>
 
-    <RepositoryUrl>https://github.com/silksong-modding/Silksong.AssetHelper</RepositoryUrl>
+    <RepositoryUrl>https://git.silksong-modding.org/silksong-modding/Silksong.AssetHelper</RepositoryUrl>
     <IsPackable>False</IsPackable>
   </PropertyGroup>
   
