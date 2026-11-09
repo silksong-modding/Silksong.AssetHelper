@@ -49,8 +49,6 @@ jobs:
         VERSION=$(dotnet build AssetHelper/AssetHelper.csproj -getProperty:Version)
         echo Version is $VERSION
         echo "version=$VERSION" >> $GITHUB_OUTPUT
-    - name: Check thunderstore status 2
-      run: tree thunderstore
     - name: Upload thunderstore artifact
       uses: https://code.forgejo.org/forgejo/upload-artifact@cb8afe72b42edc798abfb8fcb556cf660d894245 # v5
       with:
