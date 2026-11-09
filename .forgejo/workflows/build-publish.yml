@@ -38,8 +38,6 @@ jobs:
         dotnet-version: 10.x
     - name: Build
       run: dotnet build -c Release --verbosity normal
-    - name: Check thunderstore status
-      run: tree thunderstore
     - name: Pack
       # No build because it's already built by the build step
       # Building here would fail to build the thunderstore package
