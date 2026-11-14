@@ -32,8 +32,8 @@
     <PackageReference Include="BepInEx.Core" Version="5.4.21" />
     <PackageReference Include="HarmonyX" Version="2.9.0" />
     <PackageReference Include="Hamunii.BepInEx.AutoPlugin" Version="2.1.0" PrivateAssets="all" />
-    <PackageReference Include="Microsoft.Unity.Analyzers" Version="1.26.0" PrivateAssets="all" />
-    <PackageReference Include="PolySharp" Version="1.16.0">
+    <PackageReference Include="Microsoft.Unity.Analyzers" Version="1.28.0" PrivateAssets="all" />
+    <PackageReference Include="PolySharp" Version="1.17.1">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
@@ -53,7 +53,7 @@
   We use the Krafs publicizer because BepInEx doesn't seem to like publicizing individual dlls in a package.
   -->
   <ItemGroup>
-    <PackageReference Include="Krafs.Publicizer" Version="2.3.0">
+    <PackageReference Include="Krafs.Publicizer" Version="2.3.2">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
@@ -68,7 +68,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AssetsTools.NET" Version="3.0.4" GeneratePathProperty="true" />
+    <PackageReference Include="AssetsTools.NET" Version="3.0.5" GeneratePathProperty="true" />
   </ItemGroup>
 
   <!--AssetHelperLib dependency-->
@@ -96,7 +96,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="MonoDetour.HookGen" Version="0.7.*" PrivateAssets="all" />
+    <PackageReference Include="MonoDetour.HookGen" Version="0.7.1*" PrivateAssets="all" />
     <PackageReference Include="MonoDetour" Version="*" />
   </ItemGroup>
 
